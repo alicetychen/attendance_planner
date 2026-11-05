@@ -1,0 +1,3628 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>假勤管理與行事曆</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f1f5f9;
+            --border-light: #e2e8f0;
+            --border-hover: #cbd5e1;
+            
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --primary-dark: #3730a3;
+            
+            --vacation-color: #ea580c;
+            --vacation-bg: #ffedd5;
+            --vacation-border: #fed7aa;
+            --vacation-text: #9a3412;
+
+            --sick-color: #d97706;
+            --sick-bg: #fef3c7;
+            --sick-border: #fde68a;
+            --sick-text: #92400e;
+
+            --wfh-color: #2563eb;
+            --wfh-bg: #dbeafe;
+            --wfh-border: #bfdbfe;
+            --wfh-text: #1e40af;
+
+            --holiday-color: #0d9488;
+            --holiday-bg: #ccfbf1;
+            --holiday-border: #99f6e4;
+            --holiday-text: #0f766e;
+
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --rose: #e11d48;
+            --rose-light: #ffe4e6;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.03);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1320px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Top Navbar */
+        .navbar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border-color: var(--border-light);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-card-subtle);
+            border-color: var(--border-hover);
+        }
+
+        .btn-travel-portal {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+        }
+        .btn-travel-portal:hover {
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Year Selector Bar */
+        .year-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .year-switcher {
+            display: flex;
+            background: var(--bg-card-subtle);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .year-switcher-btn {
+            padding: 6px 18px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .year-switcher-btn.active {
+            background: var(--bg-card);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Dashboard Asset Cards Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+
+        .col-4 { grid-column: span 4; }
+        .col-12 { grid-column: span 12; }
+
+        @media (max-width: 1024px) {
+            .col-4 { grid-column: span 12; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: var(--transition);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .icon-vacation { background: var(--vacation-bg); color: var(--vacation-color); }
+        .icon-sick { background: var(--sick-bg); color: var(--sick-color); }
+        .icon-wfh { background: var(--wfh-bg); color: var(--wfh-color); }
+
+        .stat-value-box {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .stat-main {
+            font-size: 2.6rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1;
+        }
+
+        .stat-unit {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .stat-badge {
+            margin-left: auto;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .badge-vacation { background: var(--vacation-bg); color: var(--vacation-text); }
+        .badge-sick { background: var(--sick-bg); color: var(--sick-text); }
+        .badge-wfh { background: var(--wfh-bg); color: var(--wfh-text); }
+
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: var(--bg-card-subtle);
+            border-radius: 99px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.3s ease;
+        }
+
+        .fill-vacation { background: var(--vacation-color); }
+        .fill-sick { background: var(--sick-color); }
+        .fill-wfh { background: var(--wfh-color); }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .info-note-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            padding-top: 8px;
+            border-top: 1px dashed var(--border-light);
+        }
+
+        .info-note-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-unit {
+            display: flex;
+            background: var(--bg-card-subtle);
+            border-radius: var(--radius-sm);
+            padding: 2px;
+            border: 1px solid var(--border-light);
+        }
+
+        .toggle-btn {
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-sub);
+        }
+
+        .toggle-btn.active {
+            background: var(--vacation-color);
+            color: white;
+        }
+
+        /* Leave Table Section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg-card-subtle);
+            padding: 12px 18px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--text-sub);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #fafafa; }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .tag-vacation { background: var(--vacation-bg); color: var(--vacation-text); border: 1px solid var(--vacation-border); }
+        .tag-sick { background: var(--sick-bg); color: var(--sick-text); border: 1px solid var(--sick-border); }
+        .tag-wfh { background: var(--wfh-bg); color: var(--wfh-text); border: 1px solid var(--wfh-border); }
+        .tag-holiday { background: var(--holiday-bg); color: var(--holiday-text); border: 1px solid var(--holiday-border); }
+
+        /* Monthly Calendar */
+        .calendar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            padding: 8px 0;
+            background: var(--bg-card-subtle);
+            border-radius: 6px;
+        }
+        .calendar-weekday.weekend { color: var(--rose); }
+
+        .calendar-cell {
+            min-height: 96px;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: var(--transition);
+        }
+
+        .calendar-cell:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .calendar-cell.other-month {
+            opacity: 0.35;
+            background: #fafafa;
+        }
+
+        .calendar-cell.is-weekend {
+            background: #fffbfa;
+        }
+
+        .calendar-date-num {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event-holiday { background: var(--holiday-bg); color: var(--holiday-text); border: 1px solid var(--holiday-border); }
+        .event-vacation { background: var(--vacation-bg); color: var(--vacation-text); border: 1px solid var(--vacation-border); }
+        .event-sick { background: var(--sick-bg); color: var(--sick-text); border: 1px solid var(--sick-border); }
+        .event-wfh { background: var(--wfh-bg); color: var(--wfh-text); border: 1px solid var(--wfh-border); }
+
+        /* Modal Dialog Setup (優化渲染效能，預設 display: none，杜絕濾鏡卡頓與假死) */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            display: none !important;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            padding: 20px;
+        }
+
+        .modal-backdrop.active {
+            display: flex !important;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-dialog {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 640px;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-dialog form {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            background: white;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .modal-title { 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close-btn { 
+            background: var(--bg-card-subtle);
+            border: 1px solid var(--border-light);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub); 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: var(--transition);
+        }
+
+        .modal-close-btn:hover {
+            background: var(--rose-light);
+            color: var(--rose);
+            border-color: var(--rose);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto !important;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            background: var(--bg-card-subtle);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .form-group { margin-bottom: 16px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-sub); margin-bottom: 6px; }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* 智慧區間判定提示卡 */
+        .range-analyzer-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .range-analyzer-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .range-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            text-align: center;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        .metric-item { display: flex; flex-direction: column; gap: 2px; }
+        .metric-label { font-size: 0.72rem; color: var(--text-sub); font-weight: 700; }
+        .metric-val { font-size: 1.05rem; font-weight: 800; color: var(--text-main); }
+        .metric-val.highlight { color: var(--primary); }
+
+        .manual-adjust-box {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        /* 假期試算小幫手專屬樣式 */
+        .calc-tab-bar {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+
+        .calc-tab-btn {
+            padding: 10px 18px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--text-sub);
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calc-tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .calc-tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .quick-strategies-box {
+            background: var(--bg-card-subtle);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 18px;
+        }
+
+        .quick-strategy-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-strategy-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quick-strategy-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #eef2ff;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-strategy-chip .badge-days {
+            font-size: 0.72rem;
+            font-weight: 800;
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 1px 7px;
+            border-radius: 10px;
+        }
+
+        .calc-result-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-top: 16px;
+        }
+
+        .calc-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .calc-stat-card {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 12px 14px;
+            text-align: center;
+        }
+
+        .calc-stat-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+        }
+
+        .calc-stat-val {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        .calc-stat-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .balance-impact-card {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .tenure-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+
+        .tenure-table th, .tenure-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .tenure-table th {
+            background: var(--bg-card-subtle);
+            font-weight: 800;
+            color: var(--text-sub);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top Navbar -->
+        <nav class="navbar">
+            <div class="brand-logo">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div>
+                    <div class="brand-title">個人假勤管理與行事曆 <span style="font-size: 0.75rem; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; padding: 2px 8px; border-radius: 999px; margin-left: 6px; font-weight: 700;">通用空白範本</span></div>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-secondary" onclick="openExportImageModal()" style="border-color: #fbcfe8; background: #fdf2f8; color: #be185d; font-weight: 700;" title="匯出高畫質假勤資產結算圖卡 (PNG)，掌握剩餘天數與時數">
+                    <i class="fa-solid fa-camera"></i> 📸 匯出假勤圖卡
+                </button>
+                <button class="btn btn-secondary" onclick="openLeaveCalculatorModal()" style="border-color: #c7d2fe; color: #4338ca; background: #eef2ff; font-weight: 700;" title="試算連假攻略與特休年資">
+                    <i class="fa-solid fa-calculator" style="color: var(--primary);"></i> 🧮 假期與特休試算
+                </button>
+                <button class="btn btn-secondary" onclick="openYearlyAssetModal()" id="navSetAssetBtn" title="設定個人年度特休、病假、WFH 額度">
+                    <i class="fa-solid fa-gear"></i> 設定年度假勤總額度
+                </button>
+                <button class="btn btn-secondary" onclick="exportDataToJSON()" title="備份個人資料為 JSON 檔案">
+                    <i class="fa-solid fa-download"></i> 匯出備份
+                </button>
+                <button class="btn btn-secondary" onclick="triggerImportJSON()" title="自 JSON 備份檔還原假勤資料">
+                    <i class="fa-solid fa-upload"></i> 匯入備份
+                </button>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+                <button class="btn btn-secondary" onclick="clearAllPlans()" style="color: #b91c1c; border-color: #fecaca;" title="清空目前所有排定的假勤">
+                    <i class="fa-solid fa-trash-can"></i> 清空假勤
+                </button>
+                <button class="btn btn-primary" onclick="openAddLeaveModal()">
+                    <i class="fa-solid fa-plus"></i> 排入新假勤
+                </button>
+            </div>
+        </nav>
+
+        <!-- Year Selector Bar -->
+        <div class="year-bar">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <span style="font-weight: 800; font-size: 0.98rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i> 假勤檢視年度：
+                </span>
+                <div class="year-switcher">
+                    <button class="year-switcher-btn active" id="year-btn-2026" onclick="switchSelectedYear(2026)">📅 2026 當前年度</button>
+                    <button class="year-switcher-btn" id="year-btn-2027" onclick="switchSelectedYear(2027)">✨ 2027 明年假期 (新增設定)</button>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn btn-secondary" style="font-size: 0.85rem; padding: 6px 14px; border-color: #fbcfe8; background: #fdf2f8; color: #be185d; font-weight: 700;" onclick="openExportImageModal()" title="匯出高畫質假勤資產結算圖卡 (PNG)，掌握剩餘天數與時數">
+                    <i class="fa-solid fa-camera"></i> 📸 匯出假勤圖卡 (PNG)
+                </button>
+                <button class="btn btn-secondary" style="font-size: 0.85rem; padding: 6px 14px; border-color: #cbd5e1;" onclick="openLeaveCalculatorModal()">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> 假期試算 & 請假攻略
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid: 3 Asset Cards -->
+        <div class="dashboard-grid">
+            
+            <!-- Card 1: Annual Leave (特休) -->
+            <div class="card col-4">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon icon-vacation">
+                            <i class="fa-solid fa-umbrella-beach"></i>
+                        </div>
+                        特休 (年休假)
+                    </div>
+                    <div class="toggle-unit">
+                        <button class="toggle-btn active" id="unit-hours-btn" onclick="setUnit('hours')">小時</button>
+                        <button class="toggle-btn" id="unit-days-btn" onclick="setUnit('days')">天數</button>
+                    </div>
+                </div>
+
+                <div class="stat-value-box">
+                    <div class="stat-main" id="vacation-remaining-stat" style="color: var(--vacation-color);">136</div>
+                    <div class="stat-unit" id="vacation-unit-label">小時 剩餘</div>
+                    <span class="stat-badge badge-vacation" id="vacation-ratio-badge">剩餘 71%</span>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar-bg">
+                        <div class="progress-fill fill-vacation" id="vacation-progress-fill" style="width: 71%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>預排扣除: <strong id="vacation-used-val">32 小時 (4 天)</strong></span>
+                        <span>總可用額度: <strong id="vacation-total-val">192 小時 (24 天)</strong></span>
+                    </div>
+                </div>
+
+                <div class="info-note-list">
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-circle-info" style="color: var(--vacation-color);"></i> 原始已使用基準:</span>
+                        <strong id="vacation-used-base-display">24 小時 (3 天)</strong>
+                    </div>
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-calendar-check" style="color: var(--holiday-color);"></i> <span id="vacation-old-expiry-display">2026/12/31</span> 到期舊假 (<span id="vacation-old-rem-display">56h</span>):</span>
+                        <strong style="color: var(--holiday-color);">已納入總可用額度</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Full Sick Leave (全薪病假) -->
+            <div class="card col-4">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon icon-sick">
+                            <i class="fa-solid fa-kit-medical"></i>
+                        </div>
+                        全薪病假
+                    </div>
+                    <span class="tag tag-sick">100% 全薪</span>
+                </div>
+
+                <div class="stat-value-box">
+                    <div class="stat-main" id="sick-remaining-stat" style="color: var(--sick-color);">20</div>
+                    <div class="stat-unit" id="sick-unit-label">小時 剩餘</div>
+                    <span class="stat-badge badge-sick">剩餘 25%</span>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar-bg">
+                        <div class="progress-fill fill-sick" id="sick-progress-fill" style="width: 25%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>已使用額度: <strong id="sick-used-val">60 小時 (7.5 天)</strong></span>
+                        <span>總可用額度: <strong id="sick-total-val">80 小時 (10 天)</strong></span>
+                    </div>
+                </div>
+
+                <div class="info-note-list">
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-shield-heart" style="color: var(--sick-color);"></i> 健康保障儲備:</span>
+                        <strong id="sick-reserve-display">剩餘 2.5 天 (20h)</strong>
+                    </div>
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-building" style="color: var(--text-sub);"></i> 給薪狀態:</span>
+                        <strong>全額薪資照給</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: WFH Remote Work (遠距辦公) -->
+            <div class="card col-4">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon icon-wfh">
+                            <i class="fa-solid fa-house-laptop"></i>
+                        </div>
+                        遠距辦公申請 (WFH)
+                    </div>
+                    <span class="tag tag-wfh">每月上限額度</span>
+                </div>
+
+                <div class="stat-value-box">
+                    <div class="stat-main" id="wfh-remaining-stat" style="color: var(--wfh-color);">1</div>
+                    <div class="stat-unit">天 (8h) 本月剩餘</div>
+                    <span class="stat-badge badge-wfh" id="wfh-status-badge">本月已用 1 天</span>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar-bg">
+                        <div class="progress-fill fill-wfh" id="wfh-progress-fill" style="width: 50%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>每月可用上限: <strong id="wfh-monthly-limit-val">2 天 (16h)</strong></span>
+                        <span>年度表單上限: <strong id="wfh-yearly-limit-val">48 小時 (6 天)</strong></span>
+                    </div>
+                </div>
+
+                <div class="info-note-list">
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-laptop-code" style="color: var(--wfh-color);"></i> 遠距彈性工作:</span>
+                        <strong>支援手動彈性申報</strong>
+                    </div>
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-globe" style="color: var(--text-sub);"></i> 連動旅行:</span>
+                        <strong>可搭配自由行作息排定</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Leave Records Table Section -->
+        <div class="card col-12" style="padding: 20px;">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-list-check" style="color: var(--primary);"></i>
+                    假勤排定與已登記清單
+                </div>
+                <button class="btn btn-primary" style="font-size: 0.82rem; padding: 6px 14px;" onclick="openAddLeaveModal()">
+                    <i class="fa-solid fa-plus"></i> 排入新假勤
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>排定事項與目的地</th>
+                            <th onclick="toggleDateSort()" style="cursor: pointer; user-select: none;" title="點擊切換日期區間排序 (由早到晚 / 由晚到早)">
+                                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                                    日期區間
+                                    <i id="dateSortIcon" class="fa-solid fa-arrow-up-short-wide" style="color: var(--primary); font-size: 0.82rem;"></i>
+                                </span>
+                            </th>
+                            <th>假勤類別</th>
+                            <th>區間非工作日判定</th>
+                            <th>扣除時數 / 天數</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leave-table-body">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Monthly Calendar Section -->
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i>
+                    每月休假與 2026~2027 國定假日行事曆
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button class="btn btn-secondary" style="padding: 4px 10px;" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="calendar-month-label" style="font-weight: 800; font-size: 1rem; color: var(--text-main); min-width: 130px; text-align: center;">2026 年 10 月</span>
+                    <button class="btn btn-secondary" style="padding: 4px 10px;" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;" onclick="resetToCurrentMonth()">回到當月</button>
+                </div>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="calendar-weekday weekend">週日</div>
+                <div class="calendar-weekday">週一</div>
+                <div class="calendar-weekday">週二</div>
+                <div class="calendar-weekday">週三</div>
+                <div class="calendar-weekday">週四</div>
+                <div class="calendar-weekday">週五</div>
+                <div class="calendar-weekday weekend">週六</div>
+            </div>
+            <div class="calendar-grid" id="calendar-days-container" style="margin-top: 8px;">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: Add / Edit Leave Modal (含智慧區間判定與手動覆寫時數功能) -->
+    <div class="modal-backdrop" id="leaveModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'leaveModal')">
+        <div class="modal-dialog" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">
+                    <i class="fa-solid fa-calendar-plus" style="color: var(--primary);"></i> 安排假勤 / 遠距辦公
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeAddLeaveModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <form id="leaveForm" onsubmit="handleSaveLeave(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="leaveId">
+
+                    <div class="form-group">
+                        <label class="form-label">排定事項與目的地</label>
+                        <input type="text" id="leaveTitle" class="form-control" placeholder="例如：重慶 7 天 6 夜自由行、居家辦公" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">開始日期</label>
+                            <input type="date" id="startDate" class="form-control" required onchange="handleDateRangeChange()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">結束日期</label>
+                            <input type="date" id="endDate" class="form-control" required onchange="handleDateRangeChange()">
+                        </div>
+                    </div>
+
+                    <!-- 智慧區間判定卡片 -->
+                    <div class="range-analyzer-box" id="rangeAnalyzerBox">
+                        <div class="range-analyzer-title">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> 智慧區間自動判定 (2026~2027 國定假日與週末分析)
+                        </div>
+                        <div class="range-metrics-grid">
+                            <div class="metric-item">
+                                <span class="metric-label">日曆總天數</span>
+                                <span class="metric-val" id="analyzerTotalDays">0 天</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">週末天數</span>
+                                <span class="metric-val" id="analyzerWeekendDays">0 天</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">國定假日</span>
+                                <span class="metric-val" id="analyzerHolidayDays">0 天</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">系統建議扣除</span>
+                                <span class="metric-val highlight" id="analyzerSuggestedDays">0 天 (0h)</span>
+                            </div>
+                        </div>
+                        <div id="analyzerHolidaysNote" style="font-size: 0.78rem; color: var(--holiday-text); margin-top: 6px; font-weight: 700; display: none;"></div>
+
+                        <!-- 手動自訂扣除區塊 -->
+                        <div class="manual-adjust-box">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: var(--text-main); cursor: pointer;">
+                                <input type="checkbox" id="enableManualAdjustment" onchange="toggleManualAdjustment(this.checked)">
+                                ✍️ 啟用手動調整扣除時數 / 天數 (自由覆寫)
+                            </label>
+                            <div id="manualInputContainer" style="display: none; align-items: center; gap: 8px;">
+                                <span style="font-size: 0.82rem; font-weight: 700; color: var(--primary);">實際扣除:</span>
+                                <input type="number" id="manualDeductHours" class="form-control" style="width: 100px; padding: 5px 8px; font-size: 0.88rem; font-weight: 800;" step="0.5" min="0" placeholder="時數(h)" oninput="updateManualDaysPreview(this.value)">
+                                <span id="manualDaysPreview" style="font-size: 0.82rem; color: var(--text-sub); font-weight: 700;">(0 天)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">假勤 / 辦公類別</label>
+                        <select id="leaveType" class="form-control">
+                            <option value="vacation">特休 (年休假)</option>
+                            <option value="wfh">居家辦公 (遠距辦公 WFH)</option>
+                            <option value="sick">全薪病假</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">地點與簡短備註</label>
+                        <input type="text" id="leaveNotes" class="form-control" placeholder="例如：中國重慶 / 家中 / 個人身體不適">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddLeaveModal()">取消</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> 儲存假勤排定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Yearly Leave Asset Setup (設定 2026/2027 年度總額度) -->
+    <div class="modal-backdrop" id="yearlyAssetModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'yearlyAssetModal')">
+        <div class="modal-dialog" style="max-width: 580px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary), #6366f1); color: white;">
+                <div class="modal-title" style="color: white; font-weight: 800;">設定年度假勤總額度 (2026 / 2027)</div>
+                <button type="button" class="modal-close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeYearlyAssetModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <form id="yearlyAssetForm" onsubmit="handleSaveYearlyAssets(event)">
+                <div class="modal-body">
+                    <div class="form-group" style="background: var(--primary-light); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
+                        <label class="form-label" style="color: var(--primary-dark); font-weight: 800; font-size: 0.95rem; margin-bottom: 6px;">
+                            <i class="fa-solid fa-calendar"></i> 選擇設定年份
+                        </label>
+                        <select id="assetYearSelect" class="form-control" style="font-weight: 700; font-size: 1rem; background: #ffffff;" onchange="loadYearlyAssetToEditor(this.value)">
+                            <option value="2027">2027 年 (明年新假期與總額度)</option>
+                            <option value="2026">2026 年 (當前年度)</option>
+                            <option value="2028">2028 年 (未來年度)</option>
+                        </select>
+                    </div>
+
+                    <div id="sec-asset-vacation" style="background: #fff7ed; padding: 14px; border-radius: 10px; margin-bottom: 14px; border: 1px solid var(--vacation-border);">
+                        <strong style="color: var(--vacation-color); font-size: 0.95rem; display: block; margin-bottom: 8px;">🏖️ 特休 (年休假) 總額度設定</strong>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">特休總額度 (小時)</label>
+                                <input type="number" id="editAssetVacationTotal" class="form-control" placeholder="200" required>
+                                <span style="font-size: 0.75rem; color: var(--text-sub);">如：24天=192h / 25天=200h</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">原始已扣除基準 (小時)</label>
+                                <input type="number" id="editAssetVacationUsedBase" class="form-control" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-top: 6px;">
+                            <div class="form-group">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <label class="form-label" style="margin-bottom: 0;">結轉舊假額度 (小時)</label>
+                                    <button type="button" class="btn btn-secondary" id="btnImport2026Rem" style="padding: 2px 8px; font-size: 0.72rem; border-color: var(--vacation-border); background: white; color: var(--vacation-color); font-weight: 700;" onclick="import2026RemainingToOldLeave()" title="依據 2026 剩餘特休時數自動帶入">
+                                        <i class="fa-solid fa-file-import"></i> 匯入 2026 剩餘舊假 (<span id="preview2026RemHours">0</span>h)
+                                    </button>
+                                </div>
+                                <input type="number" id="editAssetVacationOldRem" class="form-control" placeholder="40">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">舊假到期日期</label>
+                                <input type="date" id="editAssetVacationOldExpiry" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sec-asset-sick" style="background: #fef3c7; padding: 14px; border-radius: 10px; margin-bottom: 14px; border: 1px solid var(--sick-border);">
+                        <strong style="color: var(--sick-text); font-size: 0.95rem; display: block; margin-bottom: 8px;">💊 全薪病假總額度設定</strong>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">全薪病假總額度 (小時)</label>
+                                <input type="number" id="editAssetSickTotal" class="form-control" placeholder="80" required>
+                                <span style="font-size: 0.75rem; color: var(--text-sub);">如：10天=80h</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">年度已使用基準 (小時)</label>
+                                <input type="number" id="editAssetSickUsed" class="form-control" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sec-asset-wfh" style="background: #dbeafe; padding: 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--wfh-border);">
+                        <strong style="color: var(--wfh-text); font-size: 0.95rem; display: block; margin-bottom: 8px;">🏠 遠距辦公 (WFH) 額度設定</strong>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">每月 WFH 上限 (天)</label>
+                                <input type="number" id="editAssetWfhMonthly" class="form-control" placeholder="2" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">年度 WFH 總上限 (小時)</label>
+                                <input type="number" id="editAssetWfhYearly" class="form-control" placeholder="48">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <button type="button" class="btn btn-secondary" onclick="preset2027Assets()"><i class="fa-solid fa-wand-magic-sparkles"></i> 一鍵帶入 2027 明年建議資深假勤</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeYearlyAssetModal()">取消</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> 儲存年度假期設定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Leave Calculator & Strategy Simulator (假期與特休試算小幫手) -->
+    <div class="modal-backdrop" id="leaveCalculatorModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'leaveCalculatorModal')">
+        <div class="modal-dialog" style="max-width: 680px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-calculator" style="color: var(--primary);"></i> 假期試算與請假攻略小幫手
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeLeaveCalculatorModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Tab Controls -->
+                <div class="calc-tab-bar">
+                    <button type="button" class="calc-tab-btn active" id="tab-btn-simulator" onclick="switchCalcTab('simulator')">
+                        <i class="fa-solid fa-plane-departure"></i> 🧳 連假請假攻略與區間試算
+                    </button>
+                    <button type="button" class="calc-tab-btn" id="tab-btn-tenure" onclick="switchCalcTab('tenure')">
+                        <i class="fa-solid fa-user-clock"></i> 💼 勞基法特休年資試算
+                    </button>
+                </div>
+
+                <!-- Tab 1: Simulator & Strategies -->
+                <div id="calc-tab-simulator-content">
+                    <!-- Quick Holiday Strategy Recommendations -->
+                    <div class="quick-strategies-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 800; font-size: 0.86rem; color: var(--primary); display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-fire" style="color: var(--vacation-color);"></i> 熱門連假請假攻略快捷鍵 (點擊一鍵帶入)
+                            </span>
+                            <span id="quickStrategyYearLabel" style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted);">
+                                2026 年度連假
+                            </span>
+                        </div>
+                        <div class="quick-strategy-list" id="quickStrategiesContainer">
+                            <!-- Populated dynamically based on selectedYear -->
+                        </div>
+                    </div>
+
+                    <!-- Custom Range Form -->
+                    <div style="background: white; border: 1px solid var(--border-light); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">試算開始日期</label>
+                                <input type="date" id="calcStartDate" class="form-control" onchange="handleCalcStartDateChange()" oninput="handleCalcStartDateChange()">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">試算結束日期</label>
+                                <input type="date" id="calcEndDate" class="form-control" onchange="handleCalcEndDateChange()" oninput="handleCalcEndDateChange()">
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-top: 12px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">試算假勤類別</label>
+                                <select id="calcLeaveType" class="form-control" onchange="runLeaveSimulation()">
+                                    <option value="vacation" selected>🏖️ 特休 (年休假)</option>
+                                    <option value="sick">🏥 全薪病假</option>
+                                    <option value="wfh">🏡 遠距辦公 (WFH)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">預想行程 / 事項名稱</label>
+                                <input type="text" id="calcLeaveTitle" class="form-control" placeholder="例如：春節爽休旅遊、出國度假" value="年度連假請假充電">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Simulation Result Metrics Card -->
+                    <div class="calc-result-box" id="calcResultContainer">
+                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> 試算結果分析</span>
+                            <span id="calcSummaryBadge" class="stat-badge badge-vacation" style="white-space: nowrap;">請 3 天 連休 9 天</span>
+                        </div>
+
+                        <div class="calc-stats-grid">
+                            <div class="calc-stat-card">
+                                <div class="calc-stat-label">🌴 連休總天數</div>
+                                <div class="calc-stat-val" id="calcTotalDaysVal" style="color: var(--vacation-color);">9 天</div>
+                                <div class="calc-stat-sub" id="calcDateSpanSub">2026/02/14 ~ 2026/02/22</div>
+                            </div>
+                            <div class="calc-stat-card">
+                                <div class="calc-stat-label">📌 實際需請假</div>
+                                <div class="calc-stat-val" id="calcActualWorkDaysVal" style="color: var(--primary);">3 天</div>
+                                <div class="calc-stat-sub" id="calcActualHoursSub">扣除 24 小時額度</div>
+                            </div>
+                            <div class="calc-stat-card">
+                                <div class="calc-stat-label">🛋️ 免請假天數</div>
+                                <div class="calc-stat-val" id="calcNonWorkDaysVal" style="color: #059669;">6 天</div>
+                                <div class="calc-stat-sub" id="calcNonWorkSub">週末 4 天 + 國假 2 天</div>
+                            </div>
+                        </div>
+
+                        <!-- Holidays Encountered Note -->
+                        <div id="calcHolidaysNote" style="font-size: 0.8rem; font-weight: 700; color: var(--holiday-text); background: var(--holiday-bg); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--holiday-border);">
+                            💡 期間包含國定假日：農曆除夕、春節初一
+                        </div>
+
+                        <!-- Quota Impact Comparison -->
+                        <div class="balance-impact-card">
+                            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
+                                <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-sub);">
+                                    假勤額度衝擊評估 (<span id="calcImpactYearLabel">2026</span> 年度)
+                                </div>
+                                <div style="font-size: 0.95rem; font-weight: 800; color: var(--text-main);" id="calcImpactDetails">
+                                    當前特休剩餘 104h ➔ 請假後預計剩餘 <span style="color: var(--vacation-color); font-size: 1.15rem;">80h</span> (10.0 天)
+                                </div>
+                            </div>
+                            <div id="calcQuotaHealthBadge" style="flex-shrink: 0; white-space: nowrap;">
+                                <span class="stat-badge badge-vacation" style="font-size: 0.85rem; padding: 6px 12px; white-space: nowrap;">額度充裕 (剩餘 42%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Tenure Calculator (勞基法特休年資試算) -->
+                <div id="calc-tab-tenure-content" style="display: none;">
+                    <div style="background: white; border: 1px solid var(--border-light); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label"><i class="fa-solid fa-briefcase"></i> 到職受僱日期 (Onboard Date)</label>
+                                <input type="date" id="tenureOnboardDate" class="form-control" value="2023-07-01" onchange="runTenureCalculation()">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label"><i class="fa-solid fa-scale-balanced"></i> 計算制度</label>
+                                <select id="tenureCalcSystem" class="form-control" onchange="runTenureCalculation()">
+                                    <option value="anniversary" selected>週年制 (滿完整在職年資給假)</option>
+                                    <option value="calendar">歷年制 (每年 1/1~12/31 比例結算)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tenure Calculation Results Cards -->
+                    <div class="calc-result-box" style="margin-top: 0;">
+                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fa-solid fa-id-badge"></i> 勞基法第 38 條特休法定天數試算結果</span>
+                            <span id="tenureDurationText" style="font-size: 0.82rem; font-weight: 800; color: var(--text-main);">目前累計年資：3 年 3 個月</span>
+                        </div>
+
+                        <div class="form-row" style="gap: 12px; margin-bottom: 14px;">
+                            <!-- 2026 Year Stat -->
+                            <div style="background: white; border: 1px solid #fed7aa; border-radius: 10px; padding: 14px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <div style="font-size: 0.78rem; font-weight: 800; color: var(--vacation-text);">📅 2026 年度依法特休</div>
+                                    <div style="font-size: 1.6rem; font-weight: 900; color: var(--vacation-color); margin: 6px 0;" id="tenure2026DaysVal">14 天</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-sub);" id="tenure2026HoursVal">相當於 112 小時 (8h/天)</div>
+                                </div>
+                                <button type="button" class="btn btn-secondary" style="font-size: 0.75rem; padding: 6px 10px; margin-top: 10px; border-color: #fdba74;" onclick="applyTenureToYearly(2026)">
+                                    <i class="fa-solid fa-check"></i> 套用至 2026 特休額度
+                                </button>
+                            </div>
+
+                            <!-- 2027 Year Stat -->
+                            <div style="background: white; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <div style="font-size: 0.78rem; font-weight: 800; color: var(--wfh-text);">✨ 2027 年度依法特休</div>
+                                    <div style="font-size: 1.6rem; font-weight: 900; color: var(--primary); margin: 6px 0;" id="tenure2027DaysVal">14 天</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-sub);" id="tenure2027HoursVal">相當於 112 小時 (8h/天)</div>
+                                </div>
+                                <button type="button" class="btn btn-secondary" style="font-size: 0.75rem; padding: 6px 10px; margin-top: 10px; border-color: #93c5fd;" onclick="applyTenureToYearly(2027)">
+                                    <i class="fa-solid fa-check"></i> 套用至 2027 特休額度
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Labor Law Rules Table Reference -->
+                        <div style="background: white; border: 1px solid var(--border-light); border-radius: 8px; padding: 12px;">
+                            <div style="font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin-bottom: 8px;">
+                                📋 臺灣勞動基準法第 38 條特休給假標準對照
+                            </div>
+                            <table class="tenure-table">
+                                <thead>
+                                    <tr>
+                                        <th>受僱年資級距</th>
+                                        <th>特休天數</th>
+                                        <th>換算時數 (8h/天)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>滿 6 個月 ~ 未滿 1 年</td><td><strong>3 日</strong></td><td>24 小時</td></tr>
+                                    <tr><td>滿 1 年 ~ 未滿 2 年</td><td><strong>7 日</strong></td><td>56 小時</td></tr>
+                                    <tr><td>滿 2 年 ~ 未滿 3 年</td><td><strong>10 日</strong></td><td>80 小時</td></tr>
+                                    <tr><td>滿 3 年 ~ 未滿 5 年</td><td><strong>14 日</strong> / 年</td><td>112 小時 / 年</td></tr>
+                                    <tr><td>滿 5 年 ~ 未滿 10 年</td><td><strong>15 日</strong> / 年</td><td>120 小時 / 年</td></tr>
+                                    <tr><td>滿 10 年以上</td><td>每滿 1 年 <strong>+1 日</strong> (上限 30 日)</td><td>最高 240 小時</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-secondary" onclick="closeLeaveCalculatorModal()">關閉試算</button>
+                <button type="button" class="btn btn-primary" id="calcAdoptBtn" onclick="adoptSimulationToLeave()">
+                    <i class="fa-solid fa-calendar-plus"></i> 直接採用並排入假勤清單 ➔
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Export Leave Summary Image (匯出假勤資產結算圖卡) -->
+    <div class="modal-backdrop" id="exportImageModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'exportImageModal')">
+        <div class="modal-dialog" style="max-width: 720px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-camera-retro" style="color: var(--primary);"></i> 📸 匯出個人假勤資產結算圖卡
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeExportImageModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px;">
+                <!-- 控制面板：年度切換、主單位切換 -->
+                <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.86rem; font-weight: 700; color: var(--text-main);">圖卡年度：</span>
+                        <div class="year-switcher" style="background: white; border: 1px solid var(--border-light);">
+                            <button type="button" class="year-switcher-btn active" id="export-year-2026" onclick="setExportImageYear(2026)" style="padding: 4px 12px; font-size: 0.8rem;">2026</button>
+                            <button type="button" class="year-switcher-btn" id="export-year-2027" onclick="setExportImageYear(2027)" style="padding: 4px 12px; font-size: 0.8rem;">2027</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.86rem; font-weight: 700; color: var(--text-main);">主顯示單位：</span>
+                        <div class="toggle-unit" style="background: white; border: 1px solid var(--border-light);">
+                            <button type="button" class="toggle-btn active" id="export-unit-days" onclick="setExportImageUnit('days')" style="padding: 4px 12px; font-size: 0.8rem;">以「天數」為主</button>
+                            <button type="button" class="toggle-btn" id="export-unit-hours" onclick="setExportImageUnit('hours')" style="padding: 4px 12px; font-size: 0.8rem;">以「小時」為主</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 圖卡即時預覽區 (簡約淺色風格) -->
+                <div style="text-align: center; background: #f1f5f9; border: 1px solid var(--border-light); padding: 18px; border-radius: 12px; overflow-x: auto; max-height: 520px; overflow-y: auto;">
+                    <img id="exportImagePreview" alt="假勤資產結算圖卡預覽" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: inline-block;">
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-sub); text-align: center; margin-top: 8px;">
+                    💡 提示：本圖卡以高畫質渲染 (Retina 2x)，手機長按圖片或點下方按鈕即可快速儲存或複製！
+                </div>
+            </div>
+
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-secondary" onclick="closeExportImageModal()">關閉</button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" id="copyImgBtn" onclick="copyLeaveSummaryImage()" style="border-color: #c7d2fe; color: #4338ca; background: #eef2ff;">
+                        <i class="fa-regular fa-copy"></i> 複製圖片至剪貼簿
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="downloadLeaveSummaryImage()">
+                        <i class="fa-solid fa-download"></i> 💾 下載 PNG 圖檔
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Logic -->
+    <script>
+        // 2026 台灣完整國定假日與補假
+        const NATIONAL_HOLIDAYS_2026 = [
+            { date: '2026-01-01', name: '元旦' },
+            { date: '2026-02-15', name: '春節小年夜補假' },
+            { date: '2026-02-16', name: '農曆除夕' },
+            { date: '2026-02-17', name: '春節初一' },
+            { date: '2026-02-18', name: '春節初二 (回娘家)' },
+            { date: '2026-02-19', name: '春節初三' },
+            { date: '2026-02-20', name: '春節初四補假' },
+            { date: '2026-02-27', name: '和平紀念日補假' },
+            { date: '2026-02-28', name: '和平紀念日' },
+            { date: '2026-04-03', name: '兒童節補假' },
+            { date: '2026-04-04', name: '兒童節' },
+            { date: '2026-04-05', name: '清明節' },
+            { date: '2026-04-06', name: '清明節補假' },
+            { date: '2026-05-01', name: '勞動節' },
+            { date: '2026-06-19', name: '端午節' },
+            { date: '2026-09-25', name: '中秋節' },
+            { date: '2026-09-28', name: '教師節' },
+            { date: '2026-10-09', name: '國慶日補假' },
+            { date: '2026-10-10', name: '國慶日' },
+            { date: '2026-10-26', name: '臺灣光復節補假' },
+            { date: '2026-12-25', name: '行憲紀念日' }
+        ];
+
+        // 2027 台灣完整國定假日與補假
+        const NATIONAL_HOLIDAYS_2027 = [
+            { date: '2027-01-01', name: '元旦' },
+            { date: '2027-02-05', name: '春節小年夜' },
+            { date: '2027-02-06', name: '農曆除夕' },
+            { date: '2027-02-07', name: '春節初一' },
+            { date: '2027-02-08', name: '春節初二 (回娘家)' },
+            { date: '2027-02-09', name: '春節初三' },
+            { date: '2027-02-10', name: '春節初四補假' },
+            { date: '2027-02-11', name: '春節初五補假' },
+            { date: '2027-02-28', name: '和平紀念日' },
+            { date: '2027-03-01', name: '和平紀念日補假' },
+            { date: '2027-04-03', name: '兒童節前夕' },
+            { date: '2027-04-04', name: '兒童節' },
+            { date: '2027-04-05', name: '清明節' },
+            { date: '2027-04-06', name: '清明節補假' },
+            { date: '2027-05-01', name: '勞動節' },
+            { date: '2027-06-09', name: '端午節' },
+            { date: '2027-09-15', name: '中秋節' },
+            { date: '2027-10-10', name: '國慶日' },
+            { date: '2027-10-11', name: '國慶日補假' },
+            { date: '2027-10-25', name: '臺灣光復節' },
+            { date: '2027-12-25', name: '行憲紀念日' }
+        ];
+
+        var currentViewMonth = new Date(2026, 9, 1);
+        var selectedYear = 2026;
+
+        let appState = {
+            unit: 'hours',
+            yearlyAssets: {
+                '2026': {
+                    vacationTotal: 192,
+                    vacationUsedBase: 24,
+                    vacationOldRemaining: 56,
+                    vacationOldExpiry: '2026-12-31',
+                    sickTotal: 80,
+                    sickUsed: 60,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                },
+                '2027': {
+                    vacationTotal: 200,
+                    vacationUsedBase: 0,
+                    vacationOldRemaining: 40,
+                    vacationOldExpiry: '2027-12-31',
+                    sickTotal: 80,
+                    sickUsed: 0,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                }
+            },
+            leavePlans: [],
+            travelPlans: {}
+        };
+
+                const PRESET_LEAVE_DATA = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            renderAll();
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeAddLeaveModal();
+                    closeYearlyAssetModal();
+                    closeLeaveCalculatorModal();
+                    closeExportImageModal();
+                }
+            });
+        });
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('work_life_planner_template_blank_v1_state');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch(e) {
+                    resetToPreset(false);
+                    return;
+                }
+            } else {
+                resetToPreset(false);
+                return;
+            }
+
+            if (!appState.yearlyAssets) appState.yearlyAssets = {};
+            if (!appState.yearlyAssets['2026']) {
+                appState.yearlyAssets['2026'] = {
+                    vacationTotal: 56,
+                    vacationUsedBase: 0,
+                    vacationOldRemaining: 0,
+                    vacationOldExpiry: '2026-12-31',
+                    sickTotal: 240,
+                    sickUsed: 0,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                };
+            }
+            if (!appState.yearlyAssets['2027']) {
+                appState.yearlyAssets['2027'] = {
+                    vacationTotal: 80,
+                    vacationUsedBase: 0,
+                    vacationOldRemaining: 0,
+                    vacationOldExpiry: '2027-12-31',
+                    sickTotal: 240,
+                    sickUsed: 0,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                };
+            }
+            if (!appState.leavePlans || !Array.isArray(appState.leavePlans)) {
+                appState.leavePlans = JSON.parse(JSON.stringify(PRESET_LEAVE_DATA));
+            }
+
+            // 確保載入時依照開始日期由早到晚自動排序
+            appState.leavePlans.sort((a, b) => {
+                const s = (a.startDate || '').localeCompare(b.startDate || '');
+                return s !== 0 ? s : (a.endDate || '').localeCompare(b.endDate || '');
+            });
+        }
+
+        function saveToLocalStorage() {
+            if (appState.leavePlans && Array.isArray(appState.leavePlans)) {
+                appState.leavePlans.sort((a, b) => {
+                    const s = (a.startDate || '').localeCompare(b.startDate || '');
+                    return s !== 0 ? s : (a.endDate || '').localeCompare(b.endDate || '');
+                });
+            }
+            localStorage.setItem('work_life_planner_template_blank_v1_state', JSON.stringify(appState));
+        }
+
+        function resetToPreset(userTriggered = true) {
+            appState.unit = 'days';
+            appState.yearlyAssets = {
+                '2026': {
+                    vacationTotal: 56,
+                    vacationUsedBase: 0,
+                    vacationOldRemaining: 0,
+                    vacationOldExpiry: '2026-12-31',
+                    sickTotal: 240,
+                    sickUsed: 0,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                },
+                '2027': {
+                    vacationTotal: 80,
+                    vacationUsedBase: 0,
+                    vacationOldRemaining: 0,
+                    vacationOldExpiry: '2027-12-31',
+                    sickTotal: 240,
+                    sickUsed: 0,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                }
+            };
+            appState.leavePlans = JSON.parse(JSON.stringify(PRESET_LEAVE_DATA));
+
+            saveToLocalStorage();
+            renderAll();
+
+            if (userTriggered) {
+                showToast('success', '已重置預設資料', '已成功載入 2026/2027 年度假勤額度與預設排假紀錄！');
+            }
+        }
+
+        function showToast(icon, title, text, timer = 1500) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: text,
+                    timer: timer,
+                    showConfirmButton: false,
+                    confirmButtonColor: '#4f46e5'
+                });
+            } else {
+                alert(`${title}\n${text || ''}`);
+            }
+        }
+
+        function showConfirm(title, text, onConfirm) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e11d48',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: '確定刪除',
+                    cancelButtonText: '取消',
+                    background: '#ffffff',
+                    color: '#0f172a'
+                }).then((result) => {
+                    if (result && result.isConfirmed) {
+                        onConfirm();
+                    }
+                });
+            } else {
+                if (confirm(`${title}\n${text}`)) {
+                    onConfirm();
+                }
+            }
+        }
+
+        // 核心：智慧區間判定函式 (自動分析 2026~2027 國定假日與週末)
+        function calculateLeaveDaysAndHours(startDateStr, endDateStr) {
+            if (!startDateStr || !endDateStr) {
+                return { totalCalendarDays: 0, weekendDays: 0, nationalHolidayDays: 0, holidayDetails: [], actualWorkingDays: 0, hoursNeeded: 0 };
+            }
+
+            const pStart = String(startDateStr).split('-');
+            const pEnd = String(endDateStr).split('-');
+            if (pStart.length !== 3 || pEnd.length !== 3) {
+                return { totalCalendarDays: 0, weekendDays: 0, nationalHolidayDays: 0, holidayDetails: [], actualWorkingDays: 0, hoursNeeded: 0 };
+            }
+
+            let cur = new Date(parseInt(pStart[0], 10), parseInt(pStart[1], 10) - 1, parseInt(pStart[2], 10));
+            const end = new Date(parseInt(pEnd[0], 10), parseInt(pEnd[1], 10) - 1, parseInt(pEnd[2], 10));
+
+            if (isNaN(cur.getTime()) || isNaN(end.getTime()) || cur > end) {
+                return { totalCalendarDays: 0, weekendDays: 0, nationalHolidayDays: 0, holidayDetails: [], actualWorkingDays: 0, hoursNeeded: 0 };
+            }
+
+            let totalCalendarDays = 0;
+            let weekendDays = 0;
+            let nationalHolidayDays = 0;
+            let holidayDetails = [];
+            let actualWorkingDays = 0;
+
+            const holidayMap = {};
+            NATIONAL_HOLIDAYS_2026.forEach(h => { holidayMap[h.date] = h.name; });
+            NATIONAL_HOLIDAYS_2027.forEach(h => { holidayMap[h.date] = h.name; });
+
+            let safetyCounter = 0;
+            while (cur <= end && safetyCounter < 1000) {
+                safetyCounter++;
+                totalCalendarDays++;
+                
+                const y = cur.getFullYear();
+                const m = String(cur.getMonth() + 1).padStart(2, '0');
+                const d = String(cur.getDate()).padStart(2, '0');
+                const dateISO = `${y}-${m}-${d}`;
+                
+                const dayOfWeek = cur.getDay();
+
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    weekendDays++;
+                } else if (holidayMap[dateISO]) {
+                    nationalHolidayDays++;
+                    holidayDetails.push(`${dateISO} (${holidayMap[dateISO]})`);
+                } else {
+                    actualWorkingDays++;
+                }
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            return {
+                totalCalendarDays,
+                weekendDays,
+                nationalHolidayDays,
+                holidayDetails,
+                actualWorkingDays,
+                hoursNeeded: actualWorkingDays * 8
+            };
+        }
+
+        // 取得單筆假勤的實際扣除時數與天數 (支援手動調整覆寫)
+        function getPlanActualDeduction(plan) {
+            const calc = calculateLeaveDaysAndHours(plan.startDate, plan.endDate);
+            if (plan.manualAdjustment && plan.manualHours !== undefined && plan.manualHours !== null && !isNaN(Number(plan.manualHours))) {
+                const hours = Number(plan.manualHours);
+                return {
+                    isManual: true,
+                    hours: hours,
+                    days: Number((hours / 8).toFixed(2)),
+                    calc: calc
+                };
+            }
+            return {
+                isManual: false,
+                hours: calc.hoursNeeded,
+                days: calc.actualWorkingDays,
+                calc: calc
+            };
+        }
+
+        function setUnit(unit) {
+            appState.unit = unit;
+            const btnH = document.getElementById('unit-hours-btn');
+            const btnD = document.getElementById('unit-days-btn');
+            if (btnH) btnH.classList.toggle('active', unit === 'hours');
+            if (btnD) btnD.classList.toggle('active', unit === 'days');
+            saveToLocalStorage();
+            renderAssetCards();
+        }
+
+        function renderAll() {
+            renderAssetCards();
+            renderLeaveTable();
+            renderCalendar();
+        }
+
+        function getActiveYearlyAssets(year = selectedYear) {
+            const numYear = Number(year);
+            const yearStr = String(numYear);
+            if (!appState.yearlyAssets) appState.yearlyAssets = {};
+            if (!appState.yearlyAssets[yearStr]) {
+                appState.yearlyAssets[yearStr] = {
+                    vacationTotal: numYear === 2027 ? 200 : 192,
+                    vacationUsedBase: numYear === 2027 ? 0 : 24,
+                    vacationOldRemaining: numYear === 2027 ? 40 : 56,
+                    vacationOldExpiry: `${numYear}-12-31`,
+                    sickTotal: 80,
+                    sickUsed: numYear === 2027 ? 0 : 60,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                };
+            }
+            return appState.yearlyAssets[yearStr];
+        }
+
+        function switchSelectedYear(year) {
+            selectedYear = Number(year);
+
+            const btn2026 = document.getElementById('year-btn-2026');
+            const btn2027 = document.getElementById('year-btn-2027');
+            if (btn2026) btn2026.classList.toggle('active', selectedYear === 2026);
+            if (btn2027) btn2027.classList.toggle('active', selectedYear === 2027);
+
+            const setYearBtnText = document.getElementById('set-year-asset-btn-text');
+            if (setYearBtnText) {
+                setYearBtnText.innerText = `設定 ${selectedYear} 年度假勤總額度`;
+            }
+
+            currentViewMonth = new Date(selectedYear, (selectedYear === 2027 ? 0 : 9), 1);
+            renderAll();
+        }
+
+        function renderAssetCards() {
+            const assets = getActiveYearlyAssets(selectedYear);
+            let bookedVacationHours = 0;
+            let bookedSickHours = 0;
+            let monthlyWfhDays = 0;
+
+            appState.leavePlans.forEach(plan => {
+                if (plan.startDate && plan.startDate.startsWith(String(selectedYear))) {
+                    const deduct = getPlanActualDeduction(plan);
+                    if (plan.type === 'vacation') {
+                        bookedVacationHours += deduct.hours;
+                    } else if (plan.type === 'sick') {
+                        bookedSickHours += deduct.hours;
+                    } else if (plan.type === 'wfh') {
+                        monthlyWfhDays += deduct.days;
+                    }
+                }
+            });
+
+            const usedBase = Number(assets.vacationUsedBase || 0);
+            const remainingVacationHours = Math.max(0, assets.vacationTotal - usedBase - bookedVacationHours);
+            const isHours = appState.unit === 'hours';
+
+            const vacStatEl = document.getElementById('vacation-remaining-stat');
+            if (vacStatEl) vacStatEl.innerText = isHours ? remainingVacationHours : (remainingVacationHours / 8).toFixed(1);
+            
+            const vacUnitEl = document.getElementById('vacation-unit-label');
+            if (vacUnitEl) vacUnitEl.innerText = isHours ? '小時 剩餘' : '天 剩餘';
+
+            const vacTotalSafe = Math.max(1, assets.vacationTotal || 192);
+            const vacPercent = Math.max(0, Math.min(100, Math.round((remainingVacationHours / vacTotalSafe) * 100)));
+            
+            const vacBadge = document.getElementById('vacation-ratio-badge');
+            if (vacBadge) vacBadge.innerText = `剩餘 ${vacPercent}%`;
+            
+            const vacFill = document.getElementById('vacation-progress-fill');
+            if (vacFill) vacFill.style.width = `${vacPercent}%`;
+
+            const vacUsedVal = document.getElementById('vacation-used-val');
+            if (vacUsedVal) vacUsedVal.innerText = `${bookedVacationHours} 小時 (${(bookedVacationHours / 8).toFixed(1)} 天)`;
+            
+            const vacTotalVal = document.getElementById('vacation-total-val');
+            if (vacTotalVal) vacTotalVal.innerText = `${assets.vacationTotal} 小時 (${(assets.vacationTotal / 8).toFixed(1)} 天)`;
+
+            const usedBaseEl = document.getElementById('vacation-used-base-display');
+            if (usedBaseEl) usedBaseEl.innerText = `${usedBase} 小時 (${(usedBase / 8).toFixed(1)} 天)`;
+            
+            const expEl = document.getElementById('vacation-old-expiry-display');
+            if (expEl) expEl.innerText = assets.vacationOldExpiry || `${selectedYear}/12/31`;
+
+            const remEl = document.getElementById('vacation-old-rem-display');
+            if (remEl) remEl.innerText = `${assets.vacationOldRemaining || 0}h`;
+
+            // 病假
+            const remainingSick = Math.max(0, assets.sickTotal - (Number(assets.sickUsed || 0) + bookedSickHours));
+            const sickStatEl = document.getElementById('sick-remaining-stat');
+            if (sickStatEl) sickStatEl.innerText = isHours ? remainingSick : (remainingSick / 8).toFixed(1);
+            
+            const sickUnitEl = document.getElementById('sick-unit-label');
+            if (sickUnitEl) sickUnitEl.innerText = isHours ? '小時 剩餘' : '天 剩餘';
+            
+            const sickUsedVal = document.getElementById('sick-used-val');
+            if (sickUsedVal) sickUsedVal.innerText = `${Number(assets.sickUsed || 0) + bookedSickHours} 小時 (${((Number(assets.sickUsed || 0) + bookedSickHours) / 8).toFixed(1)} 天)`;
+            
+            const sickTotalVal = document.getElementById('sick-total-val');
+            if (sickTotalVal) sickTotalVal.innerText = `${assets.sickTotal} 小時 (${(assets.sickTotal / 8).toFixed(1)} 天)`;
+
+            const sickReserveEl = document.getElementById('sick-reserve-display');
+            if (sickReserveEl) sickReserveEl.innerText = `剩餘 ${(remainingSick / 8).toFixed(1)} 天 (${remainingSick}h)`;
+
+            // WFH
+            const remainingWfhMonthly = Math.max(0, (assets.wfhMonthlyLimit || 2) - monthlyWfhDays);
+            const wfhStatEl = document.getElementById('wfh-remaining-stat');
+            if (wfhStatEl) wfhStatEl.innerText = remainingWfhMonthly.toFixed(0);
+
+            const wfhBadge = document.getElementById('wfh-status-badge');
+            if (wfhBadge) wfhBadge.innerText = `本月已排 ${monthlyWfhDays.toFixed(1)} 天`;
+
+            const wfhMonVal = document.getElementById('wfh-monthly-limit-val');
+            if (wfhMonVal) wfhMonVal.innerText = `${assets.wfhMonthlyLimit || 2} 天 (${(assets.wfhMonthlyLimit || 2) * 8}h)`;
+
+            const wfhYrVal = document.getElementById('wfh-yearly-limit-val');
+            if (wfhYrVal) wfhYrVal.innerText = `${assets.wfhYearlyTotal || 48} 小時 (${((assets.wfhYearlyTotal || 48) / 8).toFixed(0)} 天)`;
+        }
+
+        let tableSortOrder = 'asc'; // 'asc': 由早到晚 (預設), 'desc': 由晚到早
+
+        function toggleDateSort() {
+            tableSortOrder = (tableSortOrder === 'asc') ? 'desc' : 'asc';
+            renderLeaveTable();
+        }
+
+        function renderLeaveTable() {
+            const tbody = document.getElementById('leave-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            // 動態更新表頭排序圖示與提示
+            const sortIcon = document.getElementById('dateSortIcon');
+            if (sortIcon) {
+                if (tableSortOrder === 'asc') {
+                    sortIcon.className = 'fa-solid fa-arrow-up-short-wide';
+                    sortIcon.title = '目前：由早到晚 (點擊切換為由晚到早)';
+                } else {
+                    sortIcon.className = 'fa-solid fa-arrow-down-wide-short';
+                    sortIcon.title = '目前：由晚到早 (點擊切換為由早到晚)';
+                }
+            }
+
+            if (appState.leavePlans.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub); padding: 32px;">目前尚無排定之假勤紀錄，請點擊右上角「➕ 排入新假勤」開始建立！</td></tr>`;
+                return;
+            }
+
+            // 依據日期區間排序 (優先比較 startDate，次要比較 endDate)
+            const sortedPlans = [...appState.leavePlans].sort((a, b) => {
+                const startDiff = (a.startDate || '').localeCompare(b.startDate || '');
+                if (startDiff !== 0) {
+                    return tableSortOrder === 'asc' ? startDiff : -startDiff;
+                }
+                const endDiff = (a.endDate || '').localeCompare(b.endDate || '');
+                return tableSortOrder === 'asc' ? endDiff : -endDiff;
+            });
+
+            sortedPlans.forEach(plan => {
+                const deduct = getPlanActualDeduction(plan);
+                const calc = deduct.calc;
+
+                let typeBadge = '';
+                if (plan.type === 'vacation') {
+                    typeBadge = `<span class="tag tag-vacation"><i class="fa-solid fa-umbrella-beach"></i> 特休</span>`;
+                } else if (plan.type === 'wfh') {
+                    typeBadge = `<span class="tag tag-wfh"><i class="fa-solid fa-house-laptop"></i> 遠距辦公</span>`;
+                } else {
+                    typeBadge = `<span class="tag tag-sick"><i class="fa-solid fa-kit-medical"></i> 全薪病假</span>`;
+                }
+
+                let nonWorkingStr = [];
+                if (calc.weekendDays > 0) nonWorkingStr.push(`週末 ${calc.weekendDays} 天`);
+                if (calc.nationalHolidayDays > 0) {
+                    const hNames = calc.holidayDetails.map(h => h.split('(')[1]?.replace(')','')).filter(Boolean);
+                    nonWorkingStr.push(`國定假日 ${calc.nationalHolidayDays} 天 ${hNames.length ? '(' + hNames.join(',') + ')' : ''}`);
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <strong style="color: var(--text-main); font-size: 0.95rem;">${plan.title}</strong>
+                        ${plan.notes ? `<div style="font-size: 0.78rem; color: var(--text-sub); margin-top: 2px;">${plan.notes}</div>` : ''}
+                    </td>
+                    <td><i class="fa-regular fa-calendar" style="color: var(--primary);"></i> ${plan.startDate} ~ ${plan.endDate}</td>
+                    <td>${typeBadge}</td>
+                    <td style="font-size: 0.82rem; color: var(--text-sub);">${nonWorkingStr.length > 0 ? nonWorkingStr.join(' + ') : '全工作日'}</td>
+                    <td><strong style="color: var(--primary); font-size: 0.95rem;">扣除 ${deduct.days} 天 (${deduct.hours}h)</strong></td>
+                    <td>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem;" onclick="event.stopPropagation(); openEditLeaveModal('${plan.id}')" title="編輯此筆假勤與區間/時數">
+                                <i class="fa-solid fa-pen"></i> 編輯
+                            </button>
+                            <button type="button" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem; color: var(--rose);" onclick="event.stopPropagation(); deleteLeavePlan('${plan.id}')" title="刪除此筆排定">
+                                <i class="fa-solid fa-trash"></i> 刪除
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderCalendar() {
+            const container = document.getElementById('calendar-days-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const year = currentViewMonth.getFullYear();
+            const month = currentViewMonth.getMonth();
+
+            const monthLabel = document.getElementById('calendar-month-label');
+            if (monthLabel) monthLabel.innerText = `${year} 年 ${month + 1} 月`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDayOfWeek = firstDay.getDay();
+            const totalDays = lastDay.getDate();
+
+            const holidayMap = {};
+            NATIONAL_HOLIDAYS_2026.forEach(h => { holidayMap[h.date] = h.name; });
+            NATIONAL_HOLIDAYS_2027.forEach(h => { holidayMap[h.date] = h.name; });
+
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell other-month';
+                container.appendChild(cell);
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell';
+
+                const monthStr = String(month + 1).padStart(2, '0');
+                const dayStr = String(day).padStart(2, '0');
+                const dateISO = `${year}-${monthStr}-${dayStr}`;
+
+                const curDate = new Date(year, month, day);
+                const dayOfWeek = curDate.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+                if (isWeekend) cell.classList.add('is-weekend');
+
+                let dateHeaderHTML = `<div class="calendar-date-num"><span>${day}</span>`;
+                if (isWeekend) dateHeaderHTML += `<small style="font-size:0.7rem; color: var(--rose); font-weight:700;">${dayOfWeek===0?'週日':'週六'}</small>`;
+                dateHeaderHTML += `</div>`;
+
+                let eventsHTML = '';
+                if (holidayMap[dateISO]) {
+                    eventsHTML += `<div class="event-badge event-holiday" title="${holidayMap[dateISO]}">🚩 ${holidayMap[dateISO]}</div>`;
+                }
+
+                appState.leavePlans.forEach(plan => {
+                    if (dateISO >= plan.startDate && dateISO <= plan.endDate) {
+                        const deduct = getPlanActualDeduction(plan);
+                        const manualTag = deduct.isManual ? ' [手動]' : '';
+                        if (plan.type === 'vacation') {
+                            eventsHTML += `<div class="event-badge event-vacation" title="${plan.title} (${deduct.hours}h)">🏖️ ${plan.title.substring(0,8)}${manualTag}</div>`;
+                        } else if (plan.type === 'wfh') {
+                            eventsHTML += `<div class="event-badge event-wfh">🏡 WFH 遠距辦公</div>`;
+                        } else if (plan.type === 'sick') {
+                            eventsHTML += `<div class="event-badge event-sick">🏥 全薪病假</div>`;
+                        }
+                    }
+                });
+
+                cell.innerHTML = dateHeaderHTML + `<div>${eventsHTML}</div>`;
+                container.appendChild(cell);
+            }
+        }
+
+        function changeMonth(delta) {
+            currentViewMonth.setMonth(currentViewMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function resetToCurrentMonth() {
+            currentViewMonth = new Date(selectedYear, (selectedYear === 2027 ? 0 : new Date().getMonth()), 1);
+            renderCalendar();
+        }
+
+        let backdropMouseDownTarget = null;
+        function handleBackdropMouseDown(event) {
+            backdropMouseDownTarget = event ? event.target : null;
+        }
+
+        function handleBackdropClick(event, modalId) {
+            // 雙重校驗：必須 mousedown 與 click 事件的目標皆為 modalId 本體（暗色遮罩），才允許關閉
+            // 徹底防止在彈窗內點選、反白、拖曳時因游標滑出或事件冒泡而導致彈窗自動跳出關閉
+            if (event && event.target && event.target.id === modalId && backdropMouseDownTarget === event.target) {
+                const modalEl = document.getElementById(modalId);
+                if (modalEl) modalEl.classList.remove('active');
+            }
+            backdropMouseDownTarget = null;
+        }
+
+        // 當排假視窗中的開始或結束日期變動時，即時觸發區間分析
+        function handleDateRangeChange() {
+            const startEl = document.getElementById('startDate');
+            const endEl = document.getElementById('endDate');
+            if (!startEl || !endEl) return;
+
+            const startVal = startEl.value;
+            let endVal = endEl.value;
+
+            if (startVal) {
+                endEl.min = startVal;
+                if (!endVal || endVal < startVal) {
+                    endEl.value = startVal;
+                    endVal = startVal;
+                }
+            }
+
+            if (!startVal || !endVal) return;
+
+            const calc = calculateLeaveDaysAndHours(startVal, endVal);
+            
+            document.getElementById('analyzerTotalDays').innerText = `${calc.totalCalendarDays} 天`;
+            document.getElementById('analyzerWeekendDays').innerText = `${calc.weekendDays} 天`;
+            document.getElementById('analyzerHolidayDays').innerText = `${calc.nationalHolidayDays} 天`;
+            document.getElementById('analyzerSuggestedDays').innerText = `${calc.actualWorkingDays} 天 (${calc.hoursNeeded}h)`;
+
+            const holidayNoteEl = document.getElementById('analyzerHolidaysNote');
+            if (calc.holidayDetails.length > 0) {
+                holidayNoteEl.style.display = 'block';
+                holidayNoteEl.innerText = `💡 包含國定假日：${calc.holidayDetails.join('、')}`;
+            } else {
+                holidayNoteEl.style.display = 'none';
+            }
+
+            const isManualChecked = document.getElementById('enableManualAdjustment').checked;
+            if (!isManualChecked) {
+                document.getElementById('manualDeductHours').value = calc.hoursNeeded;
+                updateManualDaysPreview(calc.hoursNeeded);
+            }
+        }
+
+        function toggleManualAdjustment(enabled) {
+            const container = document.getElementById('manualInputContainer');
+            if (container) container.style.display = enabled ? 'inline-flex' : 'none';
+            if (enabled) {
+                const curHours = document.getElementById('manualDeductHours').value;
+                if (!curHours) {
+                    const startVal = document.getElementById('startDate').value;
+                    const endVal = document.getElementById('endDate').value;
+                    const calc = calculateLeaveDaysAndHours(startVal, endVal);
+                    document.getElementById('manualDeductHours').value = calc.hoursNeeded;
+                    updateManualDaysPreview(calc.hoursNeeded);
+                }
+            }
+        }
+
+        function updateManualDaysPreview(hours) {
+            const num = Number(hours);
+            const previewEl = document.getElementById('manualDaysPreview');
+            if (previewEl) {
+                if (isNaN(num) || num <= 0) {
+                    previewEl.innerText = `(0 天)`;
+                } else {
+                    previewEl.innerText = `(${(num / 8).toFixed(1)} 天)`;
+                }
+            }
+        }
+
+        function openAddLeaveModal(targetYear) {
+            try {
+                const form = document.getElementById('leaveForm');
+                if (form) form.reset();
+                document.getElementById('leaveId').value = '';
+                
+                const yearToUse = targetYear ? Number(targetYear) : selectedYear;
+                const defaultDate = yearToUse === 2027 ? '2027-01-01' : '2026-10-23';
+                document.getElementById('startDate').value = defaultDate;
+                document.getElementById('endDate').value = defaultDate;
+
+                document.getElementById('enableManualAdjustment').checked = false;
+                toggleManualAdjustment(false);
+                handleDateRangeChange();
+
+                const modalTitle = document.getElementById('modalTitle');
+                if (modalTitle) modalTitle.innerHTML = `<i class="fa-solid fa-calendar-plus" style="color: var(--primary);"></i> 安排假勤 / 遠距辦公 (${yearToUse} 年度)`;
+                
+                const modal = document.getElementById('leaveModal');
+                if (modal) modal.classList.add('active');
+            } catch (err) {
+                console.error("開啟排入假勤彈窗失敗:", err);
+                showToast('error', '開啟假勤視窗失敗', err.message);
+            }
+        }
+
+        function openEditLeaveModal(planId) {
+            try {
+                const plan = appState.leavePlans.find(p => p.id === planId);
+                if (!plan) return;
+
+                document.getElementById('leaveId').value = plan.id;
+                document.getElementById('leaveTitle').value = plan.title || '';
+                document.getElementById('startDate').value = plan.startDate || '';
+                document.getElementById('endDate').value = plan.endDate || '';
+                document.getElementById('leaveType').value = plan.type || 'vacation';
+                document.getElementById('leaveNotes').value = plan.notes || '';
+
+                handleDateRangeChange();
+
+                const isManual = !!plan.manualAdjustment;
+                document.getElementById('enableManualAdjustment').checked = isManual;
+                toggleManualAdjustment(isManual);
+                if (isManual && plan.manualHours !== undefined) {
+                    document.getElementById('manualDeductHours').value = plan.manualHours;
+                    updateManualDaysPreview(plan.manualHours);
+                }
+
+                const modalTitle = document.getElementById('modalTitle');
+                if (modalTitle) modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> 編輯假勤排定 (支援手動調整時數)`;
+                
+                const modal = document.getElementById('leaveModal');
+                if (modal) modal.classList.add('active');
+            } catch (err) {
+                console.error("開啟編輯假勤彈窗失敗:", err);
+                showToast('error', '開啟編輯視窗失敗', err.message);
+            }
+        }
+
+        function closeAddLeaveModal() {
+            const modal = document.getElementById('leaveModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function handleSaveLeave(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const leaveId = document.getElementById('leaveId').value;
+            const title = document.getElementById('leaveTitle').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const type = document.getElementById('leaveType').value;
+            const notes = document.getElementById('leaveNotes').value;
+
+            const isManual = document.getElementById('enableManualAdjustment').checked;
+            const manualHours = isManual ? Number(document.getElementById('manualDeductHours').value) : null;
+
+            if (leaveId) {
+                const idx = appState.leavePlans.findIndex(p => p.id === leaveId);
+                if (idx !== -1) {
+                    appState.leavePlans[idx] = { 
+                        id: leaveId, title, startDate, endDate, type, notes,
+                        manualAdjustment: isManual,
+                        manualHours: isManual ? manualHours : null
+                    };
+                }
+
+                if (appState.travelPlans && appState.travelPlans[leaveId]) {
+                    appState.travelPlans[leaveId].title = title;
+                    appState.travelPlans[leaveId].outboundDate1 = startDate;
+                    appState.travelPlans[leaveId].inboundDate1 = endDate;
+                }
+            } else {
+                const newId = 'plan-' + Date.now();
+                appState.leavePlans.push({ 
+                    id: newId, title, startDate, endDate, type, notes,
+                    manualAdjustment: isManual,
+                    manualHours: isManual ? manualHours : null
+                });
+
+                if (type === 'vacation') {
+                    if (!appState.travelPlans) appState.travelPlans = {};
+                    appState.travelPlans[newId] = {
+                        id: newId,
+                        title: title,
+                        isTransfer: false,
+                        pnr: '',
+                        outboundDate1: startDate,
+                        outboundFlight1: '',
+                        outboundDepTime1: '09:00',
+                        outboundArrTime1: '12:00',
+                        inboundDate1: endDate,
+                        inboundFlight1: '',
+                        inboundDepTime1: '14:00',
+                        inboundArrTime1: '17:00',
+                        hotel1Name: '',
+                        hotel1In: startDate,
+                        hotel1Out: endDate,
+                        dayDetails: {
+                            1: { b:'', l:'', d:'', spots:'抵達目的地 Check-in / 景點散策', trans:'地鐵/專車', budget: 5000 }
+                        }
+                    };
+                }
+            }
+
+            if (startDate) {
+                const pYear = parseInt(startDate.split('-')[0], 10);
+                if (pYear && !isNaN(pYear)) {
+                    selectedYear = pYear;
+                }
+            }
+
+            saveToLocalStorage();
+            switchSelectedYear(selectedYear);
+            closeAddLeaveModal();
+
+            showToast('success', `已成功儲存假勤排定！`, `目前已切換至 ${selectedYear} 年度檢視，假勤時數與行事曆已重算完畢。`);
+        }
+
+        function deleteLeavePlan(planId) {
+            showConfirm('確定要刪除此假勤排定？', '若此假勤已連動詳細旅行行程，相關旅行資料將會同步移除。', () => {
+                appState.leavePlans = appState.leavePlans.filter(p => p.id !== planId);
+                if (appState.travelPlans && appState.travelPlans[planId]) {
+                    delete appState.travelPlans[planId];
+                }
+                saveToLocalStorage();
+                renderAll();
+                showToast('success', '已刪除排定紀錄', '', 1200);
+            });
+        }
+
+        function openYearlyAssetModal(param1, param2) {
+            try {
+                let yearToSet = selectedYear;
+                let sectionToFocus = null;
+
+                if (typeof param1 === 'number') {
+                    yearToSet = param1;
+                    sectionToFocus = param2 || null;
+                } else if (typeof param1 === 'string') {
+                    if (param1 === 'vacation' || param1 === 'sick' || param1 === 'wfh') {
+                        sectionToFocus = param1;
+                    } else if (!isNaN(Number(param1))) {
+                        yearToSet = Number(param1);
+                        sectionToFocus = param2 || null;
+                    }
+                }
+
+                selectedYear = yearToSet;
+                const yearSelect = document.getElementById('assetYearSelect');
+                if (yearSelect) yearSelect.value = String(selectedYear);
+                
+                loadYearlyAssetToEditor(selectedYear);
+
+                const modal = document.getElementById('yearlyAssetModal');
+                if (modal) modal.classList.add('active');
+
+                if (sectionToFocus) {
+                    let secId = '';
+                    if (sectionToFocus === 'vacation') secId = 'sec-asset-vacation';
+                    if (sectionToFocus === 'sick') secId = 'sec-asset-sick';
+                    if (sectionToFocus === 'wfh') secId = 'sec-asset-wfh';
+
+                    requestAnimationFrame(() => {
+                        const secEl = document.getElementById(secId);
+                        if (secEl) {
+                            secEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            secEl.style.transition = 'box-shadow 0.3s ease';
+                            secEl.style.boxShadow = '0 0 0 3px var(--primary), 0 8px 20px rgba(79, 70, 229, 0.25)';
+                            setTimeout(() => {
+                                secEl.style.boxShadow = 'none';
+                            }, 1500);
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("開啟年度假勤設定彈窗失敗:", err);
+                showToast('error', '開啟設定視窗失敗', err.message);
+            }
+        }
+
+        function closeYearlyAssetModal() {
+            const modal = document.getElementById('yearlyAssetModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        // 計算特定年度特休剩餘額度 (扣除已使用基準與排定休假)
+        function getRemainingVacationHoursForYear(year = 2026) {
+            const numYear = Number(year);
+            const assets = getActiveYearlyAssets(numYear);
+            let bookedVacationHours = 0;
+            if (appState.leavePlans && Array.isArray(appState.leavePlans)) {
+                appState.leavePlans.forEach(plan => {
+                    if (plan.startDate && plan.startDate.startsWith(String(numYear)) && plan.type === 'vacation') {
+                        const deduct = getPlanActualDeduction(plan);
+                        bookedVacationHours += deduct.hours;
+                    }
+                });
+            }
+            const usedBase = Number(assets.vacationUsedBase || 0);
+            return Math.max(0, (Number(assets.vacationTotal) || 0) - usedBase - bookedVacationHours);
+        }
+
+        // 依據 2026 實際剩餘舊假期額度一鍵匯入
+        function import2026RemainingToOldLeave() {
+            const rem = getRemainingVacationHoursForYear(2026);
+            const oldRemInput = document.getElementById('editAssetVacationOldRem');
+            if (oldRemInput) {
+                oldRemInput.value = rem;
+                oldRemInput.style.transition = 'box-shadow 0.3s ease';
+                oldRemInput.style.boxShadow = '0 0 0 3px var(--vacation-border)';
+                setTimeout(() => { oldRemInput.style.boxShadow = 'none'; }, 1000);
+            }
+            showToast('info', '已成功匯入 2026 剩餘特休額度！', `已將 2026 剩餘 ${rem} 小時 (${(rem / 8).toFixed(1)} 天) 填入結轉舊假額度。`);
+        }
+
+        function loadYearlyAssetToEditor(year) {
+            const numYear = Number(year || selectedYear);
+            const assets = getActiveYearlyAssets(numYear);
+            const rem2026 = getRemainingVacationHoursForYear(2026);
+
+            const prevEl = document.getElementById('preview2026RemHours');
+            if (prevEl) prevEl.innerText = rem2026;
+
+            const btnImport = document.getElementById('btnImport2026Rem');
+            if (btnImport) {
+                btnImport.style.display = numYear === 2027 ? 'inline-flex' : 'none';
+            }
+            
+            const setVal = (id, val, fallback) => {
+                const el = document.getElementById(id);
+                if (el) el.value = (val !== undefined && val !== null && val !== '') ? val : fallback;
+            };
+
+            setVal('editAssetVacationTotal', assets.vacationTotal, numYear === 2027 ? 200 : 192);
+            setVal('editAssetVacationUsedBase', assets.vacationUsedBase, numYear === 2027 ? 0 : 24);
+
+            // 2027 設定時：若舊假額度未設定或為 0 或預設 40，自動優先依據 2026 剩餘額度匯入
+            let oldRemVal = assets.vacationOldRemaining;
+            if (numYear === 2027 && (oldRemVal === undefined || oldRemVal === null || oldRemVal === '' || oldRemVal === 0 || oldRemVal === 40)) {
+                oldRemVal = rem2026;
+            }
+            setVal('editAssetVacationOldRem', oldRemVal, numYear === 2027 ? rem2026 : 56);
+            setVal('editAssetVacationOldExpiry', assets.vacationOldExpiry, `${numYear}-12-31`);
+            setVal('editAssetSickTotal', assets.sickTotal, 80);
+            setVal('editAssetSickUsed', assets.sickUsed, numYear === 2027 ? 0 : 60);
+            setVal('editAssetWfhMonthly', assets.wfhMonthlyLimit, 2);
+            setVal('editAssetWfhYearly', assets.wfhYearlyTotal, 48);
+        }
+
+        function preset2027Assets() {
+            const yearSelect = document.getElementById('assetYearSelect');
+            if (yearSelect) yearSelect.value = '2027';
+
+            const rem2026 = getRemainingVacationHoursForYear(2026);
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            };
+
+            setVal('editAssetVacationTotal', 200);
+            setVal('editAssetVacationUsedBase', 0);
+            setVal('editAssetVacationOldRem', rem2026);
+            setVal('editAssetVacationOldExpiry', '2027-12-31');
+            setVal('editAssetSickTotal', 80);
+            setVal('editAssetSickUsed', 0);
+            setVal('editAssetWfhMonthly', 2);
+            setVal('editAssetWfhYearly', 48);
+
+            showToast('info', '已帶入 2027 明年建議額度', `特休總額度 200h (25天)，已依據 2026 實際剩餘結轉舊假 ${rem2026}h (${(rem2026 / 8).toFixed(1)} 天)！`);
+        }
+
+        function handleSaveYearlyAssets(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const yearSelectEl = document.getElementById('assetYearSelect');
+            const yearStr = yearSelectEl ? yearSelectEl.value : String(selectedYear);
+            const numYear = Number(yearStr);
+
+            if (!appState.yearlyAssets) appState.yearlyAssets = {};
+
+            const parseVal = (id, fallback) => {
+                const el = document.getElementById(id);
+                if (!el || el.value === '') return fallback;
+                const n = Number(el.value);
+                return !isNaN(n) ? n : fallback;
+            };
+
+            appState.yearlyAssets[yearStr] = {
+                vacationTotal: parseVal('editAssetVacationTotal', numYear === 2027 ? 200 : 192),
+                vacationUsedBase: parseVal('editAssetVacationUsedBase', 0),
+                vacationOldRemaining: parseVal('editAssetVacationOldRem', 0),
+                vacationOldExpiry: document.getElementById('editAssetVacationOldExpiry')?.value || `${yearStr}-12-31`,
+                sickTotal: parseVal('editAssetSickTotal', 80),
+                sickUsed: parseVal('editAssetSickUsed', 0),
+                wfhMonthlyLimit: parseVal('editAssetWfhMonthly', 2),
+                wfhYearlyTotal: parseVal('editAssetWfhYearly', 48)
+            };
+
+            selectedYear = numYear;
+            saveToLocalStorage();
+            switchSelectedYear(selectedYear);
+            closeYearlyAssetModal();
+
+            showToast('success', `成功更新 ${yearStr} 年度假勤額度！`, '剩餘假勤天數與比例已依最新額度重新計算完成。');
+        }
+
+        // ==========================================
+        // 假期試算與勞基法特休小幫手核心邏輯
+        // ==========================================
+        const HOLIDAY_STRATEGIES_2026 = [
+            { title: '🌸 春節連假攻略 A', hint: '請 3 天爽休 12 天', startDate: '2026-02-14', endDate: '2026-02-25', leaveTitle: '春節度假長假' },
+            { title: '🏮 春節連假攻略 B', hint: '請 2 天跨 228 休 16 天', startDate: '2026-02-14', endDate: '2026-03-01', leaveTitle: '春節至和平紀念日跨節長假' },
+            { title: '🌿 清明兒童連假', hint: '請 4 天連休 10 天', startDate: '2026-04-03', endDate: '2026-04-12', leaveTitle: '清明兒童春遊' },
+            { title: '🚣 端午節連假', hint: '請 4 天連休 9 天', startDate: '2026-06-13', endDate: '2026-06-21', leaveTitle: '端午初夏之旅' },
+            { title: '🥮 中秋與教師節', hint: '請 3 天連休 9 天', startDate: '2026-09-25', endDate: '2026-10-04', leaveTitle: '中秋雙節秋遊' },
+            { title: '🇹🇼 國慶日連假', hint: '請 4 天連休 9 天', startDate: '2026-10-03', endDate: '2026-10-11', leaveTitle: '國慶黃金假期' },
+            { title: '🎉 光復節充電', hint: '請 4 天連休 9 天', startDate: '2026-10-24', endDate: '2026-11-01', leaveTitle: '臺灣光復節秋季排休' },
+            { title: '🌲 行憲跨年元旦', hint: '請 4 天連休 10 天', startDate: '2026-12-25', endDate: '2027-01-03', leaveTitle: '2026-2027 跨年長假' }
+        ];
+
+        const HOLIDAY_STRATEGIES_2027 = [
+            { title: '🏮 2027 超級春節', hint: '請 4 天爽休 16 天', startDate: '2027-02-05', endDate: '2027-02-21', leaveTitle: '2027 新春豪華度假' },
+            { title: '🕊️ 228 和平連假', hint: '請 4 天連休 9 天', startDate: '2027-02-27', endDate: '2027-03-07', leaveTitle: '228 和平假期' },
+            { title: '🌿 清明兒童連假', hint: '請 3 天連休 9 天', startDate: '2027-04-03', endDate: '2027-04-11', leaveTitle: '2027 清明祭祖春遊' },
+            { title: '🚣 端午節連假', hint: '請 2 天連休 5 天', startDate: '2027-06-09', endDate: '2027-06-13', leaveTitle: '端午連假小旅行' },
+            { title: '🥮 中秋節賞月', hint: '請 2 天連休 5 天', startDate: '2027-09-15', endDate: '2027-09-19', leaveTitle: '中秋賞月中期充電' },
+            { title: '🇹🇼 雙十國慶連假', hint: '休 3 天或請 4 天休 9 天', startDate: '2027-10-09', endDate: '2027-10-17', leaveTitle: '2027 國慶秋季遊' },
+            { title: '✨ 光復節長假', hint: '請 4 天連休 9 天', startDate: '2027-10-23', endDate: '2027-10-31', leaveTitle: '臺灣光復節連假' }
+        ];
+
+        let currentTenureCalcResults = {
+            '2026': { days: 14, hours: 112 },
+            '2027': { days: 14, hours: 112 }
+        };
+
+        function openLeaveCalculatorModal() {
+            try {
+                const modal = document.getElementById('leaveCalculatorModal');
+                if (!modal) return;
+
+                const startInput = document.getElementById('calcStartDate');
+                const endInput = document.getElementById('calcEndDate');
+                const titleInput = document.getElementById('calcLeaveTitle');
+
+                let targetYear = selectedYear;
+                if (startInput && startInput.value) {
+                    const y = parseInt(startInput.value.split('-')[0], 10);
+                    if (y && !isNaN(y)) targetYear = y;
+                }
+
+                renderQuickStrategies(targetYear);
+
+                const strategies = targetYear === 2027 ? HOLIDAY_STRATEGIES_2027 : HOLIDAY_STRATEGIES_2026;
+                const defaultStrat = strategies[0];
+
+                if (startInput && (!startInput.value || !startInput.value.startsWith(String(targetYear)))) {
+                    startInput.value = defaultStrat.startDate;
+                    endInput.value = defaultStrat.endDate;
+                    titleInput.value = defaultStrat.leaveTitle;
+                }
+
+                if (startInput && endInput && startInput.value) {
+                    endInput.min = startInput.value;
+                    if (!endInput.value || endInput.value < startInput.value) {
+                        endInput.value = startInput.value;
+                    }
+                }
+
+                runLeaveSimulation();
+                runTenureCalculation();
+
+                modal.classList.add('active');
+            } catch (err) {
+                console.error("開啟假期試算彈窗失敗:", err);
+                showToast('error', '開啟試算視窗失敗', err.message);
+            }
+        }
+
+        function closeLeaveCalculatorModal() {
+            const modal = document.getElementById('leaveCalculatorModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function switchCalcTab(tab) {
+            const btnSim = document.getElementById('tab-btn-simulator');
+            const btnTen = document.getElementById('tab-btn-tenure');
+            const contSim = document.getElementById('calc-tab-simulator-content');
+            const contTen = document.getElementById('calc-tab-tenure-content');
+            const adoptBtn = document.getElementById('calcAdoptBtn');
+
+            if (tab === 'simulator') {
+                if (btnSim) btnSim.classList.add('active');
+                if (btnTen) btnTen.classList.remove('active');
+                if (contSim) contSim.style.display = 'block';
+                if (contTen) contTen.style.display = 'none';
+                if (adoptBtn) adoptBtn.style.display = 'inline-flex';
+            } else {
+                if (btnSim) btnSim.classList.remove('active');
+                if (btnTen) btnTen.classList.add('active');
+                if (contSim) contSim.style.display = 'none';
+                if (contTen) contTen.style.display = 'block';
+                if (adoptBtn) adoptBtn.style.display = 'none';
+            }
+        }
+
+        let currentStrategyYear = 2026;
+
+        function renderQuickStrategies(year) {
+            const numYear = Number(year) || 2026;
+            currentStrategyYear = numYear;
+
+            const container = document.getElementById('quickStrategiesContainer');
+            const label = document.getElementById('quickStrategyYearLabel');
+            if (!container) return;
+
+            const strategies = numYear === 2027 ? HOLIDAY_STRATEGIES_2027 : HOLIDAY_STRATEGIES_2026;
+            if (label) label.innerText = `${numYear} 年度推薦連假`;
+
+            const curStart = document.getElementById('calcStartDate')?.value;
+            const curEnd = document.getElementById('calcEndDate')?.value;
+
+            container.innerHTML = strategies.map(s => {
+                const isSelected = curStart === s.startDate && curEnd === s.endDate;
+                const activeStyle = isSelected 
+                    ? 'border-color: var(--primary); background: #eef2ff; color: var(--primary); font-weight: 800; box-shadow: 0 0 0 2px var(--primary-light);' 
+                    : '';
+                return `
+                    <div class="quick-strategy-chip" style="${activeStyle}" onclick="selectQuickStrategy('${s.startDate}', '${s.endDate}', '${s.leaveTitle}')">
+                        <span>${s.title}</span>
+                        <span class="badge-days">${s.hint}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectQuickStrategy(start, end, title) {
+            const sEl = document.getElementById('calcStartDate');
+            const eEl = document.getElementById('calcEndDate');
+            const tEl = document.getElementById('calcLeaveTitle');
+            if (sEl) sEl.value = start;
+            if (eEl) {
+                eEl.value = end;
+                eEl.min = start;
+            }
+            if (tEl) tEl.value = title;
+
+            const startYear = parseInt(start.split('-')[0], 10);
+            renderQuickStrategies(startYear || currentStrategyYear);
+
+            runLeaveSimulation();
+        }
+
+        // 開始日期變更時，連動調整結束日期，並同步調整推薦連假攻略年份
+        function handleCalcStartDateChange() {
+            const startEl = document.getElementById('calcStartDate');
+            const endEl = document.getElementById('calcEndDate');
+            if (!startEl || !endEl || !startEl.value) return;
+
+            const newStart = startEl.value;
+            const currentEnd = endEl.value;
+
+            // 限制結束日期的最小可選值為開始日期
+            endEl.min = newStart;
+
+            const startParts = newStart.split('-');
+            const startYear = parseInt(startParts[0], 10);
+
+            // 核心連動：依據試算開始日期年份，即時切換上方推薦連假攻略清單
+            if (startYear && !isNaN(startYear) && startYear !== currentStrategyYear) {
+                renderQuickStrategies(startYear);
+            } else {
+                renderQuickStrategies(currentStrategyYear);
+            }
+
+            if (!currentEnd) {
+                endEl.value = newStart;
+            } else if (currentEnd < newStart) {
+                // 如果目前的結束日期早於新開始日期
+                const endParts = currentEnd.split('-');
+                const endYear = parseInt(endParts[0], 10);
+
+                // 若是因為使用者更改年份導致（例如從 2026 改為 2027），嘗試將結束年份同步調整
+                if (endYear < startYear) {
+                    const candidateEnd = `${startYear}-${endParts[1]}-${endParts[2]}`;
+                    if (candidateEnd >= newStart) {
+                        endEl.value = candidateEnd;
+                    } else {
+                        endEl.value = newStart;
+                    }
+                } else {
+                    endEl.value = newStart;
+                }
+            }
+
+            runLeaveSimulation();
+        }
+
+        // 結束日期變更時，確保不早於開始日期
+        function handleCalcEndDateChange() {
+            const startEl = document.getElementById('calcStartDate');
+            const endEl = document.getElementById('calcEndDate');
+            if (!startEl || !endEl) return;
+
+            if (startEl.value && endEl.value && endEl.value < startEl.value) {
+                endEl.value = startEl.value;
+            }
+
+            renderQuickStrategies(currentStrategyYear);
+            runLeaveSimulation();
+        }
+
+        function runLeaveSimulation() {
+            const startDate = document.getElementById('calcStartDate')?.value;
+            const endDate = document.getElementById('calcEndDate')?.value;
+            const leaveType = document.getElementById('calcLeaveType')?.value || 'vacation';
+
+            if (!startDate || !endDate) return;
+
+            const startYear = parseInt(startDate.split('-')[0], 10);
+            if (startYear && !isNaN(startYear) && startYear !== currentStrategyYear) {
+                renderQuickStrategies(startYear);
+            }
+
+            const calc = calculateLeaveDaysAndHours(startDate, endDate);
+            const calcYear = startYear || selectedYear;
+            const assets = getActiveYearlyAssets(calcYear);
+
+            // 更新指標卡片
+            const totalDaysEl = document.getElementById('calcTotalDaysVal');
+            if (totalDaysEl) totalDaysEl.innerText = `${calc.totalCalendarDays} 天`;
+
+            const dateSpanEl = document.getElementById('calcDateSpanSub');
+            if (dateSpanEl) dateSpanEl.innerText = `${startDate} ~ ${endDate}`;
+
+            const actualWorkEl = document.getElementById('calcActualWorkDaysVal');
+            if (actualWorkEl) actualWorkEl.innerText = `${calc.actualWorkingDays} 天`;
+
+            const actualHoursEl = document.getElementById('calcActualHoursSub');
+            if (actualHoursEl) actualHoursEl.innerText = `扣除 ${calc.hoursNeeded} 小時額度`;
+
+            const nonWorkEl = document.getElementById('calcNonWorkDaysVal');
+            const nonWorkDays = calc.weekendDays + calc.nationalHolidayDays;
+            if (nonWorkEl) nonWorkEl.innerText = `${nonWorkDays} 天`;
+
+            const nonWorkSubEl = document.getElementById('calcNonWorkSub');
+            if (nonWorkSubEl) nonWorkSubEl.innerText = `週末 ${calc.weekendDays} 天 + 國假 ${calc.nationalHolidayDays} 天`;
+
+            // 摘要小徽章
+            const badgeEl = document.getElementById('calcSummaryBadge');
+            if (badgeEl) {
+                badgeEl.innerText = `請 ${calc.actualWorkingDays} 天 連休 ${calc.totalCalendarDays} 天`;
+                if (leaveType === 'sick') {
+                    badgeEl.className = 'stat-badge badge-sick';
+                } else if (leaveType === 'wfh') {
+                    badgeEl.className = 'stat-badge badge-wfh';
+                } else {
+                    badgeEl.className = 'stat-badge badge-vacation';
+                }
+            }
+
+            // 國定假日提示
+            const holNote = document.getElementById('calcHolidaysNote');
+            if (holNote) {
+                if (calc.holidayDetails.length > 0) {
+                    holNote.style.display = 'block';
+                    holNote.innerText = `💡 期間包含國定假日：${calc.holidayDetails.join('、')}`;
+                } else {
+                    holNote.style.display = 'none';
+                }
+            }
+
+            // 額度衝擊比較
+            let bookedHours = 0;
+            appState.leavePlans.forEach(plan => {
+                if (plan.startDate && plan.startDate.startsWith(String(calcYear)) && plan.type === leaveType) {
+                    const deduct = getPlanActualDeduction(plan);
+                    bookedHours += deduct.hours;
+                }
+            });
+
+            const yearLabelEl = document.getElementById('calcImpactYearLabel');
+            if (yearLabelEl) yearLabelEl.innerText = String(calcYear);
+
+            const impactDetailEl = document.getElementById('calcImpactDetails');
+            const healthBadgeEl = document.getElementById('calcQuotaHealthBadge');
+
+            if (leaveType === 'vacation') {
+                const usedBase = Number(assets.vacationUsedBase || 0);
+                const currentRemaining = Math.max(0, assets.vacationTotal - usedBase - bookedHours);
+                const afterRemaining = currentRemaining - calc.hoursNeeded;
+                const totalQuota = Math.max(1, assets.vacationTotal || 192);
+
+                if (afterRemaining >= 0) {
+                    const afterPercent = Math.round((afterRemaining / totalQuota) * 100);
+                    if (impactDetailEl) {
+                        impactDetailEl.innerHTML = `當前特休剩餘 <strong>${currentRemaining}h (${(currentRemaining/8).toFixed(1)}天)</strong> ➔ 請假後剩餘 <span style="color: var(--vacation-color); font-size: 1.15rem;">${afterRemaining}h</span> (${(afterRemaining/8).toFixed(1)} 天)`;
+                    }
+                    if (healthBadgeEl) {
+                        healthBadgeEl.innerHTML = `<span class="stat-badge badge-vacation" style="font-size: 0.85rem; padding: 6px 12px;">額度充足 (剩餘 ${afterPercent}%)</span>`;
+                    }
+                } else {
+                    if (impactDetailEl) {
+                        impactDetailEl.innerHTML = `當前特休剩餘 <strong>${currentRemaining}h</strong> ➔ <span style="color: var(--rose); font-weight: 800;">額度不足！尚缺 ${Math.abs(afterRemaining)} 小時</span>`;
+                    }
+                    if (healthBadgeEl) {
+                        healthBadgeEl.innerHTML = `<span class="stat-badge" style="background: var(--rose-light); color: var(--rose); font-size: 0.85rem; padding: 6px 12px;">⚠️ 額度超支</span>`;
+                    }
+                }
+            } else if (leaveType === 'sick') {
+                const sickUsed = Number(assets.sickUsed || 0);
+                const currentRemaining = Math.max(0, assets.sickTotal - sickUsed - bookedHours);
+                const afterRemaining = currentRemaining - calc.hoursNeeded;
+                if (impactDetailEl) {
+                    impactDetailEl.innerHTML = `當前病假剩餘 <strong>${currentRemaining}h</strong> ➔ 請假後剩餘 <span style="color: var(--sick-color); font-size: 1.15rem;">${afterRemaining >= 0 ? afterRemaining : 0}h</span>`;
+                }
+                if (healthBadgeEl) {
+                    healthBadgeEl.innerHTML = afterRemaining >= 0 
+                        ? `<span class="stat-badge badge-sick" style="font-size: 0.85rem; padding: 6px 12px;">病假餘額足夠</span>`
+                        : `<span class="stat-badge" style="background: var(--rose-light); color: var(--rose); font-size: 0.85rem; padding: 6px 12px;">⚠️ 病假超額</span>`;
+                }
+            } else if (leaveType === 'wfh') {
+                const afterDays = calc.actualWorkingDays;
+                if (impactDetailEl) {
+                    impactDetailEl.innerHTML = `申請 WFH <strong>${afterDays} 天</strong> (每月上限: ${assets.wfhMonthlyLimit || 2} 天)`;
+                }
+                if (healthBadgeEl) {
+                    healthBadgeEl.innerHTML = afterDays <= (assets.wfhMonthlyLimit || 2)
+                        ? `<span class="stat-badge badge-wfh" style="font-size: 0.85rem; padding: 6px 12px;">符合每月上限</span>`
+                        : `<span class="stat-badge" style="background: var(--rose-light); color: var(--rose); font-size: 0.85rem; padding: 6px 12px;">⚠️ 超過每月上限</span>`;
+                }
+            }
+        }
+
+        function adoptSimulationToLeave() {
+            const startDate = document.getElementById('calcStartDate')?.value;
+            const endDate = document.getElementById('calcEndDate')?.value;
+            const leaveType = document.getElementById('calcLeaveType')?.value || 'vacation';
+            const leaveTitle = document.getElementById('calcLeaveTitle')?.value || '連假休假行程';
+
+            closeLeaveCalculatorModal();
+
+            const targetYear = parseInt(startDate.split('-')[0], 10) || selectedYear;
+            openAddLeaveModal(targetYear);
+
+            document.getElementById('startDate').value = startDate;
+            document.getElementById('endDate').value = endDate;
+            document.getElementById('leaveType').value = leaveType;
+            document.getElementById('leaveTitle').value = leaveTitle;
+
+            handleDateRangeChange();
+
+            showToast('info', '已成功帶入試算方案！', '請檢查假勤資訊無誤後點擊「儲存排定」即可完成登錄。');
+        }
+
+        // 勞動基準法第 38 條特休試算核心
+        function runTenureCalculation() {
+            const onboardVal = document.getElementById('tenureOnboardDate')?.value || '2023-07-01';
+            const system = document.getElementById('tenureCalcSystem')?.value || 'anniversary';
+
+            const p = onboardVal.split('-');
+            if (p.length !== 3) return;
+
+            const onboardDate = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+            const now = new Date();
+
+            let diffYears = now.getFullYear() - onboardDate.getFullYear();
+            let diffMonths = now.getMonth() - onboardDate.getMonth();
+            if (now.getDate() < onboardDate.getDate()) {
+                diffMonths--;
+            }
+            if (diffMonths < 0) {
+                diffYears--;
+                diffMonths += 12;
+            }
+            const durationStr = `目前累計年資：${Math.max(0, diffYears)} 年 ${Math.max(0, diffMonths)} 個月`;
+            const durEl = document.getElementById('tenureDurationText');
+            if (durEl) durEl.innerText = durationStr;
+
+            function getDaysByYears(years) {
+                if (years < 0.5) return 0;
+                if (years < 1) return 3;
+                if (years < 2) return 7;
+                if (years < 3) return 10;
+                if (years < 5) return 14;
+                if (years < 10) return 15;
+                const extra = Math.floor(years) - 10 + 1;
+                return Math.min(30, 15 + extra);
+            }
+
+            function calcYearDays(targetYear) {
+                if (system === 'anniversary') {
+                    const yearsAtTarget = targetYear - onboardDate.getFullYear();
+                    return getDaysByYears(yearsAtTarget);
+                } else {
+                    const yearsAtStart = targetYear - onboardDate.getFullYear();
+                    if (yearsAtStart <= 0) return 0;
+                    if (yearsAtStart === 1) {
+                        const monthsRemaining = 12 - (onboardDate.getMonth() + 1);
+                        return Math.round(3 + (monthsRemaining / 12) * 7);
+                    }
+                    const prevDays = getDaysByYears(yearsAtStart - 1);
+                    const curDays = getDaysByYears(yearsAtStart);
+                    const ratio = (onboardDate.getMonth()) / 12;
+                    return Math.round(prevDays * ratio + curDays * (1 - ratio));
+                }
+            }
+
+            const days2026 = Math.max(0, calcYearDays(2026));
+            const days2027 = Math.max(0, calcYearDays(2027));
+
+            currentTenureCalcResults['2026'] = { days: days2026, hours: days2026 * 8 };
+            currentTenureCalcResults['2027'] = { days: days2027, hours: days2027 * 8 };
+
+            const d26 = document.getElementById('tenure2026DaysVal');
+            const h26 = document.getElementById('tenure2026HoursVal');
+            if (d26) d26.innerText = `${days2026} 天`;
+            if (h26) h26.innerText = `相當於 ${days2026 * 8} 小時 (8h/天)`;
+
+            const d27 = document.getElementById('tenure2027DaysVal');
+            const h27 = document.getElementById('tenure2027HoursVal');
+            if (d27) d27.innerText = `${days2027} 天`;
+            if (h27) h27.innerText = `相當於 ${days2027 * 8} 小時 (8h/天)`;
+        }
+
+        function applyTenureToYearly(year) {
+            const targetYear = Number(year);
+            const res = currentTenureCalcResults[String(targetYear)];
+            if (!res) return;
+
+            if (!appState.yearlyAssets[String(targetYear)]) {
+                appState.yearlyAssets[String(targetYear)] = {
+                    vacationTotal: res.hours,
+                    vacationUsedBase: 0,
+                    vacationOldRemaining: 0,
+                    vacationOldExpiry: `${targetYear}-12-31`,
+                    sickTotal: 80,
+                    sickUsed: 0,
+                    wfhMonthlyLimit: 2,
+                    wfhYearlyTotal: 48
+                };
+            } else {
+                appState.yearlyAssets[String(targetYear)].vacationTotal = res.hours;
+            }
+
+            saveToLocalStorage();
+            switchSelectedYear(targetYear);
+            renderAll();
+            runLeaveSimulation();
+
+            showToast('success', `已成功套用至 ${targetYear} 年度特休額度！`, `年度特休總額度已更新為 ${res.hours} 小時 (${res.days} 天)。`);
+        }
+
+        // ==========================================
+        // 匯出個人假勤資產結算圖卡 (Canvas 2D 渲染引擎)
+        // ==========================================
+        let exportImageState = {
+            year: 2026,
+            unit: 'days', // 'days' 或 'hours'
+            canvas: null
+        };
+
+        function openExportImageModal() {
+            exportImageState.year = selectedYear || 2026;
+            exportImageState.unit = appState.unit || 'days';
+            updateExportImageControls();
+            renderExportImage();
+            const modal = document.getElementById('exportImageModal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeExportImageModal() {
+            const modal = document.getElementById('exportImageModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function setExportImageYear(year) {
+            exportImageState.year = Number(year);
+            updateExportImageControls();
+            renderExportImage();
+        }
+
+        function setExportImageUnit(unit) {
+            exportImageState.unit = unit;
+            updateExportImageControls();
+            renderExportImage();
+        }
+
+        function updateExportImageControls() {
+            const btn2026 = document.getElementById('export-year-2026');
+            const btn2027 = document.getElementById('export-year-2027');
+            if (btn2026) btn2026.classList.toggle('active', exportImageState.year === 2026);
+            if (btn2027) btn2027.classList.toggle('active', exportImageState.year === 2027);
+
+            const btnDays = document.getElementById('export-unit-days');
+            const btnHours = document.getElementById('export-unit-hours');
+            if (btnDays) btnDays.classList.toggle('active', exportImageState.unit === 'days');
+            if (btnHours) btnHours.classList.toggle('active', exportImageState.unit === 'hours');
+        }
+
+        // 圓角矩形輔助繪製函式
+        function drawCanvasRoundedRect(ctx, x, y, width, height, radius, fillStyle, strokeStyle, lineWidth) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            if (fillStyle) {
+                ctx.fillStyle = fillStyle;
+                ctx.fill();
+            }
+            if (strokeStyle) {
+                ctx.strokeStyle = strokeStyle;
+                ctx.lineWidth = lineWidth || 1;
+                ctx.stroke();
+            }
+        }
+
+        function renderExportImage() {
+            const targetYear = exportImageState.year;
+            const assets = getActiveYearlyAssets(targetYear);
+            
+            // 計算排定假勤
+            let bookedVacationHours = 0;
+            let bookedSickHours = 0;
+            let monthlyWfhDays = 0;
+            const yearPlans = [];
+
+            appState.leavePlans.forEach(plan => {
+                if (plan.startDate && plan.startDate.startsWith(String(targetYear))) {
+                    const deduct = getPlanActualDeduction(plan);
+                    if (plan.type === 'vacation') bookedVacationHours += deduct.hours;
+                    else if (plan.type === 'sick') bookedSickHours += deduct.hours;
+                    else if (plan.type === 'wfh') monthlyWfhDays += deduct.days;
+                    yearPlans.push({ ...plan, deduct });
+                }
+            });
+
+            // 依日期先後排序
+            yearPlans.sort((a, b) => {
+                const s = (a.startDate || '').localeCompare(b.startDate || '');
+                return s !== 0 ? s : (a.endDate || '').localeCompare(b.endDate || '');
+            });
+
+            const usedBase = Number(assets.vacationUsedBase || 0);
+            const remainingVacationHours = Math.max(0, assets.vacationTotal - usedBase - bookedVacationHours);
+            const remainingVacationDays = remainingVacationHours / 8;
+            const vacTotalSafe = Math.max(1, assets.vacationTotal || 192);
+            const vacPercent = Math.max(0, Math.min(100, Math.round((remainingVacationHours / vacTotalSafe) * 100)));
+
+            const remainingSick = Math.max(0, assets.sickTotal - (Number(assets.sickUsed || 0) + bookedSickHours));
+            const remainingWfhMonthly = Math.max(0, (assets.wfhMonthlyLimit || 2) - monthlyWfhDays);
+
+            // 建立高畫質 Canvas (邏輯解析度 760 x 980，Retina 2x 縮放 1520 x 1960)
+            const canvas = document.createElement('canvas');
+            const logicalW = 760;
+            const logicalH = 980;
+            const scale = 2;
+            canvas.width = logicalW * scale;
+            canvas.height = logicalH * scale;
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+
+            // 1. 全局極簡淺色背景 (淡雅淺灰白 #f8fafc)
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, logicalW, logicalH);
+
+            // 外邊框 (精緻灰細線 #e2e8f0，內縮 12px)
+            drawCanvasRoundedRect(ctx, 12, 12, logicalW - 24, logicalH - 24, 16, null, '#e2e8f0', 1);
+
+            // 2. Header 頂部資訊區 (俐落商務排版)
+            ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('LEAVE ASSET SUMMARY REPORT', 36, 46);
+
+            ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('個人假勤資產結算報表', 36, 78);
+
+            // 年度徽章標籤 (簡約白底細框)
+            const badgeText = `${targetYear} 年度`;
+            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            const badgeW = ctx.measureText(badgeText).width + 16;
+            drawCanvasRoundedRect(ctx, 305, 60, badgeW, 24, 6, '#ffffff', '#cbd5e1', 1);
+            ctx.fillStyle = '#334155';
+            ctx.fillText(badgeText, 313, 76);
+
+            // 結算時間戳記 (靠右對齊)
+            const nowStr = new Date().toLocaleString('zh-TW', { hour12: false });
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'right';
+            ctx.fillText(`結算時間：${nowStr}`, logicalW - 36, 76);
+            ctx.textAlign = 'left';
+
+            // 水平分隔線
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(36, 96);
+            ctx.lineTo(logicalW - 36, 96);
+            ctx.stroke();
+
+            // 3. 特休核心卡片 (Y: 110, 高度 295，白底微陰影卡片)
+            const heroY = 110;
+            const heroH = 295;
+            drawCanvasRoundedRect(ctx, 36, heroY, logicalW - 72, heroH, 12, '#ffffff', '#e2e8f0', 1);
+
+            // 卡片標題與可用率徽章
+            ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#1e293b';
+            ctx.fillText('特休 (年休假) 目前餘額', 56, heroY + 34);
+
+            const ratioBadgeText = `剩餘可用 ${vacPercent}%`;
+            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            const rBadgeW = ctx.measureText(ratioBadgeText).width + 16;
+            drawCanvasRoundedRect(ctx, logicalW - 56 - rBadgeW, heroY + 18, rBadgeW, 24, 6, '#eff6ff', '#bfdbfe', 1);
+            ctx.fillStyle = '#1d4ed8';
+            ctx.fillText(ratioBadgeText, logicalW - 56 - rBadgeW + 8, heroY + 34);
+
+            // 核心大數字展示 (簡約商務藍 / 深黑)
+            const isDays = exportImageState.unit === 'days';
+            const mainNumStr = isDays ? remainingVacationDays.toFixed(1) : String(remainingVacationHours);
+            const mainUnitStr = isDays ? '天 剩餘' : '小時 剩餘';
+            const subCompareStr = isDays ? `相當於 ${remainingVacationHours} 小時` : `相當於 ${remainingVacationDays.toFixed(1)} 天`;
+
+            ctx.font = 'bold 54px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            const numW = ctx.measureText(mainNumStr).width;
+            ctx.fillStyle = '#1e40af';
+            ctx.fillText(mainNumStr, 56, heroY + 104);
+
+            // 單位標籤
+            ctx.font = '600 20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#475569';
+            ctx.fillText(mainUnitStr, 56 + numW + 10, heroY + 98);
+
+            // 對照轉換標籤膠囊 (淡灰底)
+            ctx.font = '500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            const subW = ctx.measureText(subCompareStr).width + 20;
+            drawCanvasRoundedRect(ctx, 56, heroY + 124, subW, 26, 6, '#f1f5f9', '#e2e8f0', 1);
+            ctx.fillStyle = '#475569';
+            ctx.fillText(subCompareStr, 66, heroY + 141);
+
+            // 進度條 (高 6px，簡約藍)
+            const barY = heroY + 168;
+            const barW = logicalW - 112;
+            drawCanvasRoundedRect(ctx, 56, barY, barW, 6, 3, '#e2e8f0', null);
+            if (vacPercent > 0) {
+                const fillW = Math.max(6, Math.round(barW * (vacPercent / 100)));
+                drawCanvasRoundedRect(ctx, 56, barY, fillW, 6, 3, '#2563eb', null);
+            }
+
+            // 卡片內水平細分割線
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.beginPath();
+            ctx.moveTo(56, heroY + 192);
+            ctx.lineTo(logicalW - 56, heroY + 192);
+            ctx.stroke();
+
+            // 三大指標網格 (Y: 204)
+            const gridY = heroY + 208;
+            const colW = (barW - 24) / 3;
+
+            // 指標 1: 年度總額度
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('年度特休總額度', 56, gridY + 16);
+            ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(`${(assets.vacationTotal / 8).toFixed(1)} 天`, 56, gridY + 42);
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(`(${assets.vacationTotal} 小時)`, 56, gridY + 62);
+
+            // 指標 2: 已休 / 已排定
+            const col2X = 56 + colW + 12;
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('已休 / 已排定時數', col2X, gridY + 16);
+            ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(`${((usedBase + bookedVacationHours) / 8).toFixed(1)} 天`, col2X, gridY + 42);
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(`(${usedBase + bookedVacationHours} 小時)`, col2X, gridY + 62);
+
+            // 指標 3: 前年度舊假
+            const col3X = 56 + (colW + 12) * 2;
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('前年度舊假未休', col3X, gridY + 16);
+            ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = assets.vacationOldRemaining > 0 ? '#0f172a' : '#94a3b8';
+            ctx.fillText(`${((assets.vacationOldRemaining || 0) / 8).toFixed(1)} 天 (${assets.vacationOldRemaining || 0}h)`, col3X, gridY + 42);
+            ctx.font = '500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText(`至 ${assets.vacationOldExpiry || targetYear + '/12/31'} 止`, col3X, gridY + 62);
+
+            // 4. 病假 & WFH 雙欄並列 (Y: 418, 高度 125)
+            const subCardY = 418;
+            const subCardH = 125;
+            const halfW = (logicalW - 72 - 14) / 2;
+
+            // 4.1 全薪病假 (白底卡片)
+            drawCanvasRoundedRect(ctx, 36, subCardY, halfW, subCardH, 12, '#ffffff', '#e2e8f0', 1);
+            ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#334155';
+            ctx.fillText('全薪病假', 54, subCardY + 30);
+
+            ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#0f172a';
+            const sickNumStr = `${(remainingSick / 8).toFixed(1)} 天`;
+            ctx.fillText(sickNumStr, 54, subCardY + 66);
+            const sickNumW = ctx.measureText(sickNumStr).width;
+
+            ctx.font = '500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(`(剩餘 ${remainingSick} 小時)`, 54 + sickNumW + 8, subCardY + 64);
+
+            ctx.font = '500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(`年度上限 ${(assets.sickTotal / 8).toFixed(0)} 天 (${assets.sickTotal}h)  •  已休 ${Number(assets.sickUsed || 0) + bookedSickHours}h`, 54, subCardY + 98);
+
+            // 4.2 遠距辦公 WFH (白底卡片)
+            drawCanvasRoundedRect(ctx, 36 + halfW + 14, subCardY, halfW, subCardH, 12, '#ffffff', '#e2e8f0', 1);
+            ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#334155';
+            ctx.fillText('遠距辦公 (WFH)', 54 + halfW + 14, subCardY + 30);
+
+            ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#0f172a';
+            const wfhNumStr = `本月剩餘 ${remainingWfhMonthly.toFixed(0)} 天`;
+            ctx.fillText(wfhNumStr, 54 + halfW + 14, subCardY + 66);
+
+            ctx.font = '500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(`每月上限 ${assets.wfhMonthlyLimit || 2} 天  •  年度累計上限 ${assets.wfhYearlyTotal || 48}h`, 54 + halfW + 14, subCardY + 98);
+
+            // 5. 已排定假勤行程明細 (Y: 555, 高度 335)
+            const listY = 555;
+            const listH = 335;
+            drawCanvasRoundedRect(ctx, 36, listY, logicalW - 72, listH, 12, '#ffffff', '#e2e8f0', 1);
+
+            ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(`已排定假勤明細 (${yearPlans.length} 筆)`, 54, listY + 32);
+
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.textAlign = 'right';
+            ctx.fillText('依開始日期先後排序', logicalW - 54, listY + 32);
+            ctx.textAlign = 'left';
+
+            if (yearPlans.length === 0) {
+                ctx.font = '500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+                ctx.fillStyle = '#94a3b8';
+                ctx.textAlign = 'center';
+                ctx.fillText(`目前 ${targetYear} 年度尚未排定任何休假行程，點擊「➕ 排入新假勤」即可規劃！`, logicalW / 2, listY + 175);
+                ctx.textAlign = 'left';
+            } else {
+                const maxShow = 4;
+                const displayPlans = yearPlans.slice(0, maxShow);
+                let rowY = listY + 50;
+
+                displayPlans.forEach((p, idx) => {
+                    const rowH = 54;
+                    // 分隔底線 (最後一行除外)
+                    if (idx > 0) {
+                        ctx.strokeStyle = '#f1f5f9';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(54, rowY);
+                        ctx.lineTo(logicalW - 54, rowY);
+                        ctx.stroke();
+                    }
+
+                    // 假勤徽章 (清爽淡色底)
+                    let badgeBg = '#eff6ff';
+                    let badgeBorder = '#dbeafe';
+                    let badgeColor = '#1d4ed8';
+                    let badgeLabel = '特休';
+                    if (p.type === 'wfh') {
+                        badgeBg = '#f0fdf4';
+                        badgeBorder = '#dcfce7';
+                        badgeColor = '#15803d';
+                        badgeLabel = 'WFH';
+                    } else if (p.type === 'sick') {
+                        badgeBg = '#fff7ed';
+                        badgeBorder = '#ffedd5';
+                        badgeColor = '#c2410c';
+                        badgeLabel = '病假';
+                    }
+
+                    drawCanvasRoundedRect(ctx, 54, rowY + 14, 38, 22, 4, badgeBg, badgeBorder, 1);
+                    ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+                    ctx.fillStyle = badgeColor;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(badgeLabel, 73, rowY + 29);
+                    ctx.textAlign = 'left';
+
+                    // 假勤標題
+                    ctx.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+                    ctx.fillStyle = '#0f172a';
+                    const titleShort = p.title.length > 20 ? p.title.slice(0, 20) + '...' : p.title;
+                    ctx.fillText(titleShort, 102, rowY + 25);
+
+                    // 日期區間
+                    ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                    ctx.fillStyle = '#64748b';
+                    const dateStr = p.startDate === p.endDate ? p.startDate : `${p.startDate} ~ ${p.endDate}`;
+                    ctx.fillText(dateStr, 102, rowY + 44);
+
+                    // 扣除時數與天數 (靠右對齊，深墨灰)
+                    ctx.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                    ctx.fillStyle = '#1e293b';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(`扣除 ${p.deduct.days} 天 (${p.deduct.hours}h)`, logicalW - 54, rowY + 32);
+                    ctx.textAlign = 'left';
+
+                    rowY += rowH;
+                });
+
+                if (yearPlans.length > maxShow) {
+                    ctx.font = '500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`...另有 ${yearPlans.length - maxShow} 筆排定行程，請至行事曆檢視完整排定`, logicalW / 2, listY + 310);
+                    ctx.textAlign = 'left';
+                }
+            }
+
+            // 6. 頁尾 Footer (Y: 910 ~ 950)
+            const footY = 912;
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(36, footY);
+            ctx.lineTo(logicalW - 36, footY);
+            ctx.stroke();
+
+            ctx.font = '500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('由 Work-Life Balance Planner 生成  •  資料安全保存在個人本機', 36, footY + 28);
+
+            ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'right';
+            ctx.fillText('祝您休假愉快！', logicalW - 36, footY + 28);
+            ctx.textAlign = 'left';
+
+            // 將結果轉為 PNG DataURL 並放入預覽
+            const dataURL = canvas.toDataURL('image/png');
+            const previewImg = document.getElementById('exportImagePreview');
+            if (previewImg) previewImg.src = dataURL;
+            exportImageState.canvas = canvas;
+        }
+
+        function downloadLeaveSummaryImage() {
+            try {
+                if (!exportImageState.canvas) renderExportImage();
+                const canvas = exportImageState.canvas;
+                const link = document.createElement('a');
+                const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                link.download = `${exportImageState.year}年度_假勤資產結算報表_${today}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                showToast('success', '圖檔下載成功！', `已下載 ${exportImageState.year} 年度高畫質假勤資產圖卡 (PNG)。`);
+            } catch (err) {
+                console.error("下載圖檔失敗:", err);
+                showToast('error', '下載失敗', err.message);
+            }
+        }
+
+        async function copyLeaveSummaryImage() {
+            try {
+                if (!exportImageState.canvas) renderExportImage();
+                const canvas = exportImageState.canvas;
+                
+                if (!navigator.clipboard || !window.ClipboardItem) {
+                    throw new Error('您的瀏覽器不支援直接複製圖片到剪貼簿，請點擊「下載 PNG 圖檔」儲存！');
+                }
+
+                canvas.toBlob(async (blob) => {
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        showToast('success', '已複製到剪貼簿！', '可直接在 LINE / Teams / Slack 等視窗中按下 Ctrl+V 貼上分享！');
+                    } catch (clipErr) {
+                        console.error("複製到剪貼簿失敗:", clipErr);
+                        showToast('info', '剪貼簿限制', '請直接於預覽圖上方按滑鼠右鍵「複製圖片」或直接下載圖檔！');
+                    }
+                }, 'image/png');
+            } catch (err) {
+                showToast('error', '複製失敗', err.message);
+            }
+        }
+
+
+        // 匯出資料為 JSON 檔案
+        function exportDataToJSON() {
+            try {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+                const downloadAnchor = document.createElement('a');
+                const today = new Date().toISOString().split('T')[0];
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `個人假勤管理備份_${today}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+                showToast('success', '匯出成功', '您的個人假勤設定與排定已成功下載備份！');
+            } catch (err) {
+                showToast('error', '匯出失敗', err.message);
+            }
+        }
+
+        // 觸發檔案選擇器
+        function triggerImportJSON() {
+            const input = document.getElementById('importFileInput');
+            if (input) input.click();
+        }
+
+        // 處理匯入 JSON 檔案
+        function handleImportFile(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!imported || typeof imported !== 'object') {
+                        throw new Error('檔案格式錯誤，不是有效的 JSON 物件');
+                    }
+                    if (!imported.yearlyAssets || !imported.leavePlans) {
+                        throw new Error('缺少必要的假勤資料欄位 (yearlyAssets 或 leavePlans)');
+                    }
+                    appState = imported;
+                    saveToLocalStorage();
+                    renderAll();
+                    showToast('success', '匯入成功', `已成功還原假勤資料，共 ${appState.leavePlans.length} 筆排定！`);
+                } catch (err) {
+                    showToast('error', '匯入失敗', '讀取備份檔案失敗：' + err.message);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 清空所有排定
+        function clearAllPlans() {
+            showConfirm(
+                '確認清空所有假勤？',
+                '此動作將清除您目前所有已排定的假勤清單（年度額度設定將保留）。確定要清空嗎？',
+                () => {
+                    appState.leavePlans = [];
+                    saveToLocalStorage();
+                    renderAll();
+                    showToast('info', '已清空假勤清單', '目前排定清單已重設為空白狀態。');
+                }
+            );
+        }
+
+        // 載入示範資料
+        function loadSampleDemoData() {
+            showConfirm(
+                '載入示範體驗資料？',
+                '此動作將填入示範連假排定（例如 2026/10 國慶光復連休與 WFH 範例），方便您體驗各項智慧判定功能。',
+                () => {
+                    appState.yearlyAssets['2026'] = {
+                        vacationTotal: 120,
+                        vacationUsedBase: 16,
+                        vacationOldRemaining: 24,
+                        vacationOldExpiry: '2026-12-31',
+                        sickTotal: 240,
+                        sickUsed: 16,
+                        wfhMonthlyLimit: 2,
+                        wfhYearlyTotal: 48
+                    };
+                    appState.leavePlans = [
+                        {
+                            id: 'sample-1',
+                            title: '🏝️ 墾丁秋季度假與放鬆',
+                            startDate: '2026-10-23',
+                            endDate: '2026-10-26',
+                            type: 'vacation',
+                            notes: '避開人潮，享受陽光海灘',
+                            manualAdjustment: false,
+                            manualHours: null
+                        },
+                        {
+                            id: 'sample-2',
+                            title: '🏠 居家專注工作日 (WFH)',
+                            startDate: '2026-10-30',
+                            endDate: '2026-10-30',
+                            type: 'wfh',
+                            notes: '第四季專案規劃整理',
+                            manualAdjustment: false,
+                            manualHours: null
+                        }
+                    ];
+                    saveToLocalStorage();
+                    renderAll();
+                    showToast('success', '已載入示範資料', '已成功填入示範假勤，您可以開始嘗試編輯、排定或試算！');
+                }
+            );
+        }
+
+        // 全域 window 綁定
+        window.openExportImageModal = openExportImageModal;
+        window.closeExportImageModal = closeExportImageModal;
+        window.setExportImageYear = setExportImageYear;
+        window.setExportImageUnit = setExportImageUnit;
+        window.downloadLeaveSummaryImage = downloadLeaveSummaryImage;
+        window.copyLeaveSummaryImage = copyLeaveSummaryImage;
+        window.exportDataToJSON = exportDataToJSON;
+        window.triggerImportJSON = triggerImportJSON;
+        window.handleImportFile = handleImportFile;
+        window.clearAllPlans = clearAllPlans;
+        window.loadSampleDemoData = loadSampleDemoData;
+        window.openYearlyAssetModal = openYearlyAssetModal;
+        window.closeYearlyAssetModal = closeYearlyAssetModal;
+        window.loadYearlyAssetToEditor = loadYearlyAssetToEditor;
+        window.preset2027Assets = preset2027Assets;
+        window.handleSaveYearlyAssets = handleSaveYearlyAssets;
+        window.openAddLeaveModal = openAddLeaveModal;
+        window.openEditLeaveModal = openEditLeaveModal;
+        window.closeAddLeaveModal = closeAddLeaveModal;
+        window.handleSaveLeave = handleSaveLeave;
+        window.deleteLeavePlan = deleteLeavePlan;
+        window.switchSelectedYear = switchSelectedYear;
+        window.setUnit = setUnit;
+        window.resetToPreset = resetToPreset;
+        window.changeMonth = changeMonth;
+        window.resetToCurrentMonth = resetToCurrentMonth;
+        window.handleBackdropMouseDown = handleBackdropMouseDown;
+        window.handleBackdropClick = handleBackdropClick;
+        window.handleDateRangeChange = handleDateRangeChange;
+        window.toggleManualAdjustment = toggleManualAdjustment;
+        window.updateManualDaysPreview = updateManualDaysPreview;
+        window.showToast = showToast;
+        window.showConfirm = showConfirm;
+        window.toggleDateSort = toggleDateSort;
+
+        // 假期試算小幫手全域綁定
+        window.openLeaveCalculatorModal = openLeaveCalculatorModal;
+        window.closeLeaveCalculatorModal = closeLeaveCalculatorModal;
+        window.switchCalcTab = switchCalcTab;
+        window.renderQuickStrategies = renderQuickStrategies;
+        window.selectQuickStrategy = selectQuickStrategy;
+        window.runLeaveSimulation = runLeaveSimulation;
+        window.adoptSimulationToLeave = adoptSimulationToLeave;
+        window.runTenureCalculation = runTenureCalculation;
+        window.applyTenureToYearly = applyTenureToYearly;
+        window.handleCalcStartDateChange = handleCalcStartDateChange;
+        window.handleCalcEndDateChange = handleCalcEndDateChange;
+        window.getRemainingVacationHoursForYear = getRemainingVacationHoursForYear;
+        window.import2026RemainingToOldLeave = import2026RemainingToOldLeave;
+    </script>
+</body>
+</html>
