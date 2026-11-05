@@ -548,20 +548,25 @@
         .calendar-weekday.weekend { color: var(--rose); }
 
         .calendar-cell {
-            min-height: 58px; /* 緊湊月曆格高 (適應左右對照並排) */
+            height: 62px; /* 固定格高，確保整月所有格子尺寸嚴格一致 */
+            min-height: 62px;
+            max-height: 62px;
             background: white;
             border: 1px solid var(--border-light);
             border-radius: 4px;
-            padding: 3px 4px;
+            padding: 2px 4px;
             display: flex;
             flex-direction: column;
             gap: 2px;
+            box-sizing: border-box;
+            overflow: hidden; /* 超過格子高度的內容自動隱藏 */
+            position: relative;
             transition: var(--transition);
         }
 
         .calendar-cell:hover {
             border-color: var(--primary);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 2px 8px rgba(90, 110, 127, 0.2);
         }
 
         .calendar-cell.other-month {
@@ -574,12 +579,23 @@
         }
 
         .calendar-date-num {
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             font-weight: 800;
             color: var(--text-main);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            line-height: 1.1;
+            flex-shrink: 0;
+        }
+
+        .calendar-events-wrap {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden; /* 超出內容自動截斷隱藏 */
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .calendar-cell.drag-over {
@@ -597,8 +613,71 @@
             border-radius: 3px;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: ellipsis; /* 文字過長自動隱藏並呈現省略號 */
             line-height: 1.25;
+            box-sizing: border-box;
+            width: 100%;
+            display: block;
+        }
+
+        .more-events-badge {
+            font-size: 0.62rem;
+            font-weight: 800;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 0 4px;
+            border-radius: 6px;
+            line-height: 1.1;
+            cursor: pointer;
+        }
+
+        /* 日曆懸浮詳情卡片 (Hover 顯示完整假勤與假日資訊) */
+        .calendar-tooltip {
+            position: fixed;
+            z-index: 999999;
+            background: rgba(30, 41, 59, 0.96);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.76rem;
+            line-height: 1.4;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.12s ease, transform 0.12s ease;
+            max-width: 290px;
+        }
+
+        .calendar-tooltip.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .calendar-tooltip-header {
+            font-weight: 800;
+            font-size: 0.8rem;
+            color: #93c5fd;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 4px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-tooltip-item {
+            margin-top: 4px;
+            padding-top: 4px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.12);
+        }
+
+        .calendar-tooltip-item:first-of-type {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
         }
 
         .event-badge.is-draggable {
@@ -958,7 +1037,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.5</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.6</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -2602,6 +2681,7 @@
 
         function handleBadgeDragStart(e, planId, sourceDate) {
             e.stopPropagation();
+            hideCalendarTooltip();
             draggedPlanData = { planId: String(planId), sourceDate: String(sourceDate) };
             if (e.dataTransfer) {
                 e.dataTransfer.setData('text/plain', JSON.stringify(draggedPlanData));
@@ -2614,6 +2694,7 @@
 
         function handleBadgeDragEnd(e) {
             e.stopPropagation();
+            hideCalendarTooltip();
             if (e.currentTarget) {
                 e.currentTarget.classList.remove('dragging');
             }
@@ -2722,6 +2803,115 @@
             showToast('success', '已成功調整假勤日期！', `「${plan.title}」已移動至 ${dateDisplay}，右側清單與假勤額度已同步連動。`, 2200);
         }
 
+        // ==========================================
+        // 日曆懸浮詳情卡片 (Hover Tooltip / Popover)
+        // ==========================================
+        function showCalendarTooltip(e, dateISO, holidayName, plans) {
+            let tooltip = document.getElementById('calendarGlobalTooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.id = 'calendarGlobalTooltip';
+                tooltip.className = 'calendar-tooltip';
+                document.body.appendChild(tooltip);
+            }
+
+            const pDate = dateISO.split('-').map(Number);
+            const dObj = new Date(pDate[0], pDate[1] - 1, pDate[2]);
+            const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+            const dayOfWeekStr = dayNames[dObj.getDay()];
+
+            let itemsHTML = '';
+            if (holidayName) {
+                itemsHTML += `
+                    <div class="calendar-tooltip-item">
+                        <span class="calendar-tooltip-tag" style="background: var(--holiday-bg); color: var(--holiday-text); border: 1px solid var(--holiday-border);">🚩 國定假日</span>
+                        <strong style="color: #fca5a5;">${holidayName}</strong>
+                    </div>
+                `;
+            }
+
+            if (plans && plans.length > 0) {
+                plans.forEach(plan => {
+                    const deduct = getPlanActualDeduction(plan);
+                    let tagBg = 'var(--vacation-bg)';
+                    let tagText = '🏖️ 特休';
+                    if (plan.type === 'wfh') {
+                        tagBg = 'var(--wfh-bg)';
+                        tagText = '🏡 遠距';
+                    } else if (plan.type === 'sick') {
+                        tagBg = 'var(--sick-bg)';
+                        tagText = '🏥 病假';
+                    }
+
+                    const timeSpan = (plan.startTime && plan.endTime) ? ` (${plan.startTime}~${plan.endTime})` : '';
+                    const dateSpan = (plan.startDate === plan.endDate) ? `${plan.startDate}${timeSpan}` : `${plan.startDate} ~ ${plan.endDate}${timeSpan}`;
+
+                    itemsHTML += `
+                        <div class="calendar-tooltip-item">
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 2px;">
+                                <span>
+                                    <span class="calendar-tooltip-tag" style="background: ${tagBg}; color: #ffffff;">${tagText}</span>
+                                    <strong style="color: #ffffff;">${plan.title}</strong>
+                                </span>
+                                <span style="font-weight: 800; color: #fde047; font-size: 0.74rem;">${deduct.days}天 (${deduct.hours}h)</span>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #cbd5e1;"><i class="fa-regular fa-calendar"></i> ${dateSpan}</div>
+                            ${plan.notes ? `<div style="font-size: 0.69rem; color: #94a3b8;"><i class="fa-solid fa-location-dot"></i> ${plan.notes}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            if (!holidayName && (!plans || plans.length === 0)) {
+                hideCalendarTooltip();
+                return;
+            }
+
+            const totalCount = (plans ? plans.length : 0) + (holidayName ? 1 : 0);
+            tooltip.innerHTML = `
+                <div class="calendar-tooltip-header">
+                    <span><i class="fa-regular fa-calendar-check"></i> ${dateISO} (週${dayOfWeekStr})</span>
+                    <span style="font-size: 0.68rem; color: #94a3b8;">${totalCount} 項事件</span>
+                </div>
+                <div>${itemsHTML}</div>
+                <div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.15); font-size: 0.66rem; color: #94a3b8; text-align: right;">
+                    💡 滑鼠按住可拖曳調整日期、點擊可編輯
+                </div>
+            `;
+
+            tooltip.classList.add('active');
+            positionCalendarTooltip(e);
+        }
+
+        function positionCalendarTooltip(e) {
+            const tooltip = document.getElementById('calendarGlobalTooltip');
+            if (!tooltip || !tooltip.classList.contains('active')) return;
+
+            const padding = 12;
+            const tooltipW = tooltip.offsetWidth || 260;
+            const tooltipH = tooltip.offsetHeight || 120;
+
+            let left = e.clientX + 14;
+            let top = e.clientY + 14;
+
+            if (left + tooltipW > window.innerWidth - padding) {
+                left = e.clientX - tooltipW - 12;
+            }
+            if (top + tooltipH > window.innerHeight - padding) {
+                top = e.clientY - tooltipH - 12;
+            }
+
+            tooltip.style.left = `${Math.max(padding, left)}px`;
+            tooltip.style.top = `${Math.max(padding, top)}px`;
+        }
+
+        function hideCalendarTooltip() {
+            const tooltip = document.getElementById('calendarGlobalTooltip');
+            if (tooltip) {
+                tooltip.classList.remove('active');
+            }
+        }
+
         function renderCalendar() {
             const container = document.getElementById('calendar-days-container');
             if (!container) return;
@@ -2769,48 +2959,70 @@
 
                 if (isWeekend) cell.classList.add('is-weekend');
 
-                let dateHeaderHTML = `<div class="calendar-date-num"><span>${day}</span>`;
-                if (isWeekend) dateHeaderHTML += `<small style="font-size:0.65rem; color: var(--rose); font-weight:700;">${dayOfWeek===0?'日':'六'}</small>`;
-                dateHeaderHTML += `</div>`;
-
-                let eventsHTML = '';
-                if (holidayMap[dateISO]) {
-                    eventsHTML += `<div class="event-badge event-holiday" title="${holidayMap[dateISO]}">🚩 ${holidayMap[dateISO]}</div>`;
-                }
-
+                // 找出當天所有假日與休假
+                const holidayName = holidayMap[dateISO] || null;
+                const dayPlans = [];
                 appState.leavePlans.forEach(plan => {
                     if (dateISO >= plan.startDate && dateISO <= plan.endDate) {
-                        const deduct = getPlanActualDeduction(plan);
-                        const manualTag = deduct.isManual ? ' [手動]' : '';
-                        let typeIcon = '🏖️';
-                        let typeClass = 'event-vacation';
-                        let typeText = `${plan.title.substring(0,6)}${manualTag}`;
-                        if (plan.type === 'wfh') {
-                            typeIcon = '🏡';
-                            typeClass = 'event-wfh';
-                            typeText = 'WFH';
-                        } else if (plan.type === 'sick') {
-                            typeIcon = '🏥';
-                            typeClass = 'event-sick';
-                            typeText = '病假';
-                        }
-
-                        eventsHTML += `
-                            <div class="event-badge ${typeClass} is-draggable" 
-                                 draggable="true" 
-                                 data-plan-id="${plan.id}" 
-                                 data-source-date="${dateISO}"
-                                 ondragstart="handleBadgeDragStart(event, '${plan.id}', '${dateISO}')"
-                                 ondragend="handleBadgeDragEnd(event)"
-                                 onclick="event.stopPropagation(); openEditLeaveModal('${plan.id}')"
-                                 title="滑鼠按住拖曳可調整日期 / 點擊可編輯內容：${plan.title} (${deduct.hours}h)">
-                                ${typeIcon} ${typeText}
-                            </div>
-                        `;
+                        dayPlans.push(plan);
                     }
                 });
 
-                cell.innerHTML = dateHeaderHTML + `<div>${eventsHTML}</div>`;
+                const totalEvents = (holidayName ? 1 : 0) + dayPlans.length;
+
+                let dateHeaderHTML = `<div class="calendar-date-num">`;
+                dateHeaderHTML += `<span>${day}`;
+                if (isWeekend) dateHeaderHTML += ` <small style="font-size:0.62rem; color: var(--rose); font-weight:700;">${dayOfWeek===0?'日':'六'}</small>`;
+                dateHeaderHTML += `</span>`;
+                if (totalEvents > 1) {
+                    dateHeaderHTML += `<span class="more-events-badge" title="此日共有 ${totalEvents} 項假勤/節日，滑鼠移入查看完整明細">+${totalEvents - 1}</span>`;
+                }
+                dateHeaderHTML += `</div>`;
+
+                let eventsHTML = '';
+                if (holidayName) {
+                    eventsHTML += `<div class="event-badge event-holiday">🚩 ${holidayName}</div>`;
+                }
+
+                dayPlans.forEach(plan => {
+                    const deduct = getPlanActualDeduction(plan);
+                    const manualTag = deduct.isManual ? ' [手動]' : '';
+                    let typeIcon = '🏖️';
+                    let typeClass = 'event-vacation';
+                    let typeText = `${plan.title.substring(0,6)}${manualTag}`;
+                    if (plan.type === 'wfh') {
+                        typeIcon = '🏡';
+                        typeClass = 'event-wfh';
+                        typeText = 'WFH';
+                    } else if (plan.type === 'sick') {
+                        typeIcon = '🏥';
+                        typeClass = 'event-sick';
+                        typeText = '病假';
+                    }
+
+                    eventsHTML += `
+                        <div class="event-badge ${typeClass} is-draggable" 
+                             draggable="true" 
+                             data-plan-id="${plan.id}" 
+                             data-source-date="${dateISO}"
+                             ondragstart="handleBadgeDragStart(event, '${plan.id}', '${dateISO}')"
+                             ondragend="handleBadgeDragEnd(event)"
+                             onclick="event.stopPropagation(); openEditLeaveModal('${plan.id}')">
+                            ${typeIcon} ${typeText}
+                        </div>
+                    `;
+                });
+
+                // 超出內容以 wrap 容器包裹，overflow: hidden 截斷
+                cell.innerHTML = dateHeaderHTML + `<div class="calendar-events-wrap">${eventsHTML}</div>`;
+
+                // 綁定 Hover 顯示完整資訊
+                if (totalEvents > 0) {
+                    cell.onmouseenter = (e) => showCalendarTooltip(e, dateISO, holidayName, dayPlans);
+                    cell.onmousemove = (e) => positionCalendarTooltip(e);
+                    cell.onmouseleave = () => hideCalendarTooltip();
+                }
+
                 container.appendChild(cell);
             }
         }
