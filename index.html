@@ -932,7 +932,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.1 莫蘭迪</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.2 莫蘭迪</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1226,7 +1226,7 @@
 
                     <div class="form-group">
                         <label class="form-label">排定事項與目的地</label>
-                        <input type="text" id="leaveTitle" class="form-control" placeholder="例如：重慶 7 天 6 夜自由行、居家辦公" required>
+                        <input type="text" id="leaveTitle" class="form-control" placeholder="例如: 居家辦公/身體不適/調休/旅行" required>
                     </div>
 
                     <div class="form-row">
@@ -1237,6 +1237,98 @@
                         <div class="form-group">
                             <label class="form-label">結束日期</label>
                             <input type="date" id="endDate" class="form-control" required onchange="handleDateRangeChange()">
+                        </div>
+                    </div>
+
+                    <!-- 24 小時制起訖時間設定 (時、分分開獨立設定) -->
+                    <div class="form-group" style="background: var(--bg-card-subtle); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: -4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                            <label class="form-label" style="margin-bottom: 0; font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-regular fa-clock" style="color: var(--primary);"></i> 請假／辦公時間 (24 小時制)
+                            </label>
+                            <div style="display: flex; gap: 5px;">
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 600;" onclick="setTimePreset('full')" title="09:00 ~ 18:00 (整天 8 小時)">整天 (8h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 600;" onclick="setTimePreset('morning')" title="09:00 ~ 13:00 (上午 4 小時)">上午 (4h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 600;" onclick="setTimePreset('afternoon')" title="14:00 ~ 18:00 (下午 4 小時)">下午 (4h)</button>
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-bottom: 0;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">開始時間 (時 : 分)</span>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <select id="startHour" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                                        <option value="00">00 時</option>
+                                        <option value="01">01 時</option>
+                                        <option value="02">02 時</option>
+                                        <option value="03">03 時</option>
+                                        <option value="04">04 時</option>
+                                        <option value="05">05 時</option>
+                                        <option value="06">06 時</option>
+                                        <option value="07">07 時</option>
+                                        <option value="08">08 時</option>
+                                        <option value="09" selected>09 時</option>
+                                        <option value="10">10 時</option>
+                                        <option value="11">11 時</option>
+                                        <option value="12">12 時</option>
+                                        <option value="13">13 時</option>
+                                        <option value="14">14 時</option>
+                                        <option value="15">15 時</option>
+                                        <option value="16">16 時</option>
+                                        <option value="17">17 時</option>
+                                        <option value="18">18 時</option>
+                                        <option value="19">19 時</option>
+                                        <option value="20">20 時</option>
+                                        <option value="21">21 時</option>
+                                        <option value="22">22 時</option>
+                                        <option value="23">23 時</option>
+                                    </select>
+                                    <span style="font-weight: 700; color: var(--text-sub);">:</span>
+                                    <select id="startMinute" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                                        <option value="00" selected>00 分</option>
+                                        <option value="15">15 分</option>
+                                        <option value="30">30 分</option>
+                                        <option value="45">45 分</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">結束時間 (時 : 分)</span>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <select id="endHour" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                                        <option value="00">00 時</option>
+                                        <option value="01">01 時</option>
+                                        <option value="02">02 時</option>
+                                        <option value="03">03 時</option>
+                                        <option value="04">04 時</option>
+                                        <option value="05">05 時</option>
+                                        <option value="06">06 時</option>
+                                        <option value="07">07 時</option>
+                                        <option value="08">08 時</option>
+                                        <option value="09">09 時</option>
+                                        <option value="10">10 時</option>
+                                        <option value="11">11 時</option>
+                                        <option value="12">12 時</option>
+                                        <option value="13">13 時</option>
+                                        <option value="14">14 時</option>
+                                        <option value="15">15 時</option>
+                                        <option value="16">16 時</option>
+                                        <option value="17">17 時</option>
+                                        <option value="18" selected>18 時</option>
+                                        <option value="19">19 時</option>
+                                        <option value="20">20 時</option>
+                                        <option value="21">21 時</option>
+                                        <option value="22">22 時</option>
+                                        <option value="23">23 時</option>
+                                    </select>
+                                    <span style="font-weight: 700; color: var(--text-sub);">:</span>
+                                    <select id="endMinute" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                                        <option value="00" selected>00 分</option>
+                                        <option value="15">15 分</option>
+                                        <option value="30">30 分</option>
+                                        <option value="45">45 分</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1740,6 +1832,8 @@
                 title: '居家 (遠距辦公)',
                 startDate: '2026-10-16',
                 endDate: '2026-10-16',
+                startTime: '09:00',
+                endTime: '18:00',
                 type: 'wfh',
                 notes: '地點：家中',
                 manualAdjustment: false,
@@ -1751,6 +1845,8 @@
                 title: '重慶自由行 7天6夜 🇨🇳',
                 startDate: '2026-10-23',
                 endDate: '2026-10-29',
+                startTime: '09:00',
+                endTime: '18:00',
                 type: 'vacation',
                 notes: '中國重慶 / 地點：解放碑與朝天門',
                 manualAdjustment: false,
@@ -1762,6 +1858,8 @@
                 title: '居家 (遠距辦公)',
                 startDate: '2026-10-30',
                 endDate: '2026-10-30',
+                startTime: '09:00',
+                endTime: '18:00',
                 type: 'wfh',
                 notes: '地點：家中',
                 manualAdjustment: false,
@@ -1773,8 +1871,10 @@
                 title: '排休',
                 startDate: '2026-11-20',
                 endDate: '2026-11-20',
+                startTime: '09:00',
+                endTime: '13:00',
                 type: 'vacation',
-                notes: '個人排休',
+                notes: '個人排休 (半天 4 小時)',
                 manualAdjustment: true,
                 manualHours: 4,
                 completed: false
@@ -1784,6 +1884,8 @@
                 title: '東京自由行 6天5夜 🇯🇵',
                 startDate: '2026-12-18',
                 endDate: '2026-12-23',
+                startTime: '09:00',
+                endTime: '18:00',
                 type: 'vacation',
                 notes: '日本東京自由行',
                 manualAdjustment: false,
@@ -2006,13 +2108,40 @@
             };
         }
 
-        // 取得單筆假勤的實際扣除時數與天數 (支援手動調整覆寫)
+        // 計算 24 小時制起訖時間的有效工作時數
+        function calculateDurationHours(startTime, endTime) {
+            if (!startTime || !endTime) return 8;
+            const [sH, sM] = startTime.split(':').map(Number);
+            const [eH, eM] = endTime.split(':').map(Number);
+            if (isNaN(sH) || isNaN(eH)) return 8;
+            const startDecimal = sH + (sM || 0) / 60;
+            const endDecimal = eH + (eM || 0) / 60;
+            if (endDecimal <= startDecimal) return 0;
+            let diff = endDecimal - startDecimal;
+            // 若涵蓋完整中午休息時段 12:00~13:00，扣除 1 小時午休
+            if (startDecimal <= 12 && endDecimal >= 13) {
+                diff = Math.max(0, diff - 1);
+            }
+            return Math.min(8, Math.round(diff * 2) / 2);
+        }
+
+        // 取得單筆假勤的實際扣除時數與天數 (支援時間區間與手動調整覆寫)
         function getPlanActualDeduction(plan) {
             const calc = calculateLeaveDaysAndHours(plan.startDate, plan.endDate);
             if (plan.manualAdjustment && plan.manualHours !== undefined && plan.manualHours !== null && !isNaN(Number(plan.manualHours))) {
                 const hours = Number(plan.manualHours);
                 return {
                     isManual: true,
+                    hours: hours,
+                    days: Number((hours / 8).toFixed(2)),
+                    calc: calc
+                };
+            }
+            // 若為單日且有設定起訖時間，自動依據時間差換算
+            if (plan.startDate === plan.endDate && plan.startTime && plan.endTime && calc.actualWorkingDays > 0) {
+                const hours = calculateDurationHours(plan.startTime, plan.endTime);
+                return {
+                    isManual: false,
                     hours: hours,
                     days: Number((hours / 8).toFixed(2)),
                     calc: calc
@@ -2405,7 +2534,10 @@
                         ${isExpired ? `<span style="font-size: 0.68rem; color: var(--text-muted); background: var(--bg-card-subtle); padding: 1px 4px; border-radius: 3px; margin-left: 4px;">已過期</span>` : ''}
                         ${plan.notes ? `<div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 1px;">${plan.notes}</div>` : ''}
                     </td>
-                    <td style="white-space: nowrap; font-size: 0.76rem;"><i class="fa-regular fa-calendar" style="color: var(--primary);"></i> ${plan.startDate} ~ ${plan.endDate}</td>
+                    <td style="white-space: nowrap; font-size: 0.76rem;">
+                        <div><i class="fa-regular fa-calendar" style="color: var(--primary);"></i> ${plan.startDate} ~ ${plan.endDate}</div>
+                        ${(plan.startTime && plan.endTime) ? `<div style="font-size: 0.69rem; color: var(--text-muted); margin-top: 2px;"><i class="fa-regular fa-clock"></i> ${plan.startTime} ~ ${plan.endTime}</div>` : ''}
+                    </td>
                     <td>${typeBadge}</td>
                     <td style="white-space: nowrap;"><strong style="color: var(--primary); font-size: 0.8rem;">${deduct.days}天 (${deduct.hours}h)</strong></td>
                     <td style="text-align: right; white-space: nowrap;">
@@ -2535,6 +2667,31 @@
             backdropMouseDownTarget = null;
         }
 
+        // 快捷時間設定 (整天 8h / 上午 4h / 下午 4h)
+        function setTimePreset(type) {
+            const sH = document.getElementById('startHour');
+            const sM = document.getElementById('startMinute');
+            const eH = document.getElementById('endHour');
+            const eM = document.getElementById('endMinute');
+            if (!sH || !sM || !eH || !eM) return;
+            if (type === 'full') {
+                sH.value = '09'; sM.value = '00';
+                eH.value = '18'; eM.value = '00';
+            } else if (type === 'morning') {
+                sH.value = '09'; sM.value = '00';
+                eH.value = '13'; eM.value = '00';
+            } else if (type === 'afternoon') {
+                sH.value = '14'; sM.value = '00';
+                eH.value = '18'; eM.value = '00';
+            }
+            handleDateRangeChange();
+        }
+
+        // 時間下拉選單變更事件
+        function handleTimeChange() {
+            handleDateRangeChange();
+        }
+
         // 當排假視窗中的開始或結束日期變動時，即時觸發區間分析
         function handleDateRangeChange() {
             const startEl = document.getElementById('startDate');
@@ -2556,10 +2713,28 @@
 
             const calc = calculateLeaveDaysAndHours(startVal, endVal);
             
+            // 讀取當前設定之 24 小時制起訖時間
+            const sH = document.getElementById('startHour')?.value || '09';
+            const sM = document.getElementById('startMinute')?.value || '00';
+            const eH = document.getElementById('endHour')?.value || '18';
+            const eM = document.getElementById('endMinute')?.value || '00';
+            const startTime = `${sH}:${sM}`;
+            const endTime = `${eH}:${eM}`;
+
+            let suggestedHours = calc.hoursNeeded;
+            let suggestedDays = calc.actualWorkingDays;
+
+            // 若為單日工作日請假，依時間區間計算實際扣除時數
+            if (startVal === endVal && calc.actualWorkingDays > 0) {
+                const timeHours = calculateDurationHours(startTime, endTime);
+                suggestedHours = timeHours;
+                suggestedDays = Number((timeHours / 8).toFixed(2));
+            }
+
             document.getElementById('analyzerTotalDays').innerText = `${calc.totalCalendarDays} 天`;
             document.getElementById('analyzerWeekendDays').innerText = `${calc.weekendDays} 天`;
             document.getElementById('analyzerHolidayDays').innerText = `${calc.nationalHolidayDays} 天`;
-            document.getElementById('analyzerSuggestedDays').innerText = `${calc.actualWorkingDays} 天 (${calc.hoursNeeded}h)`;
+            document.getElementById('analyzerSuggestedDays').innerText = `${suggestedDays} 天 (${suggestedHours}h)`;
 
             const holidayNoteEl = document.getElementById('analyzerHolidaysNote');
             if (calc.holidayDetails.length > 0) {
@@ -2571,8 +2746,8 @@
 
             const isManualChecked = document.getElementById('enableManualAdjustment').checked;
             if (!isManualChecked) {
-                document.getElementById('manualDeductHours').value = calc.hoursNeeded;
-                updateManualDaysPreview(calc.hoursNeeded);
+                document.getElementById('manualDeductHours').value = suggestedHours;
+                updateManualDaysPreview(suggestedHours);
             }
         }
 
@@ -2610,9 +2785,18 @@
                 document.getElementById('leaveId').value = '';
                 
                 const yearToUse = targetYear ? Number(targetYear) : selectedYear;
-                const defaultDate = yearToUse === 2027 ? '2027-01-01' : '2026-10-23';
+                const now = new Date();
+                const todayISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                const defaultDate = (yearToUse === 2027) ? '2027-01-01' : (todayISO.startsWith(String(yearToUse)) ? todayISO : `${yearToUse}-01-01`);
+                
                 document.getElementById('startDate').value = defaultDate;
                 document.getElementById('endDate').value = defaultDate;
+
+                // 預設 24 小時制時間 09:00 ~ 18:00 (整天)
+                if (document.getElementById('startHour')) document.getElementById('startHour').value = '09';
+                if (document.getElementById('startMinute')) document.getElementById('startMinute').value = '00';
+                if (document.getElementById('endHour')) document.getElementById('endHour').value = '18';
+                if (document.getElementById('endMinute')) document.getElementById('endMinute').value = '00';
 
                 document.getElementById('enableManualAdjustment').checked = false;
                 toggleManualAdjustment(false);
@@ -2641,6 +2825,16 @@
                 document.getElementById('leaveType').value = plan.type || 'vacation';
                 document.getElementById('leaveNotes').value = plan.notes || '';
 
+                // 還原 24 小時制時間設定
+                const sTime = plan.startTime || '09:00';
+                const eTime = plan.endTime || '18:00';
+                const sParts = sTime.split(':');
+                const eParts = eTime.split(':');
+                if (document.getElementById('startHour')) document.getElementById('startHour').value = sParts[0] || '09';
+                if (document.getElementById('startMinute')) document.getElementById('startMinute').value = sParts[1] || '00';
+                if (document.getElementById('endHour')) document.getElementById('endHour').value = eParts[0] || '18';
+                if (document.getElementById('endMinute')) document.getElementById('endMinute').value = eParts[1] || '00';
+
                 handleDateRangeChange();
 
                 const isManual = !!plan.manualAdjustment;
@@ -2652,7 +2846,7 @@
                 }
 
                 const modalTitle = document.getElementById('modalTitle');
-                if (modalTitle) modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> 編輯假勤排定 (支援手動調整時數)`;
+                if (modalTitle) modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> 編輯假勤排定 (支援時間與時數調整)`;
                 
                 const modal = document.getElementById('leaveModal');
                 if (modal) modal.classList.add('active');
@@ -2676,6 +2870,14 @@
             const type = document.getElementById('leaveType').value;
             const notes = document.getElementById('leaveNotes').value;
 
+            // 讀取 24 小時制起訖時間
+            const sH = document.getElementById('startHour')?.value || '09';
+            const sM = document.getElementById('startMinute')?.value || '00';
+            const eH = document.getElementById('endHour')?.value || '18';
+            const eM = document.getElementById('endMinute')?.value || '00';
+            const startTime = `${sH}:${sM}`;
+            const endTime = `${eH}:${eM}`;
+
             const isManual = document.getElementById('enableManualAdjustment').checked;
             const manualHours = isManual ? Number(document.getElementById('manualDeductHours').value) : null;
 
@@ -2684,6 +2886,7 @@
                 if (idx !== -1) {
                     appState.leavePlans[idx] = { 
                         id: leaveId, title, startDate, endDate, type, notes,
+                        startTime, endTime,
                         manualAdjustment: isManual,
                         manualHours: isManual ? manualHours : null,
                         completed: !!appState.leavePlans[idx].completed
@@ -2699,6 +2902,7 @@
                 const newId = 'plan-' + Date.now();
                 appState.leavePlans.push({ 
                     id: newId, title, startDate, endDate, type, notes,
+                    startTime, endTime,
                     manualAdjustment: isManual,
                     manualHours: isManual ? manualHours : null
                 });
@@ -2712,8 +2916,8 @@
                         pnr: '',
                         outboundDate1: startDate,
                         outboundFlight1: '',
-                        outboundDepTime1: '09:00',
-                        outboundArrTime1: '12:00',
+                        outboundDepTime1: startTime,
+                        outboundArrTime1: endTime,
                         inboundDate1: endDate,
                         inboundFlight1: '',
                         inboundDepTime1: '14:00',
