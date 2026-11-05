@@ -650,13 +650,13 @@
         .modal-dialog {
             background: white;
             border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-md);
             width: 100%;
-            max-width: 640px;
-            max-height: 88vh;
+            max-width: 580px;
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.28);
             position: relative;
             overflow: hidden;
         }
@@ -670,7 +670,7 @@
         }
 
         .modal-header {
-            padding: 20px 24px;
+            padding: 9px 12px;
             background: white;
             border-bottom: 1px solid var(--border-light);
             display: flex;
@@ -681,25 +681,25 @@
         }
 
         .modal-title { 
-            font-size: 1.15rem; 
+            font-size: 0.92rem; 
             font-weight: 800; 
             color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
         }
 
         .modal-close-btn { 
             background: var(--bg-card-subtle);
             border: 1px solid var(--border-light);
-            width: 36px;
-            height: 36px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-sub); 
-            font-size: 1rem; 
+            font-size: 0.78rem; 
             cursor: pointer; 
             transition: var(--transition);
         }
@@ -711,109 +711,109 @@
         }
 
         .modal-body {
-            padding: 24px;
+            padding: 10px 12px;
             overflow-y: auto !important;
             flex: 1;
             min-height: 0;
         }
 
         .modal-footer {
-            padding: 16px 24px;
+            padding: 8px 12px;
             background: var(--bg-card-subtle);
             border-top: 1px solid var(--border-light);
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
+            gap: 8px;
             z-index: 10;
             flex-shrink: 0;
         }
 
-        .form-group { margin-bottom: 16px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .form-label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-sub); margin-bottom: 6px; }
+        .form-group { margin-bottom: 7px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .form-label { display: block; font-size: 0.76rem; font-weight: 700; color: var(--text-sub); margin-bottom: 2px; }
         .form-control {
             width: 100%;
-            padding: 10px 14px;
+            padding: 5px 8px;
             background: white;
             border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
             color: var(--text-main);
             outline: none;
             transition: var(--transition);
         }
         .form-control:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            box-shadow: 0 0 0 2px var(--primary-light);
         }
 
-        /* 智慧區間判定提示卡 */
+        /* 智慧區間判定提示卡 (比照主頁面緊湊排版) */
         .range-analyzer-box {
             background: #f8fafc;
             border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 16px;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 7px;
         }
 
         .range-analyzer-title {
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 800;
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
+            gap: 5px;
+            margin-bottom: 5px;
         }
 
         .range-metrics-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+            gap: 6px;
             text-align: center;
             background: white;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
             border: 1px solid var(--border-light);
         }
 
-        .metric-item { display: flex; flex-direction: column; gap: 2px; }
-        .metric-label { font-size: 0.72rem; color: var(--text-sub); font-weight: 700; }
-        .metric-val { font-size: 1.05rem; font-weight: 800; color: var(--text-main); }
+        .metric-item { display: flex; flex-direction: column; gap: 1px; }
+        .metric-label { font-size: 0.68rem; color: var(--text-sub); font-weight: 700; }
+        .metric-val { font-size: 0.92rem; font-weight: 800; color: var(--text-main); }
         .metric-val.highlight { color: var(--primary); }
 
         .manual-adjust-box {
-            margin-top: 12px;
-            padding-top: 12px;
+            margin-top: 6px;
+            padding-top: 6px;
             border-top: 1px dashed var(--border-light);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 8px;
         }
 
         /* 假期試算小幫手專屬樣式 */
         .calc-tab-bar {
             display: flex;
-            gap: 10px;
-            border-bottom: 2px solid var(--border-light);
-            margin-bottom: 20px;
+            gap: 6px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 10px;
         }
 
         .calc-tab-btn {
-            padding: 10px 18px;
-            font-size: 0.92rem;
+            padding: 6px 12px;
+            font-size: 0.82rem;
             font-weight: 800;
             color: var(--text-sub);
             background: transparent;
             border: none;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .calc-tab-btn:hover {
@@ -824,34 +824,34 @@
             color: var(--primary);
             border-bottom-color: var(--primary);
             background: rgba(90, 110, 127, 0.08);
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
         }
 
         .quick-strategies-box {
             background: var(--bg-card-subtle);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-md);
-            padding: 12px 14px;
-            margin-bottom: 14px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
         }
 
         .quick-strategy-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 6px;
+            margin-top: 6px;
         }
 
         .quick-strategy-chip {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
+            gap: 4px;
+            padding: 3px 8px;
             background: white;
             border: 1px solid var(--border-light);
-            border-radius: 16px;
-            font-size: 0.8rem;
+            border-radius: 12px;
+            font-size: 0.74rem;
             font-weight: 700;
             color: var(--text-main);
             cursor: pointer;
@@ -879,40 +879,40 @@
             background: var(--bg-card-subtle);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-md);
-            padding: 14px;
-            margin-top: 14px;
+            padding: 8px 10px;
+            margin-top: 8px;
         }
 
         .calc-stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 14px;
+            gap: 6px;
+            margin-bottom: 7px;
         }
 
         .calc-stat-card {
             background: white;
             border: 1px solid var(--border-light);
-            border-radius: 10px;
-            padding: 12px 14px;
+            border-radius: 6px;
+            padding: 6px 8px;
             text-align: center;
         }
 
         .calc-stat-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: var(--text-sub);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .calc-stat-val {
-            font-size: 1.35rem;
+            font-size: 1.1rem;
             font-weight: 900;
             color: var(--text-main);
         }
 
         .calc-stat-sub {
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             margin-top: 2px;
         }
@@ -958,7 +958,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.4</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.5</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1265,22 +1265,22 @@
                     </div>
 
                     <!-- 24 小時制起訖時間設定 (時、分分開獨立設定) -->
-                    <div class="form-group" style="background: var(--bg-card-subtle); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: -4px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                            <label class="form-label" style="margin-bottom: 0; font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                    <div class="form-group" style="background: var(--bg-card-subtle); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-top: -2px; margin-bottom: 7px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-wrap: wrap; gap: 4px;">
+                            <label class="form-label" style="margin-bottom: 0; font-size: 0.78rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
                                 <i class="fa-regular fa-clock" style="color: var(--primary);"></i> 請假／辦公時間 (24 小時制)
                             </label>
-                            <div style="display: flex; gap: 5px;">
-                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 600;" onclick="setTimePreset('full')" title="09:00 ~ 18:00 (整天 8 小時)">整天 (8h)</button>
-                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 600;" onclick="setTimePreset('morning')" title="09:00 ~ 13:00 (上午 4 小時)">上午 (4h)</button>
-                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 600;" onclick="setTimePreset('afternoon')" title="14:00 ~ 18:00 (下午 4 小時)">下午 (4h)</button>
+                            <div style="display: flex; gap: 4px;">
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 600;" onclick="setTimePreset('full')" title="09:00 ~ 18:00 (整天 8 小時)">整天 (8h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 600;" onclick="setTimePreset('morning')" title="09:00 ~ 13:00 (上午 4 小時)">上午 (4h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 600;" onclick="setTimePreset('afternoon')" title="14:00 ~ 18:00 (下午 4 小時)">下午 (4h)</button>
                             </div>
                         </div>
                         <div class="form-row" style="margin-bottom: 0;">
                             <div class="form-group" style="margin-bottom: 0;">
-                                <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">開始時間 (時 : 分)</span>
-                                <div style="display: flex; align-items: center; gap: 4px;">
-                                    <select id="startHour" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                                <span style="font-size: 0.72rem; color: var(--text-sub); display: block; margin-bottom: 2px;">開始時間 (時 : 分)</span>
+                                <div style="display: flex; align-items: center; gap: 3px;">
+                                    <select id="startHour" class="form-control" style="padding: 4px 2px; text-align: center; font-size: 0.82rem;" onchange="handleTimeChange()">
                                         <option value="00">00 時</option>
                                         <option value="01">01 時</option>
                                         <option value="02">02 時</option>
@@ -1345,7 +1345,7 @@
                                         <option value="23">23 時</option>
                                     </select>
                                     <span style="font-weight: 700; color: var(--text-sub);">:</span>
-                                    <select id="endMinute" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                                    <select id="endMinute" class="form-control" style="padding: 4px 2px; text-align: center; font-size: 0.82rem;" onchange="handleTimeChange()">
                                         <option value="00" selected>00 分</option>
                                         <option value="15">15 分</option>
                                         <option value="30">30 分</option>
@@ -1411,8 +1411,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddLeaveModal()">取消</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> 儲存假勤排定</button>
+                    <button type="button" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.78rem;" onclick="closeAddLeaveModal()">取消</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 3px 10px; font-size: 0.78rem;"><i class="fa-solid fa-check"></i> 儲存假勤排定</button>
                 </div>
             </form>
         </div>
@@ -1420,78 +1420,78 @@
 
     <!-- Modal 2: Yearly Leave Asset Setup (設定 2026/2027 年度總額度) -->
     <div class="modal-backdrop" id="yearlyAssetModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'yearlyAssetModal')">
-        <div class="modal-dialog" style="max-width: 580px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
+        <div class="modal-dialog" style="max-width: 540px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
             <div class="modal-header" style="background: linear-gradient(135deg, var(--primary), #74889b); color: white;">
-                <div class="modal-title" style="color: white; font-weight: 800;">設定年度假勤總額度 (2026 / 2027)</div>
-                <button type="button" class="modal-close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeYearlyAssetModal()"><i class="fa-solid fa-xmark"></i></button>
+                <div class="modal-title" style="color: white; font-weight: 800; font-size: 0.92rem;"><i class="fa-solid fa-gear"></i> 設定年度假勤總額度 (2026 / 2027)</div>
+                <button type="button" class="modal-close-btn" style="color: white; background: rgba(255,255,255,0.2); border: none;" onclick="closeYearlyAssetModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <form id="yearlyAssetForm" onsubmit="handleSaveYearlyAssets(event)">
                 <div class="modal-body">
-                    <div class="form-group" style="background: var(--primary-light); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
-                        <label class="form-label" style="color: var(--primary-dark); font-weight: 800; font-size: 0.95rem; margin-bottom: 6px;">
+                    <div class="form-group" style="background: var(--primary-light); padding: 7px 10px; border-radius: 6px; margin-bottom: 7px;">
+                        <label class="form-label" style="color: var(--primary-dark); font-weight: 800; font-size: 0.82rem; margin-bottom: 3px;">
                             <i class="fa-solid fa-calendar"></i> 選擇設定年份
                         </label>
-                        <select id="assetYearSelect" class="form-control" style="font-weight: 700; font-size: 1rem; background: #ffffff;" onchange="loadYearlyAssetToEditor(this.value)">
+                        <select id="assetYearSelect" class="form-control" style="font-weight: 700; font-size: 0.85rem; background: #ffffff; padding: 4px 8px;" onchange="loadYearlyAssetToEditor(this.value)">
                             <option value="2027">2027 年 (明年新假期與總額度)</option>
                             <option value="2026">2026 年 (當前年度)</option>
                             <option value="2028">2028 年 (未來年度)</option>
                         </select>
                     </div>
 
-                    <div id="sec-asset-vacation" style="background: #fff7ed; padding: 14px; border-radius: 10px; margin-bottom: 14px; border: 1px solid var(--vacation-border);">
-                        <strong style="color: var(--vacation-color); font-size: 0.95rem; display: block; margin-bottom: 8px;">🏖️ 特休 (年休假) 總額度設定</strong>
+                    <div id="sec-asset-vacation" style="background: #fff7ed; padding: 7px 10px; border-radius: 6px; margin-bottom: 7px; border: 1px solid var(--vacation-border);">
+                        <strong style="color: var(--vacation-color); font-size: 0.82rem; display: block; margin-bottom: 4px;">🏖️ 特休 (年休假) 總額度設定</strong>
                         <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 4px;">
                                 <label class="form-label">特休總額度 (小時)</label>
                                 <input type="number" id="editAssetVacationTotal" class="form-control" placeholder="200" required>
-                                <span style="font-size: 0.75rem; color: var(--text-sub);">如：24天=192h / 25天=200h</span>
+                                <span style="font-size: 0.7rem; color: var(--text-sub);">如：24天=192h / 25天=200h</span>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 4px;">
                                 <label class="form-label">原始已扣除基準 (小時)</label>
                                 <input type="number" id="editAssetVacationUsedBase" class="form-control" placeholder="0">
                             </div>
                         </div>
-                        <div class="form-row" style="margin-top: 6px;">
-                            <div class="form-group">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div class="form-row" style="margin-top: 3px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
                                     <label class="form-label" style="margin-bottom: 0;">結轉舊假額度 (小時)</label>
-                                    <button type="button" class="btn btn-secondary" id="btnImport2026Rem" style="padding: 2px 8px; font-size: 0.72rem; border-color: var(--vacation-border); background: white; color: var(--vacation-color); font-weight: 700;" onclick="import2026RemainingToOldLeave()" title="依據 2026 剩餘特休時數自動帶入">
+                                    <button type="button" class="btn btn-secondary" id="btnImport2026Rem" style="padding: 1px 6px; font-size: 0.69rem; border-color: var(--vacation-border); background: white; color: var(--vacation-color); font-weight: 700;" onclick="import2026RemainingToOldLeave()" title="依據 2026 剩餘特休時數自動帶入">
                                         <i class="fa-solid fa-file-import"></i> 匯入 2026 剩餘舊假 (<span id="preview2026RemHours">0</span>h)
                                     </button>
                                 </div>
                                 <input type="number" id="editAssetVacationOldRem" class="form-control" placeholder="40">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">舊假到期日期</label>
                                 <input type="date" id="editAssetVacationOldExpiry" class="form-control">
                             </div>
                         </div>
                     </div>
 
-                    <div id="sec-asset-sick" style="background: var(--sick-bg); padding: 14px; border-radius: 10px; margin-bottom: 14px; border: 1px solid var(--sick-border);">
-                        <strong style="color: var(--sick-text); font-size: 0.95rem; display: block; margin-bottom: 8px;">💊 全薪病假總額度設定</strong>
+                    <div id="sec-asset-sick" style="background: var(--sick-bg); padding: 7px 10px; border-radius: 6px; margin-bottom: 7px; border: 1px solid var(--sick-border);">
+                        <strong style="color: var(--sick-text); font-size: 0.82rem; display: block; margin-bottom: 4px;">💊 全薪病假總額度設定</strong>
                         <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">全薪病假總額度 (小時)</label>
                                 <input type="number" id="editAssetSickTotal" class="form-control" placeholder="80" required>
-                                <span style="font-size: 0.75rem; color: var(--text-sub);">如：10天=80h</span>
+                                <span style="font-size: 0.7rem; color: var(--text-sub);">如：10天=80h</span>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">年度已使用基準 (小時)</label>
                                 <input type="number" id="editAssetSickUsed" class="form-control" placeholder="0">
                             </div>
                         </div>
                     </div>
 
-                    <div id="sec-asset-wfh" style="background: var(--wfh-bg); padding: 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--wfh-border);">
-                        <strong style="color: var(--wfh-text); font-size: 0.95rem; display: block; margin-bottom: 8px;">🏠 遠距辦公 (WFH) 額度設定</strong>
+                    <div id="sec-asset-wfh" style="background: var(--wfh-bg); padding: 7px 10px; border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--wfh-border);">
+                        <strong style="color: var(--wfh-text); font-size: 0.82rem; display: block; margin-bottom: 4px;">🏠 遠距辦公 (WFH) 額度設定</strong>
                         <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">每月 WFH 上限 (天)</label>
                                 <input type="number" id="editAssetWfhMonthly" class="form-control" placeholder="2" required>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">年度 WFH 總上限 (小時)</label>
                                 <input type="number" id="editAssetWfhYearly" class="form-control" placeholder="48">
                             </div>
@@ -1500,10 +1500,10 @@
                 </div>
 
                 <div class="modal-footer" style="justify-content: space-between;">
-                    <button type="button" class="btn btn-secondary" onclick="preset2027Assets()"><i class="fa-solid fa-wand-magic-sparkles"></i> 一鍵帶入 2027 明年建議資深假勤</button>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn btn-secondary" onclick="closeYearlyAssetModal()">取消</button>
-                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> 儲存年度假期設定</button>
+                    <button type="button" class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.74rem;" onclick="preset2027Assets()"><i class="fa-solid fa-wand-magic-sparkles"></i> 一鍵帶入 2027 建議資深假勤</button>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.76rem;" onclick="closeYearlyAssetModal()">取消</button>
+                        <button type="submit" class="btn btn-primary" style="padding: 3px 10px; font-size: 0.76rem;"><i class="fa-solid fa-check"></i> 儲存年度假期設定</button>
                     </div>
                 </div>
             </form>
@@ -1549,7 +1549,7 @@
                     </div>
 
                     <!-- Custom Range Form -->
-                    <div style="background: white; border: 1px solid var(--border-light); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+                    <div style="background: white; border: 1px solid var(--border-light); border-radius: 6px; padding: 7px 10px; margin-bottom: 7px;">
                         <div class="form-row">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">試算開始日期</label>
@@ -1560,7 +1560,7 @@
                                 <input type="date" id="calcEndDate" class="form-control" onchange="handleCalcEndDateChange()" oninput="handleCalcEndDateChange()">
                             </div>
                         </div>
-                        <div class="form-row" style="margin-top: 12px;">
+                        <div class="form-row" style="margin-top: 5px;">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">試算假勤類別</label>
                                 <select id="calcLeaveType" class="form-control" onchange="runLeaveSimulation()">
@@ -1578,9 +1578,9 @@
 
                     <!-- Simulation Result Metrics Card -->
                     <div class="calc-result-box" id="calcResultContainer">
-                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
                             <span><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> 試算結果分析</span>
-                            <span id="calcSummaryBadge" class="stat-badge badge-vacation" style="white-space: nowrap;">請 3 天 連休 9 天</span>
+                            <span id="calcSummaryBadge" class="stat-badge badge-vacation" style="white-space: nowrap; font-size: 0.72rem; padding: 2px 7px;">請 3 天 連休 9 天</span>
                         </div>
 
                         <div class="calc-stats-grid">
@@ -1602,22 +1602,22 @@
                         </div>
 
                         <!-- Holidays Encountered Note -->
-                        <div id="calcHolidaysNote" style="font-size: 0.8rem; font-weight: 700; color: var(--holiday-text); background: var(--holiday-bg); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--holiday-border);">
+                        <div id="calcHolidaysNote" style="font-size: 0.74rem; font-weight: 700; color: var(--holiday-text); background: var(--holiday-bg); padding: 5px 8px; border-radius: 4px; margin-bottom: 6px; border: 1px solid var(--holiday-border);">
                             💡 期間包含國定假日：農曆除夕、春節初一
                         </div>
 
                         <!-- Quota Impact Comparison -->
-                        <div class="balance-impact-card">
-                            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
-                                <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-sub);">
+                        <div class="balance-impact-card" style="padding: 6px 10px; border-radius: 6px;">
+                            <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
+                                <div style="font-size: 0.74rem; font-weight: 700; color: var(--text-sub);">
                                     假勤額度衝擊評估 (<span id="calcImpactYearLabel">2026</span> 年度)
                                 </div>
-                                <div style="font-size: 0.95rem; font-weight: 800; color: var(--text-main);" id="calcImpactDetails">
-                                    當前特休剩餘 104h ➔ 請假後預計剩餘 <span style="color: var(--vacation-color); font-size: 1.15rem;">80h</span> (10.0 天)
+                                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main);" id="calcImpactDetails">
+                                    當前特休剩餘 104h ➔ 請假後預計剩餘 <span style="color: var(--vacation-color); font-size: 1rem;">80h</span> (10.0 天)
                                 </div>
                             </div>
                             <div id="calcQuotaHealthBadge" style="flex-shrink: 0; white-space: nowrap;">
-                                <span class="stat-badge badge-vacation" style="font-size: 0.85rem; padding: 6px 12px; white-space: nowrap;">額度充裕 (剩餘 42%)</span>
+                                <span class="stat-badge badge-vacation" style="font-size: 0.76rem; padding: 3px 8px; white-space: nowrap;">額度充裕 (剩餘 42%)</span>
                             </div>
                         </div>
                     </div>
@@ -1625,7 +1625,7 @@
 
                 <!-- Tab 2: Tenure Calculator (勞基法特休年資試算) -->
                 <div id="calc-tab-tenure-content" style="display: none;">
-                    <div style="background: white; border: 1px solid var(--border-light); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                    <div style="background: white; border: 1px solid var(--border-light); border-radius: 6px; padding: 7px 10px; margin-bottom: 7px;">
                         <div class="form-row">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label"><i class="fa-solid fa-briefcase"></i> 到職受僱日期 (Onboard Date)</label>
@@ -1643,57 +1643,57 @@
 
                     <!-- Tenure Calculation Results Cards -->
                     <div class="calc-result-box" style="margin-top: 0;">
-                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
                             <span><i class="fa-solid fa-id-badge"></i> 勞基法第 38 條特休法定天數試算結果</span>
-                            <span id="tenureDurationText" style="font-size: 0.82rem; font-weight: 800; color: var(--text-main);">目前累計年資：3 年 3 個月</span>
+                            <span id="tenureDurationText" style="font-size: 0.76rem; font-weight: 800; color: var(--text-main);">目前累計年資：3 年 3 個月</span>
                         </div>
 
-                        <div class="form-row" style="gap: 12px; margin-bottom: 14px;">
+                        <div class="form-row" style="gap: 8px; margin-bottom: 7px;">
                             <!-- 2026 Year Stat -->
-                            <div style="background: white; border: 1px solid #fed7aa; border-radius: 10px; padding: 14px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="background: white; border: 1px solid #fed7aa; border-radius: 6px; padding: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
                                 <div>
-                                    <div style="font-size: 0.78rem; font-weight: 800; color: var(--vacation-text);">📅 2026 年度依法特休</div>
-                                    <div style="font-size: 1.6rem; font-weight: 900; color: var(--vacation-color); margin: 6px 0;" id="tenure2026DaysVal">14 天</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-sub);" id="tenure2026HoursVal">相當於 112 小時 (8h/天)</div>
+                                    <div style="font-size: 0.74rem; font-weight: 800; color: var(--vacation-text);">📅 2026 年度依法特休</div>
+                                    <div style="font-size: 1.3rem; font-weight: 900; color: var(--vacation-color); margin: 3px 0;" id="tenure2026DaysVal">14 天</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-sub);" id="tenure2026HoursVal">相當於 112 小時 (8h/天)</div>
                                 </div>
-                                <button type="button" class="btn btn-secondary" style="font-size: 0.75rem; padding: 6px 10px; margin-top: 10px; border-color: #fdba74;" onclick="applyTenureToYearly(2026)">
+                                <button type="button" class="btn btn-secondary" style="font-size: 0.7rem; padding: 3px 8px; margin-top: 6px; border-color: #fdba74;" onclick="applyTenureToYearly(2026)">
                                     <i class="fa-solid fa-check"></i> 套用至 2026 特休額度
                                 </button>
                             </div>
 
                             <!-- 2027 Year Stat -->
-                            <div style="background: white; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="background: white; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
                                 <div>
-                                    <div style="font-size: 0.78rem; font-weight: 800; color: var(--wfh-text);">✨ 2027 年度依法特休</div>
-                                    <div style="font-size: 1.6rem; font-weight: 900; color: var(--primary); margin: 6px 0;" id="tenure2027DaysVal">14 天</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-sub);" id="tenure2027HoursVal">相當於 112 小時 (8h/天)</div>
+                                    <div style="font-size: 0.74rem; font-weight: 800; color: var(--wfh-text);">✨ 2027 年度依法特休</div>
+                                    <div style="font-size: 1.3rem; font-weight: 900; color: var(--primary); margin: 3px 0;" id="tenure2027DaysVal">14 天</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-sub);" id="tenure2027HoursVal">相當於 112 小時 (8h/天)</div>
                                 </div>
-                                <button type="button" class="btn btn-secondary" style="font-size: 0.75rem; padding: 6px 10px; margin-top: 10px; border-color: #93c5fd;" onclick="applyTenureToYearly(2027)">
+                                <button type="button" class="btn btn-secondary" style="font-size: 0.7rem; padding: 3px 8px; margin-top: 6px; border-color: #93c5fd;" onclick="applyTenureToYearly(2027)">
                                     <i class="fa-solid fa-check"></i> 套用至 2027 特休額度
                                 </button>
                             </div>
                         </div>
 
                         <!-- Labor Law Rules Table Reference -->
-                        <div style="background: white; border: 1px solid var(--border-light); border-radius: 8px; padding: 12px;">
-                            <div style="font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin-bottom: 8px;">
+                        <div style="background: white; border: 1px solid var(--border-light); border-radius: 6px; padding: 7px 10px;">
+                            <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-sub); margin-bottom: 5px;">
                                 📋 臺灣勞動基準法第 38 條特休給假標準對照
                             </div>
-                            <table class="tenure-table">
+                            <table class="tenure-table" style="font-size: 0.74rem;">
                                 <thead>
                                     <tr>
-                                        <th>受僱年資級距</th>
-                                        <th>特休天數</th>
-                                        <th>換算時數 (8h/天)</th>
+                                        <th style="padding: 3px 6px;">受僱年資級距</th>
+                                        <th style="padding: 3px 6px;">特休天數</th>
+                                        <th style="padding: 3px 6px;">換算時數 (8h/天)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>滿 6 個月 ~ 未滿 1 年</td><td><strong>3 日</strong></td><td>24 小時</td></tr>
-                                    <tr><td>滿 1 年 ~ 未滿 2 年</td><td><strong>7 日</strong></td><td>56 小時</td></tr>
-                                    <tr><td>滿 2 年 ~ 未滿 3 年</td><td><strong>10 日</strong></td><td>80 小時</td></tr>
-                                    <tr><td>滿 3 年 ~ 未滿 5 年</td><td><strong>14 日</strong> / 年</td><td>112 小時 / 年</td></tr>
-                                    <tr><td>滿 5 年 ~ 未滿 10 年</td><td><strong>15 日</strong> / 年</td><td>120 小時 / 年</td></tr>
-                                    <tr><td>滿 10 年以上</td><td>每滿 1 年 <strong>+1 日</strong> (上限 30 日)</td><td>最高 240 小時</td></tr>
+                                    <tr><td style="padding: 3px 6px;">滿 6 個月 ~ 未滿 1 年</td><td style="padding: 3px 6px;"><strong>3 日</strong></td><td style="padding: 3px 6px;">24 小時</td></tr>
+                                    <tr><td style="padding: 3px 6px;">滿 1 年 ~ 未滿 2 年</td><td style="padding: 3px 6px;"><strong>7 日</strong></td><td style="padding: 3px 6px;">56 小時</td></tr>
+                                    <tr><td style="padding: 3px 6px;">滿 2 年 ~ 未滿 3 年</td><td style="padding: 3px 6px;"><strong>10 日</strong></td><td style="padding: 3px 6px;">80 小時</td></tr>
+                                    <tr><td style="padding: 3px 6px;">滿 3 年 ~ 未滿 5 年</td><td style="padding: 3px 6px;"><strong>14 日</strong> / 年</td><td style="padding: 3px 6px;">112 小時 / 年</td></tr>
+                                    <tr><td style="padding: 3px 6px;">滿 5 年 ~ 未滿 10 年</td><td style="padding: 3px 6px;"><strong>15 日</strong> / 年</td><td style="padding: 3px 6px;">120 小時 / 年</td></tr>
+                                    <tr><td style="padding: 3px 6px;">滿 10 年以上</td><td style="padding: 3px 6px;">每滿 1 年 <strong>+1 日</strong> (上限 30 日)</td><td style="padding: 3px 6px;">最高 240 小時</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1702,8 +1702,8 @@
             </div>
 
             <div class="modal-footer" style="justify-content: space-between;">
-                <button type="button" class="btn btn-secondary" onclick="closeLeaveCalculatorModal()">關閉試算</button>
-                <button type="button" class="btn btn-primary" id="calcAdoptBtn" onclick="adoptSimulationToLeave()">
+                <button type="button" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.76rem;" onclick="closeLeaveCalculatorModal()">關閉試算</button>
+                <button type="button" class="btn btn-primary" id="calcAdoptBtn" style="padding: 3px 10px; font-size: 0.76rem;" onclick="adoptSimulationToLeave()">
                     <i class="fa-solid fa-calendar-plus"></i> 直接採用並排入假勤清單 ➔
                 </button>
             </div>
@@ -1712,7 +1712,7 @@
 
     <!-- Modal 4: Export Leave Summary Image (匯出假勤資產結算圖卡) -->
     <div class="modal-backdrop" id="exportImageModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'exportImageModal')">
-        <div class="modal-dialog" style="max-width: 720px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
+        <div class="modal-dialog" style="max-width: 680px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <div class="modal-title">
                     <i class="fa-solid fa-camera-retro" style="color: var(--primary);"></i> 📸 匯出個人假勤資產結算圖卡
@@ -1720,42 +1720,42 @@
                 <button type="button" class="modal-close-btn" onclick="closeExportImageModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div class="modal-body" style="padding: 20px;">
+            <div class="modal-body" style="padding: 10px 12px;">
                 <!-- 控制面板：年度切換、主單位切換 -->
-                <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 0.86rem; font-weight: 700; color: var(--text-main);">圖卡年度：</span>
+                <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: 6px; padding: 7px 10px; margin-bottom: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-main);">圖卡年度：</span>
                         <div class="year-switcher" style="background: white; border: 1px solid var(--border-light);">
-                            <button type="button" class="year-switcher-btn active" id="export-year-2026" onclick="setExportImageYear(2026)" style="padding: 4px 12px; font-size: 0.8rem;">2026</button>
-                            <button type="button" class="year-switcher-btn" id="export-year-2027" onclick="setExportImageYear(2027)" style="padding: 4px 12px; font-size: 0.8rem;">2027</button>
+                            <button type="button" class="year-switcher-btn active" id="export-year-2026" onclick="setExportImageYear(2026)" style="padding: 2px 8px; font-size: 0.75rem;">2026</button>
+                            <button type="button" class="year-switcher-btn" id="export-year-2027" onclick="setExportImageYear(2027)" style="padding: 2px 8px; font-size: 0.75rem;">2027</button>
                         </div>
                     </div>
 
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 0.86rem; font-weight: 700; color: var(--text-main);">主顯示單位：</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-main);">主顯示單位：</span>
                         <div class="toggle-unit" style="background: white; border: 1px solid var(--border-light);">
-                            <button type="button" class="toggle-btn active" id="export-unit-days" onclick="setExportImageUnit('days')" style="padding: 4px 12px; font-size: 0.8rem;">以「天數」為主</button>
-                            <button type="button" class="toggle-btn" id="export-unit-hours" onclick="setExportImageUnit('hours')" style="padding: 4px 12px; font-size: 0.8rem;">以「小時」為主</button>
+                            <button type="button" class="toggle-btn active" id="export-unit-days" onclick="setExportImageUnit('days')" style="padding: 2px 8px; font-size: 0.75rem;">以「天數」為主</button>
+                            <button type="button" class="toggle-btn" id="export-unit-hours" onclick="setExportImageUnit('hours')" style="padding: 2px 8px; font-size: 0.75rem;">以「小時」為主</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 圖卡即時預覽區 (簡約淺色風格) -->
-                <div style="text-align: center; background: #f1f5f9; border: 1px solid var(--border-light); padding: 18px; border-radius: 12px; overflow-x: auto; max-height: 520px; overflow-y: auto;">
-                    <img id="exportImagePreview" alt="假勤資產結算圖卡預覽" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: inline-block;">
+                <div style="text-align: center; background: #f1f5f9; border: 1px solid var(--border-light); padding: 10px; border-radius: 6px; overflow-x: auto; max-height: 480px; overflow-y: auto;">
+                    <img id="exportImagePreview" alt="假勤資產結算圖卡預覽" style="max-width: 100%; height: auto; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: inline-block;">
                 </div>
-                <div style="font-size: 0.78rem; color: var(--text-sub); text-align: center; margin-top: 8px;">
+                <div style="font-size: 0.72rem; color: var(--text-sub); text-align: center; margin-top: 6px;">
                     💡 提示：本圖卡以高畫質渲染 (Retina 2x)，手機長按圖片或點下方按鈕即可快速儲存或複製！
                 </div>
             </div>
 
             <div class="modal-footer" style="justify-content: space-between;">
-                <button type="button" class="btn btn-secondary" onclick="closeExportImageModal()">關閉</button>
-                <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn btn-secondary" id="copyImgBtn" onclick="copyLeaveSummaryImage()" style="border-color: #c7d2fe; color: #4338ca; background: #eef2ff;">
+                <button type="button" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.76rem;" onclick="closeExportImageModal()">關閉</button>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn btn-secondary" id="copyImgBtn" onclick="copyLeaveSummaryImage()" style="border-color: #c7d2fe; color: #4338ca; background: #eef2ff; padding: 3px 8px; font-size: 0.76rem;">
                         <i class="fa-regular fa-copy"></i> 複製圖片至剪貼簿
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="downloadLeaveSummaryImage()">
+                    <button type="button" class="btn btn-primary" onclick="downloadLeaveSummaryImage()" style="padding: 3px 10px; font-size: 0.76rem;">
                         <i class="fa-solid fa-download"></i> 💾 下載 PNG 圖檔
                     </button>
                 </div>
