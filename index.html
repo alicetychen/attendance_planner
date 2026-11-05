@@ -80,22 +80,30 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+            position: relative;
+            width: 100%;
+        }
+
         body {
             background-color: var(--bg-body);
             color: var(--text-main);
             min-height: 100vh;
             padding: 8px 12px; /* 緊實精緻的全域邊距 (參照圖三風格) */
             margin: 0;
-            width: 100%;
             display: flex;
             justify-content: center;
             font-size: 12px;
         }
 
-        /* 寬度與視窗切齊並依據視窗縮放大小進行彈性自適應調整 */
+        /* 寬度與視窗切齊並依據視窗縮放大小進行彈性自適應調整，徹底杜絕水平溢出與空白邊 */
         .app-container {
             width: 100%;
             max-width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -239,6 +247,8 @@
             display: grid;
             grid-template-columns: repeat(12, 1fr);
             gap: 8px; /* 間距縮小 */
+            width: 100%;
+            min-width: 0;
         }
 
         .col-4 { grid-column: span 4; }
@@ -258,6 +268,10 @@
             flex-direction: column;
             gap: 5px;
             transition: var(--transition);
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .card-header {
@@ -396,17 +410,19 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* 左右對照看板雙欄結構 (參照圖二形式) */
+        /* 左右對照看板雙欄結構 (參照圖二形式，使用 minmax(0, ...) 杜絕內容撐爆外層寬度) */
         .dual-dashboard-grid {
             display: grid;
-            grid-template-columns: 1.05fr 0.95fr; /* 左右並排對照 */
+            grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); /* 左右並排對照 */
             gap: 8px;
             align-items: stretch;
+            width: 100%;
+            min-width: 0;
         }
 
         @media (max-width: 1024px) {
             .dual-dashboard-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
@@ -419,6 +435,10 @@
             display: flex;
             flex-direction: column;
             min-height: 440px;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .pane-header {
@@ -428,6 +448,7 @@
             margin-bottom: 6px;
             padding-bottom: 6px;
             border-bottom: 1px solid var(--border-light);
+            gap: 6px;
         }
 
         .pane-title {
@@ -445,6 +466,10 @@
             overflow-y: auto;
             max-height: 420px;
             padding-right: 2px;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
         }
 
         /* 細緻捲軸樣式 (參照圖二與圖三) */
@@ -464,14 +489,20 @@
             background: #9c9588;
         }
 
-        /* 表格微型化樣式 */
+        /* 表格微型化樣式：嚴格限制在容器內橫向滾動，絕不撐開外層頁面 */
         .table-container {
             background: var(--bg-card);
             overflow-x: auto;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
         }
 
         table {
             width: 100%;
+            min-width: 480px; /* 保證欄位可讀性，在容器內平滑水平滾動 */
             border-collapse: collapse;
             text-align: left;
             font-size: 0.78rem;
@@ -1025,6 +1056,295 @@
             font-weight: 800;
             color: var(--text-sub);
         }
+
+        /* ========================================================
+           手機端與窄螢幕最佳化 (徹底消除水平溢出與右側多餘空白邊)
+           ======================================================== */
+        .year-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .unit-toggle-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 6px;
+            padding-left: 12px;
+            border-left: 2px solid var(--border-light);
+        }
+
+        .year-bar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* 平板與手機版適配 (<= 768px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 6px 8px;
+            }
+
+            .app-container {
+                gap: 6px;
+            }
+
+            /* 導覽列堆疊與按鈕全寬/二分 */
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 10px;
+                gap: 8px;
+            }
+
+            .brand-logo {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .brand-title {
+                font-size: 0.98rem;
+            }
+
+            .nav-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 5px;
+            }
+
+            .nav-actions .btn {
+                padding: 5px 6px;
+                font-size: 0.74rem;
+                justify-content: center;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .nav-actions .btn-primary {
+                grid-column: span 2;
+                padding: 7px 10px;
+                font-size: 0.82rem;
+            }
+
+            /* 年度檢視與單位切換 Bar */
+            .year-bar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 10px;
+                gap: 8px;
+            }
+
+            .year-bar-left {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+                width: 100%;
+            }
+
+            .year-bar-title {
+                font-size: 0.84rem;
+            }
+
+            .year-switcher {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .year-switcher-btn {
+                text-align: center;
+                padding: 5px 4px;
+                font-size: 0.74rem;
+                white-space: nowrap;
+            }
+
+            .unit-toggle-wrapper {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+                width: 100%;
+                justify-content: space-between;
+                padding-top: 5px;
+                border-top: 1px dashed var(--border-light);
+            }
+
+            .year-bar-right {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+                padding-top: 5px;
+                border-top: 1px dashed var(--border-light);
+            }
+
+            .year-bar-right .btn {
+                justify-content: center;
+                text-align: center;
+                padding: 5px 4px;
+                font-size: 0.74rem;
+                white-space: nowrap;
+            }
+
+            /* 日曆看板標題與切換列：完美拆成兩排，徹底避免標題文字被折斷破版 */
+            .calendar-pane-card {
+                padding: 8px 8px;
+            }
+
+            .calendar-pane-header {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 6px !important;
+            }
+
+            .calendar-pane-header .pane-title {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                font-size: 0.84rem;
+            }
+
+            .calendar-title-text {
+                font-weight: 800;
+                white-space: nowrap;
+            }
+
+            .drag-hint-badge {
+                font-size: 0.68rem !important;
+                background: var(--bg-card-subtle);
+                padding: 1px 6px;
+                border-radius: 4px;
+            }
+
+            .calendar-nav-controls {
+                width: 100% !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                background: var(--bg-card-subtle);
+                padding: 3px 6px;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            .calendar-nav-controls #calendar-month-label {
+                font-size: 0.82rem !important;
+                flex: 1;
+                text-align: center;
+            }
+
+            .calendar-nav-controls .btn {
+                padding: 4px 8px !important;
+                font-size: 0.74rem !important;
+            }
+
+            /* 日曆格子在手機上等高自適應 */
+            .calendar-grid {
+                gap: 3px;
+            }
+
+            .calendar-cell {
+                height: 54px !important;
+                min-height: 54px !important;
+                max-height: 54px !important;
+                padding: 1px 2px !important;
+            }
+
+            .calendar-date-num {
+                font-size: 0.68rem !important;
+            }
+
+            .calendar-weekday {
+                font-size: 0.68rem !important;
+                padding: 2px 0 !important;
+            }
+
+            .event-badge {
+                font-size: 0.58rem !important;
+                padding: 0 2px !important;
+                line-height: 1.2 !important;
+                border-radius: 2px !important;
+            }
+
+            /* 清單看板在手機端 */
+            .records-pane-card {
+                padding: 8px 8px;
+            }
+
+            .records-pane-header {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .mobile-table-hint {
+                display: inline-flex !important;
+            }
+
+            .records-scroll-container {
+                max-height: 380px;
+            }
+
+            /* 彈窗在手機端全螢幕適配 */
+            .modal-backdrop {
+                padding: 8px !important;
+            }
+
+            .modal-dialog {
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 94vh !important;
+                border-radius: 8px !important;
+            }
+
+            .modal-body {
+                padding: 10px 12px !important;
+            }
+
+            .form-row {
+                flex-direction: column !important;
+                gap: 6px !important;
+            }
+
+            .form-group {
+                margin-bottom: 6px !important;
+            }
+
+            .modal-footer {
+                padding: 8px 12px !important;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* 針對更窄螢幕手機 (<= 420px，如 iPhone SE / 小型 Android) */
+        @media (max-width: 420px) {
+            body {
+                padding: 4px 5px;
+            }
+
+            .stat-main {
+                font-size: 1.6rem;
+            }
+
+            .calendar-cell {
+                height: 50px !important;
+                min-height: 50px !important;
+                max-height: 50px !important;
+            }
+
+            .calendar-title-text {
+                font-size: 0.78rem;
+            }
+
+            .drag-hint-badge {
+                display: none; /* 極窄螢幕隱藏拖曳提示文字，留給標題充足空間 */
+            }
+        }
     </style>
 </head>
 <body>
@@ -1037,7 +1357,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.6</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.7</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1061,8 +1381,8 @@
 
         <!-- Year & Unit Selector Bar (上方的 Bar 顯示年度與小時/天數切換) -->
         <div class="year-bar">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+            <div class="year-bar-left">
+                <span class="year-bar-title" style="font-weight: 800; font-size: 0.92rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i> 假勤檢視年度：
                 </span>
                 <div class="year-switcher">
@@ -1070,7 +1390,7 @@
                     <button class="year-switcher-btn" id="year-btn-2027" onclick="switchSelectedYear(2027)">✨ 2027 明年假期 (新增設定)</button>
                 </div>
                 <!-- 同步小時與天數的切換移至上方的 bar 顯示 -->
-                <div style="display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; padding-left: 12px; border-left: 2px solid var(--border-light);">
+                <div class="unit-toggle-wrapper">
                     <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-sub); display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> 數值單位：
                     </span>
@@ -1080,7 +1400,7 @@
                     </div>
                 </div>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <div class="year-bar-right">
                 <button class="btn btn-secondary" style="font-size: 0.82rem; padding: 4px 10px; border-color: #e8d1d6; background: #f8edf0; color: #8a4956; font-weight: 700;" onclick="openExportImageModal()" title="匯出高畫質假勤資產結算圖卡 (PNG)，掌握剩餘天數與時數">
                     <i class="fa-solid fa-camera"></i> 📸 匯出假勤圖卡 (PNG)
                 </button>
@@ -1239,14 +1559,14 @@
         <div class="dual-dashboard-grid">
             
             <!-- 左欄：每月休假與 2026~2027 國定假日行事曆 -->
-            <div class="pane-card">
-                <div class="pane-header">
+            <div class="pane-card calendar-pane-card">
+                <div class="pane-header calendar-pane-header">
                     <div class="pane-title">
                         <i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i>
-                        每月休假與國定假日行事曆
-                        <span style="font-size: 0.72rem; color: var(--text-sub); font-weight: normal; margin-left: 6px;"><i class="fa-solid fa-arrows-up-down-left-right" style="color: var(--primary);"></i> 可直接拖曳調整日期</span>
+                        <span class="calendar-title-text">每月休假與國定假日行事曆</span>
+                        <span class="drag-hint-badge" style="font-size: 0.72rem; color: var(--text-sub); font-weight: normal; margin-left: 6px;"><i class="fa-solid fa-arrows-up-down-left-right" style="color: var(--primary);"></i> 可拖曳調整日期</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 5px;">
+                    <div class="calendar-nav-controls" style="display: flex; align-items: center; gap: 5px;">
                         <button class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.74rem;" onclick="changeMonth(-1)" title="上一月"><i class="fa-solid fa-chevron-left"></i></button>
                         <span id="calendar-month-label" style="font-weight: 800; font-size: 0.85rem; color: var(--text-main); min-width: 95px; text-align: center;">2026 年 11 月</span>
                         <button class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.74rem;" onclick="changeMonth(1)" title="下一月"><i class="fa-solid fa-chevron-right"></i></button>
@@ -1269,14 +1589,15 @@
             </div>
 
             <!-- 右欄：假勤排定清單 (左右對照，帶有細緻滾動條與隱藏已過期選項) -->
-            <div class="pane-card">
-                <div class="pane-header">
+            <div class="pane-card records-pane-card">
+                <div class="pane-header records-pane-header">
                     <div class="pane-title">
                         <i class="fa-solid fa-list-check" style="color: var(--primary);"></i>
                         假勤排定清單
                         <span id="records-count-badge" style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 1px 6px; border-radius: 8px;">0 項</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span class="mobile-table-hint" style="font-size: 0.70rem; color: var(--text-muted); display: none;"><i class="fa-solid fa-arrows-left-right"></i> 表格可滑動</span>
                         <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.74rem; color: var(--text-sub); cursor: pointer; user-select: none;" title="已過期的請假預設不顯示，取消勾選可檢視歷史紀錄">
                             <input type="checkbox" id="chkHideExpired" checked onchange="toggleHideExpired(this.checked)" style="cursor: pointer; accent-color: var(--primary);">
                             <span>隱藏已過期</span>
