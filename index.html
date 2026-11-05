@@ -839,11 +839,12 @@
         }
 
         .form-group { margin-bottom: 7px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .form-label { display: block; font-size: 0.76rem; font-weight: 700; color: var(--text-sub); margin-bottom: 2px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; box-sizing: border-box; }
+        .form-label { display: block; font-size: 0.76rem; font-weight: 700; color: var(--text-sub); margin-bottom: 2px; height: 16px; line-height: 16px; }
         .form-control {
             width: 100%;
-            padding: 5px 8px;
+            height: 32px; /* 統一標準高度，確保同一水平所有框框高低完全齊平 */
+            padding: 4px 8px;
             background: white;
             border: 1px solid var(--border-light);
             border-radius: 6px;
@@ -851,10 +852,85 @@
             color: var(--text-main);
             outline: none;
             transition: var(--transition);
+            box-sizing: border-box;
+            display: block;
+            line-height: 1.35;
         }
         .form-control:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        /* 彈窗中同一水平時間選擇框統一樣式 (時、分平分對稱、高度一致、垂直水平完美齊平) */
+        .time-picker-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .time-picker-col {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .time-picker-label {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 2px;
+            height: 16px;
+            line-height: 16px;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .time-picker-select-group {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            width: 100%;
+            height: 32px;
+            box-sizing: border-box;
+        }
+
+        .time-picker-select {
+            flex: 1;
+            min-width: 0;
+            height: 32px;
+            padding: 4px 2px;
+            text-align: center;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 5px;
+            color: var(--text-main);
+            outline: none;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: var(--transition);
+            display: block;
+        }
+
+        .time-picker-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .time-picker-colon {
+            font-weight: 800;
+            color: var(--text-sub);
+            width: 8px;
+            text-align: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+            line-height: 32px;
+            display: inline-block;
         }
 
         /* 智慧區間判定提示卡 (比照主頁面緊湊排版) */
@@ -879,17 +955,19 @@
         .range-metrics-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
+            gap: 4px;
             text-align: center;
             background: white;
-            padding: 6px 8px;
+            padding: 6px 4px;
             border-radius: 6px;
             border: 1px solid var(--border-light);
+            align-items: center;
+            box-sizing: border-box;
         }
 
-        .metric-item { display: flex; flex-direction: column; gap: 1px; }
-        .metric-label { font-size: 0.68rem; color: var(--text-sub); font-weight: 700; }
-        .metric-val { font-size: 0.92rem; font-weight: 800; color: var(--text-main); }
+        .metric-item { display: flex; flex-direction: column; gap: 2px; align-items: center; justify-content: center; min-width: 0; }
+        .metric-label { font-size: 0.68rem; color: var(--text-sub); font-weight: 700; white-space: nowrap; line-height: 1.1; }
+        .metric-val { font-size: 0.88rem; font-weight: 800; color: var(--text-main); white-space: nowrap; line-height: 1.2; }
         .metric-val.highlight { color: var(--primary); }
 
         .manual-adjust-box {
@@ -1307,8 +1385,10 @@
             }
 
             .form-row {
-                flex-direction: column !important;
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
                 gap: 6px !important;
+                width: 100% !important;
             }
 
             .form-group {
@@ -1357,7 +1437,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.7</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.8</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1664,23 +1744,23 @@
                         </div>
                     </div>
 
-                    <!-- 24 小時制起訖時間設定 (時、分分開獨立設定) -->
-                    <div class="form-group" style="background: var(--bg-card-subtle); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-top: -2px; margin-bottom: 7px;">
+                    <!-- 24 小時制起訖時間設定 (時、分分開獨立設定，左右嚴格鏡像對齊) -->
+                    <div class="form-group" style="background: var(--bg-card-subtle); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-light); margin-top: -2px; margin-bottom: 7px; box-sizing: border-box;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-wrap: wrap; gap: 4px;">
-                            <label class="form-label" style="margin-bottom: 0; font-size: 0.78rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
+                            <label class="form-label" style="margin-bottom: 0; font-size: 0.78rem; font-weight: 700; color: var(--text-main); display: inline-flex; align-items: center; gap: 5px; height: 22px; line-height: 22px;">
                                 <i class="fa-regular fa-clock" style="color: var(--primary);"></i> 請假／辦公時間 (24 小時制)
                             </label>
-                            <div style="display: flex; gap: 4px;">
-                                <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 600;" onclick="setTimePreset('full')" title="09:00 ~ 18:00 (整天 8 小時)">整天 (8h)</button>
-                                <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 600;" onclick="setTimePreset('morning')" title="09:00 ~ 13:00 (上午 4 小時)">上午 (4h)</button>
-                                <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 600;" onclick="setTimePreset('afternoon')" title="14:00 ~ 18:00 (下午 4 小時)">下午 (4h)</button>
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('full')" title="09:00 ~ 18:00 (整天 8 小時)">整天 (8h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('morning')" title="09:00 ~ 13:00 (上午 4 小時)">上午 (4h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('afternoon')" title="14:00 ~ 18:00 (下午 4 小時)">下午 (4h)</button>
                             </div>
                         </div>
-                        <div class="form-row" style="margin-bottom: 0;">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <span style="font-size: 0.72rem; color: var(--text-sub); display: block; margin-bottom: 2px;">開始時間 (時 : 分)</span>
-                                <div style="display: flex; align-items: center; gap: 3px;">
-                                    <select id="startHour" class="form-control" style="padding: 4px 2px; text-align: center; font-size: 0.82rem;" onchange="handleTimeChange()">
+                        <div class="time-picker-grid">
+                            <div class="time-picker-col">
+                                <span class="time-picker-label">開始時間 (時 : 分)</span>
+                                <div class="time-picker-select-group">
+                                    <select id="startHour" class="time-picker-select" onchange="handleTimeChange()">
                                         <option value="00">00 時</option>
                                         <option value="01">01 時</option>
                                         <option value="02">02 時</option>
@@ -1706,8 +1786,8 @@
                                         <option value="22">22 時</option>
                                         <option value="23">23 時</option>
                                     </select>
-                                    <span style="font-weight: 700; color: var(--text-sub);">:</span>
-                                    <select id="startMinute" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                                    <span class="time-picker-colon">:</span>
+                                    <select id="startMinute" class="time-picker-select" onchange="handleTimeChange()">
                                         <option value="00" selected>00 分</option>
                                         <option value="15">15 分</option>
                                         <option value="30">30 分</option>
@@ -1715,10 +1795,10 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">結束時間 (時 : 分)</span>
-                                <div style="display: flex; align-items: center; gap: 4px;">
-                                    <select id="endHour" class="form-control" style="padding: 5px 4px; text-align: center; font-size: 0.85rem;" onchange="handleTimeChange()">
+                            <div class="time-picker-col">
+                                <span class="time-picker-label">結束時間 (時 : 分)</span>
+                                <div class="time-picker-select-group">
+                                    <select id="endHour" class="time-picker-select" onchange="handleTimeChange()">
                                         <option value="00">00 時</option>
                                         <option value="01">01 時</option>
                                         <option value="02">02 時</option>
@@ -1744,8 +1824,8 @@
                                         <option value="22">22 時</option>
                                         <option value="23">23 時</option>
                                     </select>
-                                    <span style="font-weight: 700; color: var(--text-sub);">:</span>
-                                    <select id="endMinute" class="form-control" style="padding: 4px 2px; text-align: center; font-size: 0.82rem;" onchange="handleTimeChange()">
+                                    <span class="time-picker-colon">:</span>
+                                    <select id="endMinute" class="time-picker-select" onchange="handleTimeChange()">
                                         <option value="00" selected>00 分</option>
                                         <option value="15">15 分</option>
                                         <option value="30">30 分</option>
@@ -1840,26 +1920,27 @@
                     </div>
 
                     <div id="sec-asset-vacation" style="background: #fff7ed; padding: 7px 10px; border-radius: 6px; margin-bottom: 7px; border: 1px solid var(--vacation-border);">
-                        <strong style="color: var(--vacation-color); font-size: 0.82rem; display: block; margin-bottom: 4px;">🏖️ 特休 (年休假) 總額度設定</strong>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong style="color: var(--vacation-color); font-size: 0.82rem;">🏖️ 特休 (年休假) 總額度設定</strong>
+                            <button type="button" class="btn btn-secondary" id="btnImport2026Rem" style="padding: 1px 6px; font-size: 0.69rem; border-color: var(--vacation-border); background: white; color: var(--vacation-color); font-weight: 700; height: 22px; line-height: 20px;" onclick="import2026RemainingToOldLeave()" title="依據 2026 剩餘特休時數自動帶入">
+                                <i class="fa-solid fa-file-import"></i> 匯入 2026 剩餘舊假 (<span id="preview2026RemHours">0</span>h)
+                            </button>
+                        </div>
                         <div class="form-row">
                             <div class="form-group" style="margin-bottom: 4px;">
                                 <label class="form-label">特休總額度 (小時)</label>
                                 <input type="number" id="editAssetVacationTotal" class="form-control" placeholder="200" required>
-                                <span style="font-size: 0.7rem; color: var(--text-sub);">如：24天=192h / 25天=200h</span>
+                                <span style="font-size: 0.7rem; color: var(--text-sub); display: block; margin-top: 2px;">如：24天=192h / 25天=200h</span>
                             </div>
                             <div class="form-group" style="margin-bottom: 4px;">
                                 <label class="form-label">原始已扣除基準 (小時)</label>
                                 <input type="number" id="editAssetVacationUsedBase" class="form-control" placeholder="0">
+                                <span style="font-size: 0.7rem; color: transparent; display: block; margin-top: 2px;" aria-hidden="true">對齊佔位</span>
                             </div>
                         </div>
                         <div class="form-row" style="margin-top: 3px;">
                             <div class="form-group" style="margin-bottom: 0;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
-                                    <label class="form-label" style="margin-bottom: 0;">結轉舊假額度 (小時)</label>
-                                    <button type="button" class="btn btn-secondary" id="btnImport2026Rem" style="padding: 1px 6px; font-size: 0.69rem; border-color: var(--vacation-border); background: white; color: var(--vacation-color); font-weight: 700;" onclick="import2026RemainingToOldLeave()" title="依據 2026 剩餘特休時數自動帶入">
-                                        <i class="fa-solid fa-file-import"></i> 匯入 2026 剩餘舊假 (<span id="preview2026RemHours">0</span>h)
-                                    </button>
-                                </div>
+                                <label class="form-label">結轉舊假額度 (小時)</label>
                                 <input type="number" id="editAssetVacationOldRem" class="form-control" placeholder="40">
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
@@ -1875,11 +1956,12 @@
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">全薪病假總額度 (小時)</label>
                                 <input type="number" id="editAssetSickTotal" class="form-control" placeholder="80" required>
-                                <span style="font-size: 0.7rem; color: var(--text-sub);">如：10天=80h</span>
+                                <span style="font-size: 0.7rem; color: var(--text-sub); display: block; margin-top: 2px;">如：10天=80h</span>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label class="form-label">年度已使用基準 (小時)</label>
                                 <input type="number" id="editAssetSickUsed" class="form-control" placeholder="0">
+                                <span style="font-size: 0.7rem; color: transparent; display: block; margin-top: 2px;" aria-hidden="true">對齊佔位</span>
                             </div>
                         </div>
                     </div>
