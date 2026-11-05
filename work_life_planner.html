@@ -932,18 +932,18 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.2 莫蘭迪</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.3</span></div>
                 </div>
             </div>
             <div class="nav-actions">
                 <button class="btn btn-secondary" onclick="openLeaveCalculatorModal()" style="border-color: #cbd7e2; color: #445667; background: #edf2f6; font-weight: 700;">
-                    <i class="fa-solid fa-calculator" style="color: var(--primary);"></i> 🧮 假期試算
+                    <i class="fa-solid fa-calculator" style="color: var(--primary);"></i> 假期試算
                 </button>
                 <button class="btn btn-secondary" onclick="openYearlyAssetModal()" id="navSetAssetBtn">
                     設定年度假勤總額度
                 </button>
                 <a href="work_life_planner_blank.html" class="btn btn-secondary" style="border-color: #c9ded2; color: #385748; background: #edf4f0; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" target="_blank" title="開啟乾淨空白的同事範本版 (方便分享給同事自行規劃)">
-                    <i class="fa-solid fa-share-nodes"></i> 📋 同事空白範本
+                    <i class="fa-solid fa-share-nodes"></i> 同事空白範本
                 </a>
                 <button class="btn btn-secondary" onclick="resetToPreset()">
                     <i class="fa-solid fa-rotate-left"></i> 重置預設
@@ -1175,9 +1175,6 @@
                             <input type="checkbox" id="chkHideExpired" checked onchange="toggleHideExpired(this.checked)" style="cursor: pointer; accent-color: var(--primary);">
                             <span>隱藏已過期</span>
                         </label>
-                        <button class="btn btn-primary" style="font-size: 0.76rem; padding: 3px 8px;" onclick="openAddLeaveModal()">
-                            <i class="fa-solid fa-plus"></i> 排入新假勤
-                        </button>
                     </div>
                 </div>
 
@@ -2117,9 +2114,16 @@
             const startDecimal = sH + (sM || 0) / 60;
             const endDecimal = eH + (eM || 0) / 60;
             if (endDecimal <= startDecimal) return 0;
+
+            // 特殊快捷半天與全天時段精準判定 (避免上午 09:00~13:00 被誤扣午休)
+            if (sH === 9 && sM === 0 && eH === 13 && eM === 0) return 4; // 上午 (4h)
+            if (sH === 14 && sM === 0 && eH === 18 && eM === 0) return 4; // 下午 (4h)
+            if (sH === 13 && sM === 0 && eH === 17 && eM === 0) return 4; // 下午 (4h)
+            if (sH === 9 && sM === 0 && eH === 18 && eM === 0) return 8; // 全天 (8h)
+
             let diff = endDecimal - startDecimal;
-            // 若涵蓋完整中午休息時段 12:00~13:00，扣除 1 小時午休
-            if (startDecimal <= 12 && endDecimal >= 13) {
+            // 只有當跨越中午 (開始早於 12:00 且結束晚於 13:00) 且總時長大於 4 小時時，才視為全天型排班扣除 1 小時午休
+            if (startDecimal < 12 && endDecimal > 13 && diff > 4) {
                 diff = Math.max(0, diff - 1);
             }
             return Math.min(8, Math.round(diff * 2) / 2);
