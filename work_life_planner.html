@@ -582,6 +582,14 @@
             align-items: center;
         }
 
+        .calendar-cell.drag-over {
+            border: 2px dashed var(--primary) !important;
+            background: #edf3f7 !important;
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(90, 110, 127, 0.25);
+            z-index: 2;
+        }
+
         .event-badge {
             font-size: 0.68rem;
             font-weight: 700;
@@ -592,8 +600,26 @@
             text-overflow: ellipsis;
             line-height: 1.25;
         }
-            overflow: hidden;
-            text-overflow: ellipsis;
+
+        .event-badge.is-draggable {
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .event-badge.is-draggable:hover {
+            filter: brightness(0.95);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+        }
+
+        .event-badge.is-draggable:active {
+            cursor: grabbing;
+        }
+
+        .event-badge.dragging {
+            opacity: 0.4;
+            transform: scale(0.94);
         }
 
         .event-holiday { background: var(--holiday-bg); color: var(--holiday-text); border: 1px solid var(--holiday-border); }
@@ -932,7 +958,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.3</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.4</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1139,6 +1165,7 @@
                     <div class="pane-title">
                         <i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i>
                         每月休假與國定假日行事曆
+                        <span style="font-size: 0.72rem; color: var(--text-sub); font-weight: normal; margin-left: 6px;"><i class="fa-solid fa-arrows-up-down-left-right" style="color: var(--primary);"></i> 可直接拖曳調整日期</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 5px;">
                         <button class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.74rem;" onclick="changeMonth(-1)" title="上一月"><i class="fa-solid fa-chevron-left"></i></button>
@@ -2568,6 +2595,133 @@
             renderAll();
         }
 
+        // ==========================================
+        // 日曆假勤卡片拖曳（Drag & Drop）日期調整功能
+        // ==========================================
+        let draggedPlanData = null;
+
+        function handleBadgeDragStart(e, planId, sourceDate) {
+            e.stopPropagation();
+            draggedPlanData = { planId: String(planId), sourceDate: String(sourceDate) };
+            if (e.dataTransfer) {
+                e.dataTransfer.setData('text/plain', JSON.stringify(draggedPlanData));
+                e.dataTransfer.effectAllowed = 'move';
+            }
+            if (e.currentTarget) {
+                e.currentTarget.classList.add('dragging');
+            }
+        }
+
+        function handleBadgeDragEnd(e) {
+            e.stopPropagation();
+            if (e.currentTarget) {
+                e.currentTarget.classList.remove('dragging');
+            }
+            document.querySelectorAll('.calendar-cell.drag-over').forEach(el => el.classList.remove('drag-over'));
+            draggedPlanData = null;
+        }
+
+        function handleCalendarDragOver(e) {
+            e.preventDefault();
+            if (e.dataTransfer) {
+                e.dataTransfer.dropEffect = 'move';
+            }
+        }
+
+        function handleCalendarDragEnter(e) {
+            e.preventDefault();
+            const cell = e.currentTarget;
+            if (cell && cell.dataset && cell.dataset.date) {
+                cell.classList.add('drag-over');
+            }
+        }
+
+        function handleCalendarDragLeave(e) {
+            const cell = e.currentTarget;
+            if (cell && !cell.contains(e.relatedTarget)) {
+                cell.classList.remove('drag-over');
+            }
+        }
+
+        function handleCalendarDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const cell = e.currentTarget;
+            if (cell) cell.classList.remove('drag-over');
+
+            let planId = null;
+            let sourceDate = null;
+
+            if (draggedPlanData) {
+                planId = draggedPlanData.planId;
+                sourceDate = draggedPlanData.sourceDate;
+            } else if (e.dataTransfer) {
+                try {
+                    const raw = e.dataTransfer.getData('text/plain');
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        planId = parsed.planId;
+                        sourceDate = parsed.sourceDate;
+                    }
+                } catch (err) {}
+            }
+
+            if (!planId || !cell || !cell.dataset || !cell.dataset.date) return;
+
+            const targetDate = cell.dataset.date;
+            if (targetDate === sourceDate) return;
+
+            const plan = appState.leavePlans.find(p => String(p.id) === String(planId));
+            if (!plan) return;
+
+            const oldStartDate = plan.startDate;
+            const oldEndDate = plan.endDate;
+
+            if (!oldStartDate || !oldEndDate || oldStartDate === oldEndDate) {
+                // 單日假勤直接調整為目標日期
+                plan.startDate = targetDate;
+                plan.endDate = targetDate;
+            } else {
+                // 多日假期區間整體平移
+                const parseYMD = str => {
+                    const p = str.split('-').map(Number);
+                    return new Date(p[0], p[1] - 1, p[2]);
+                };
+                const formatYMD = d => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${day}`;
+                };
+
+                const sDate = parseYMD(sourceDate);
+                const tDate = parseYMD(targetDate);
+                const diffDays = Math.round((tDate - sDate) / (1000 * 60 * 60 * 24));
+
+                const newStart = parseYMD(oldStartDate);
+                newStart.setDate(newStart.getDate() + diffDays);
+                const newEnd = parseYMD(oldEndDate);
+                newEnd.setDate(newEnd.getDate() + diffDays);
+
+                plan.startDate = formatYMD(newStart);
+                plan.endDate = formatYMD(newEnd);
+            }
+
+            // 同步旅行行程連動日期 (若存在)
+            if (appState.travelPlans && appState.travelPlans[plan.id]) {
+                appState.travelPlans[plan.id].outboundDate1 = plan.startDate;
+                appState.travelPlans[plan.id].inboundDate1 = plan.endDate;
+                appState.travelPlans[plan.id].hotel1In = plan.startDate;
+                appState.travelPlans[plan.id].hotel1Out = plan.endDate;
+            }
+
+            saveToLocalStorage();
+            renderAll();
+
+            const dateDisplay = (plan.startDate === plan.endDate) ? plan.startDate : `${plan.startDate} ~ ${plan.endDate}`;
+            showToast('success', '已成功調整假勤日期！', `「${plan.title}」已移動至 ${dateDisplay}，右側清單與假勤額度已同步連動。`, 2200);
+        }
+
         function renderCalendar() {
             const container = document.getElementById('calendar-days-container');
             if (!container) return;
@@ -2601,6 +2755,13 @@
                 const monthStr = String(month + 1).padStart(2, '0');
                 const dayStr = String(day).padStart(2, '0');
                 const dateISO = `${year}-${monthStr}-${dayStr}`;
+                cell.dataset.date = dateISO;
+
+                // 綁定拖放目標事件
+                cell.ondragover = handleCalendarDragOver;
+                cell.ondragenter = handleCalendarDragEnter;
+                cell.ondragleave = handleCalendarDragLeave;
+                cell.ondrop = handleCalendarDrop;
 
                 const curDate = new Date(year, month, day);
                 const dayOfWeek = curDate.getDay();
@@ -2621,13 +2782,31 @@
                     if (dateISO >= plan.startDate && dateISO <= plan.endDate) {
                         const deduct = getPlanActualDeduction(plan);
                         const manualTag = deduct.isManual ? ' [手動]' : '';
-                        if (plan.type === 'vacation') {
-                            eventsHTML += `<div class="event-badge event-vacation" title="${plan.title} (${deduct.hours}h)">🏖️ ${plan.title.substring(0,6)}${manualTag}</div>`;
-                        } else if (plan.type === 'wfh') {
-                            eventsHTML += `<div class="event-badge event-wfh">🏡 WFH</div>`;
+                        let typeIcon = '🏖️';
+                        let typeClass = 'event-vacation';
+                        let typeText = `${plan.title.substring(0,6)}${manualTag}`;
+                        if (plan.type === 'wfh') {
+                            typeIcon = '🏡';
+                            typeClass = 'event-wfh';
+                            typeText = 'WFH';
                         } else if (plan.type === 'sick') {
-                            eventsHTML += `<div class="event-badge event-sick">🏥 病假</div>`;
+                            typeIcon = '🏥';
+                            typeClass = 'event-sick';
+                            typeText = '病假';
                         }
+
+                        eventsHTML += `
+                            <div class="event-badge ${typeClass} is-draggable" 
+                                 draggable="true" 
+                                 data-plan-id="${plan.id}" 
+                                 data-source-date="${dateISO}"
+                                 ondragstart="handleBadgeDragStart(event, '${plan.id}', '${dateISO}')"
+                                 ondragend="handleBadgeDragEnd(event)"
+                                 onclick="event.stopPropagation(); openEditLeaveModal('${plan.id}')"
+                                 title="滑鼠按住拖曳可調整日期 / 點擊可編輯內容：${plan.title} (${deduct.hours}h)">
+                                ${typeIcon} ${typeText}
+                            </div>
+                        `;
                     }
                 });
 
