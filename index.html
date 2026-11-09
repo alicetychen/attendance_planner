@@ -1437,7 +1437,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.9</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.10</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -3250,13 +3250,13 @@
                 plans.forEach(plan => {
                     const deduct = getPlanActualDeduction(plan);
                     let tagBg = 'var(--vacation-bg)';
-                    let tagText = '🏖️ 特休';
+                    let tagText = '🏖️';
                     if (plan.type === 'wfh') {
                         tagBg = 'var(--wfh-bg)';
-                        tagText = '🏡 遠距';
+                        tagText = '🏡';
                     } else if (plan.type === 'sick') {
                         tagBg = 'var(--sick-bg)';
-                        tagText = '🏥 病假';
+                        tagText = '🏥';
                     }
 
                     const timeSpan = (plan.startTime && plan.endTime) ? ` (${plan.startTime}~${plan.endTime})` : '';
