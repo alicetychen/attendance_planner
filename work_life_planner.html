@@ -1437,7 +1437,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.8</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.9</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1751,9 +1751,10 @@
                                 <i class="fa-regular fa-clock" style="color: var(--primary);"></i> 請假／辦公時間 (24 小時制)
                             </label>
                             <div style="display: flex; gap: 4px; align-items: center;">
-                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('full')" title="09:00 ~ 18:00 (整天 8 小時)">整天 (8h)</button>
-                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('morning')" title="09:00 ~ 13:00 (上午 4 小時)">上午 (4h)</button>
-                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('afternoon')" title="14:00 ~ 18:00 (下午 4 小時)">下午 (4h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('full')" title="07:00 ~ 16:00 (整天 8 小時)">整天 (8h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('morning')" title="07:00 ~ 11:00 (上午 4 小時)">上午 (4h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('morning5')" title="07:00 ~ 12:00 (上午 5 小時)">上午 (5h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('afternoon')" title="12:00 ~ 16:00 (下午 4 小時)">下午 (4h)</button>
                             </div>
                         </div>
                         <div class="time-picker-grid">
@@ -1867,10 +1868,15 @@
                                 <input type="checkbox" id="enableManualAdjustment" onchange="toggleManualAdjustment(this.checked)">
                                 ✍️ 啟用手動調整扣除時數 / 天數 (自由覆寫)
                             </label>
-                            <div id="manualInputContainer" style="display: none; align-items: center; gap: 8px;">
+                            <div id="manualInputContainer" style="display: none; align-items: center; gap: 8px; flex-wrap: wrap;">
                                 <span style="font-size: 0.82rem; font-weight: 700; color: var(--primary);">實際扣除:</span>
-                                <input type="number" id="manualDeductHours" class="form-control" style="width: 100px; padding: 5px 8px; font-size: 0.88rem; font-weight: 800;" step="0.5" min="0" placeholder="時數(h)" oninput="updateManualDaysPreview(this.value)">
+                                <input type="number" id="manualDeductHours" class="form-control" style="width: 85px; padding: 4px 8px; font-size: 0.88rem; font-weight: 800;" step="0.5" min="0" placeholder="時數(h)" oninput="updateManualDaysPreview(this.value)">
                                 <span id="manualDaysPreview" style="font-size: 0.82rem; color: var(--text-sub); font-weight: 700;">(0 天)</span>
+                                <div style="display: inline-flex; gap: 4px; margin-left: 4px;">
+                                    <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.68rem; height: 22px;" onclick="setManualHoursDirectly(4)" title="設定扣除 4 小時 (0.5 天)">設為 4h (半天)</button>
+                                    <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.68rem; height: 22px;" onclick="setManualHoursDirectly(5)" title="設定扣除 5 小時 (如 07:00~12:00)">設為 5h</button>
+                                    <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.68rem; height: 22px;" onclick="setManualHoursDirectly(8)" title="設定扣除 8 小時 (全天)">設為 8h (全天)</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2377,12 +2383,12 @@
                 title: '排休',
                 startDate: '2026-11-20',
                 endDate: '2026-11-20',
-                startTime: '09:00',
-                endTime: '13:00',
+                startTime: '07:00',
+                endTime: '12:00',
                 type: 'vacation',
-                notes: '個人排休 (半天 4 小時)',
-                manualAdjustment: true,
-                manualHours: 4,
+                notes: '個人排休 (7~12 上午半天)',
+                manualAdjustment: false,
+                manualHours: null,
                 completed: false
             },
             {
@@ -2624,15 +2630,22 @@
             const endDecimal = eH + (eM || 0) / 60;
             if (endDecimal <= startDecimal) return 0;
 
-            // 特殊快捷半天與全天時段精準判定 (避免上午 09:00~13:00 被誤扣午休)
+            // 07:00 ~ 16:00 當前上班制時段精準判定
+            if (sH === 7 && sM === 0 && eH === 16 && eM === 0) return 8; // 全天 (8h，跨午休扣1h)
+            if (sH === 7 && sM === 0 && eH === 11 && eM === 0) return 4; // 上午標準半天 (4h)
+            if (sH === 7 && sM === 0 && eH === 12 && eM === 0) return 5; // 上午 07:00~12:00 (5h)
+            if (sH === 12 && sM === 0 && eH === 16 && eM === 0) return 4; // 下午標準半天 (4h)
+            if (sH === 11 && sM === 0 && eH === 16 && eM === 0) return 4; // 下午 (4h，含午休)
+
+            // 09:00 ~ 18:00 時段相容支援
             if (sH === 9 && sM === 0 && eH === 13 && eM === 0) return 4; // 上午 (4h)
             if (sH === 14 && sM === 0 && eH === 18 && eM === 0) return 4; // 下午 (4h)
             if (sH === 13 && sM === 0 && eH === 17 && eM === 0) return 4; // 下午 (4h)
             if (sH === 9 && sM === 0 && eH === 18 && eM === 0) return 8; // 全天 (8h)
 
             let diff = endDecimal - startDecimal;
-            // 只有當跨越中午 (開始早於 12:00 且結束晚於 13:00) 且總時長大於 4 小時時，才視為全天型排班扣除 1 小時午休
-            if (startDecimal < 12 && endDecimal > 13 && diff > 4) {
+            // 只有當跨越中午且總時長大於等於 6 小時時，才視為全天型排班扣除 1 小時午休
+            if (startDecimal <= 12 && endDecimal >= 13 && diff >= 6) {
                 diff = Math.max(0, diff - 1);
             }
             return Math.min(8, Math.round(diff * 2) / 2);
@@ -3389,10 +3402,9 @@
 
                 dayPlans.forEach(plan => {
                     const deduct = getPlanActualDeduction(plan);
-                    const manualTag = deduct.isManual ? ' [手動]' : '';
                     let typeIcon = '🏖️';
                     let typeClass = 'event-vacation';
-                    let typeText = `${plan.title.substring(0,6)}${manualTag}`;
+                    let typeText = plan.title;
                     if (plan.type === 'wfh') {
                         typeIcon = '🏡';
                         typeClass = 'event-wfh';
@@ -3466,6 +3478,20 @@
         }
 
         // 快捷時間設定 (整天 8h / 上午 4h / 下午 4h)
+        // 直接設定手動時數快捷函式
+        function setManualHoursDirectly(hours) {
+            const chk = document.getElementById('enableManualAdjustment');
+            if (chk && !chk.checked) {
+                chk.checked = true;
+                toggleManualAdjustment(true);
+            }
+            const input = document.getElementById('manualDeductHours');
+            if (input) {
+                input.value = hours;
+                updateManualDaysPreview(hours);
+            }
+        }
+
         function setTimePreset(type) {
             const sH = document.getElementById('startHour');
             const sM = document.getElementById('startMinute');
@@ -3473,14 +3499,17 @@
             const eM = document.getElementById('endMinute');
             if (!sH || !sM || !eH || !eM) return;
             if (type === 'full') {
-                sH.value = '09'; sM.value = '00';
-                eH.value = '18'; eM.value = '00';
+                sH.value = '07'; sM.value = '00';
+                eH.value = '16'; eM.value = '00';
             } else if (type === 'morning') {
-                sH.value = '09'; sM.value = '00';
-                eH.value = '13'; eM.value = '00';
+                sH.value = '07'; sM.value = '00';
+                eH.value = '11'; eM.value = '00';
+            } else if (type === 'morning5') {
+                sH.value = '07'; sM.value = '00';
+                eH.value = '12'; eM.value = '00';
             } else if (type === 'afternoon') {
-                sH.value = '14'; sM.value = '00';
-                eH.value = '18'; eM.value = '00';
+                sH.value = '12'; sM.value = '00';
+                eH.value = '16'; eM.value = '00';
             }
             handleDateRangeChange();
         }
@@ -3590,10 +3619,10 @@
                 document.getElementById('startDate').value = defaultDate;
                 document.getElementById('endDate').value = defaultDate;
 
-                // 預設 24 小時制時間 09:00 ~ 18:00 (整天)
-                if (document.getElementById('startHour')) document.getElementById('startHour').value = '09';
+                // 預設 24 小時制時間 07:00 ~ 16:00 (符合當前上班制度整天)
+                if (document.getElementById('startHour')) document.getElementById('startHour').value = '07';
                 if (document.getElementById('startMinute')) document.getElementById('startMinute').value = '00';
-                if (document.getElementById('endHour')) document.getElementById('endHour').value = '18';
+                if (document.getElementById('endHour')) document.getElementById('endHour').value = '16';
                 if (document.getElementById('endMinute')) document.getElementById('endMinute').value = '00';
 
                 document.getElementById('enableManualAdjustment').checked = false;
