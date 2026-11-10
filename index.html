@@ -1009,11 +1009,13 @@
             gap: 6px;
             border-bottom: 1px solid var(--border-light);
             margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .calc-tab-btn {
-            padding: 6px 12px;
-            font-size: 0.82rem;
+            padding: 6px 10px;
+            font-size: 0.80rem;
             font-weight: 800;
             color: var(--text-sub);
             background: transparent;
@@ -1024,7 +1026,10 @@
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 5px;
+            min-width: 0;
+            box-sizing: border-box;
         }
 
         .calc-tab-btn:hover {
@@ -1396,6 +1401,35 @@
                 padding: 8px !important;
             }
 
+            #leaveCalculatorModal .modal-dialog {
+                max-width: 100% !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            #leaveCalculatorModal .calc-tab-bar {
+                gap: 4px !important;
+            }
+
+            #leaveCalculatorModal .calc-tab-btn {
+                padding: 6px 4px !important;
+                font-size: 0.72rem !important;
+                flex: 1 1 0 !important;
+                min-width: 0 !important;
+            }
+
+            #calc-tab-tenure-content .form-row {
+                grid-template-columns: 1fr !important;
+                gap: 6px !important;
+            }
+
+            #calc-tab-tenure-content select.form-control {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                text-overflow: ellipsis !important;
+            }
+
             .modal-dialog {
                 width: 100% !important;
                 max-width: 100% !important;
@@ -1483,7 +1517,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.11</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.12</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1800,6 +1834,7 @@
                                 <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('full')" title="07:00 ~ 16:00 (整天 8 小時)">整天 (8h)</button>
                                 <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('morning')" title="07:00 ~ 11:00 (上午 4 小時)">上午 (4h)</button>
                                 <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('morning5')" title="07:00 ~ 12:00 (上午 5 小時)">上午 (5h)</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('afternoon3')" title="13:00 ~ 16:00 (下午 3 小時)">下午 (3h)</button>
                                 <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.70rem; border-radius: 3px; font-weight: 600; height: 22px; line-height: 1;" onclick="setTimePreset('afternoon')" title="12:00 ~ 16:00 (下午 4 小時)">下午 (4h)</button>
                             </div>
                         </div>
@@ -1919,6 +1954,7 @@
                                 <input type="number" id="manualDeductHours" class="form-control" style="width: 85px; padding: 4px 8px; font-size: 0.88rem; font-weight: 800;" step="0.5" min="0" placeholder="時數(h)" oninput="updateManualDaysPreview(this.value)">
                                 <span id="manualDaysPreview" style="font-size: 0.82rem; color: var(--text-sub); font-weight: 700;">(0 天)</span>
                                 <div style="display: inline-flex; gap: 4px; margin-left: 4px;">
+                                    <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.68rem; height: 22px;" onclick="setManualHoursDirectly(3)" title="設定扣除 3 小時 (如 13:00~16:00)">設為 3h</button>
                                     <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.68rem; height: 22px;" onclick="setManualHoursDirectly(4)" title="設定扣除 4 小時 (0.5 天)">設為 4h (半天)</button>
                                     <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.68rem; height: 22px;" onclick="setManualHoursDirectly(5)" title="設定扣除 5 小時 (如 07:00~12:00)">設為 5h</button>
                                     <button type="button" class="btn btn-secondary" style="padding: 1px 6px; font-size: 0.68rem; height: 22px;" onclick="setManualHoursDirectly(8)" title="設定扣除 8 小時 (全天)">設為 8h (全天)</button>
@@ -2177,7 +2213,7 @@
 
                     <!-- Tenure Calculation Results Cards -->
                     <div class="calc-result-box" style="margin-top: 0;">
-                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px;">
                             <span><i class="fa-solid fa-id-badge"></i> 勞基法第 38 條特休法定天數試算結果</span>
                             <span id="tenureDurationText" style="font-size: 0.76rem; font-weight: 800; color: var(--text-main);">目前累計年資：3 年 3 個月</span>
                         </div>
@@ -2213,7 +2249,8 @@
                             <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-sub); margin-bottom: 5px;">
                                 📋 臺灣勞動基準法第 38 條特休給假標準對照
                             </div>
-                            <table class="tenure-table" style="font-size: 0.74rem;">
+                            <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; box-sizing: border-box; margin-bottom: 4px;">
+                            <table class="tenure-table" style="font-size: 0.72rem; min-width: 280px; width: 100%;">
                                 <thead>
                                     <tr>
                                         <th style="padding: 3px 6px;">受僱年資級距</th>
@@ -2230,6 +2267,7 @@
                                     <tr><td style="padding: 3px 6px;">滿 10 年以上</td><td style="padding: 3px 6px;">每滿 1 年 <strong>+1 日</strong> (上限 30 日)</td><td style="padding: 3px 6px;">最高 240 小時</td></tr>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2680,6 +2718,7 @@
             if (sH === 7 && sM === 0 && eH === 16 && eM === 0) return 8; // 全天 (8h，跨午休扣1h)
             if (sH === 7 && sM === 0 && eH === 11 && eM === 0) return 4; // 上午標準半天 (4h)
             if (sH === 7 && sM === 0 && eH === 12 && eM === 0) return 5; // 上午 07:00~12:00 (5h)
+            if (sH === 13 && sM === 0 && eH === 16 && eM === 0) return 3; // 下午 13:00~16:00 (3h)
             if (sH === 12 && sM === 0 && eH === 16 && eM === 0) return 4; // 下午標準半天 (4h)
             if (sH === 11 && sM === 0 && eH === 16 && eM === 0) return 4; // 下午 (4h，含午休)
 
@@ -3553,6 +3592,9 @@
             } else if (type === 'morning5') {
                 sH.value = '07'; sM.value = '00';
                 eH.value = '12'; eM.value = '00';
+            } else if (type === 'afternoon3') {
+                sH.value = '13'; sM.value = '00';
+                eH.value = '16'; eM.value = '00';
             } else if (type === 'afternoon') {
                 sH.value = '12'; sM.value = '00';
                 eH.value = '16'; eM.value = '00';
