@@ -838,11 +838,20 @@
             flex-shrink: 0;
         }
 
-        .form-group { margin-bottom: 7px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; box-sizing: border-box; }
+        .form-group { margin-bottom: 7px; min-width: 0; }
+        .form-row { 
+            display: grid; 
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); 
+            gap: 8px; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+        .form-row > * { min-width: 0 !important; }
         .form-label { display: block; font-size: 0.76rem; font-weight: 700; color: var(--text-sub); margin-bottom: 2px; height: 16px; line-height: 16px; }
         .form-control {
             width: 100%;
+            max-width: 100%;
+            min-width: 0;
             height: 32px; /* 統一標準高度，確保同一水平所有框框高低完全齊平 */
             padding: 4px 8px;
             background: white;
@@ -855,6 +864,20 @@
             box-sizing: border-box;
             display: block;
             line-height: 1.35;
+        }
+        /* 日期輸入框防溢出與 iOS WebKit 原生控制項適配 */
+        input[type="date"].form-control,
+        input[type="date"] {
+            min-width: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="date"]::-webkit-date-and-time-value {
+            text-align: left;
+            margin: 0;
         }
         .form-control:focus {
             border-color: var(--primary);
@@ -1378,21 +1401,44 @@
                 max-width: 100% !important;
                 max-height: 94vh !important;
                 border-radius: 8px !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
             }
 
             .modal-body {
                 padding: 10px 12px !important;
+                overflow-x: hidden !important;
+                box-sizing: border-box !important;
             }
 
             .form-row {
                 display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
                 gap: 6px !important;
                 width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .form-row > * {
+                min-width: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
 
             .form-group {
                 margin-bottom: 6px !important;
+                min-width: 0 !important;
+            }
+
+            /* 手機端日期輸入框精準適配，絕不超出小框框 */
+            .form-control[type="date"] {
+                font-size: 0.76rem !important;
+                padding: 4px 6px !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                -webkit-appearance: none !important;
             }
 
             .modal-footer {
@@ -1437,7 +1483,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.10</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.11</span></div>
                 </div>
             </div>
             <div class="nav-actions">
