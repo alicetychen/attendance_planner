@@ -359,6 +359,100 @@
         .fill-sick { background: var(--sick-color); }
         .fill-wfh { background: var(--wfh-color); }
 
+        /* 卡片內部雙軌數值區塊 (Card Dual Stat Wrap) */
+        .card-dual-stat-wrap {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-card-subtle);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin: 2px 0 5px 0;
+        }
+        .card-stat-side {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .stat-side-cur {
+            text-align: left;
+        }
+        .stat-side-rem {
+            text-align: right;
+        }
+        .side-kicker {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            white-space: nowrap;
+        }
+        .stat-side-rem .side-kicker {
+            justify-content: flex-end;
+        }
+        .side-num {
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+        .side-unit {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+        .side-sub {
+            font-size: 0.65rem;
+            color: var(--text-sub);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .card-stat-bridge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 0 2px;
+        }
+        .bridge-tag {
+            font-size: 0.61rem;
+            font-weight: 800;
+            color: #991b1b;
+            background: #fee2e2;
+            padding: 1px 5px;
+            border-radius: 99px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+
+
+        .fill-vacation-done {
+            background: #9c5c3e;
+        }
+        .fill-vacation-plan {
+            background: repeating-linear-gradient(45deg, #d49a7e, #d49a7e 6px, #b37356 6px, #b37356 12px);
+        }
+        .fill-sick-done {
+            background: #8b6838;
+        }
+        .fill-sick-plan {
+            background: repeating-linear-gradient(45deg, #c9a878, #c9a878 6px, #a88454 6px, #a88454 12px);
+        }
+        .fill-wfh-done {
+            background: #3b5f75;
+        }
+        .fill-wfh-plan {
+            background: repeating-linear-gradient(45deg, #7c9eb3, #7c9eb3 6px, #557990 6px, #557990 12px);
+        }
+
         .progress-labels {
             display: flex;
             justify-content: space-between;
@@ -1199,6 +1293,23 @@
                 gap: 6px;
             }
 
+
+            /* 雙軌展示盒在手機端之緊實優化 */
+            .card-dual-stat-wrap {
+                padding: 6px 8px;
+                gap: 4px;
+            }
+            .side-num {
+                font-size: 1.22rem;
+            }
+            .side-kicker {
+                font-size: 0.62rem;
+            }
+            .bridge-tag {
+                font-size: 0.58rem;
+                padding: 1px 4px;
+            }
+
             /* 導覽列堆疊與按鈕全寬/二分 */
             .navbar {
                 flex-direction: column;
@@ -1517,7 +1628,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.12</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.13</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -1570,7 +1681,7 @@
             </div>
         </div>
 
-        <!-- Dashboard Grid: 3 Asset Cards -->
+                <!-- Dashboard Grid: 3 Asset Cards (雙軌雙指標核心卡片，整合呈現目前可用 vs 扣除預排剩餘) -->
         <div class="dashboard-grid">
             
             <!-- Card 1: Annual Leave (特休) -->
@@ -1582,41 +1693,54 @@
                         </div>
                         特休 (年休假)
                     </div>
-                    <span class="tag tag-vacation" id="vacation-unit-tag">小時制檢視</span>
+                    <span class="tag tag-vacation" id="vacation-unit-tag">天數制檢視</span>
                 </div>
 
-                <div class="stat-value-box">
-                    <div class="stat-main" id="vacation-remaining-stat" style="color: var(--vacation-color);">136</div>
-                    <div class="stat-unit" id="vacation-unit-label">小時 剩餘</div>
-                    <span class="stat-badge badge-vacation" id="vacation-ratio-badge">剩餘 71%</span>
+                <!-- 雙軌核心數值展示盒 -->
+                <div class="card-dual-stat-wrap">
+                    <div class="card-stat-side stat-side-cur">
+                        <span class="side-kicker"><i class="fa-solid fa-building-circle-check" style="color: #2e6040;"></i> 目前系統可用</span>
+                        <div class="side-num" style="color: #2e6040;" id="vacation-cur-stat">16.5 <span class="side-unit" id="vacation-cur-unit">天</span></div>
+                        <div class="side-sub" id="vacation-cur-sub">(132 小時)</div>
+                    </div>
+                    <div class="card-stat-bridge">
+                        <span class="bridge-tag" id="vacation-plan-bridge-tag"><i class="fa-solid fa-minus"></i> 5.5天 (44h)</span>
+                        <i class="fa-solid fa-arrow-right-long" style="color: #94a3b8; font-size: 0.75rem;"></i>
+                    </div>
+                    <div class="card-stat-side stat-side-rem">
+                        <span class="side-kicker" style="color: var(--vacation-color); font-weight: 800;"><i class="fa-solid fa-piggy-bank"></i> 扣除預排剩餘</span>
+                        <div class="side-num" style="color: var(--vacation-color);" id="vacation-remaining-stat">11.0 <span class="side-unit" id="vacation-unit-label">天</span></div>
+                        <div class="side-sub" id="vacation-rem-sub">(88 小時)</div>
+                    </div>
                 </div>
 
                 <div class="progress-container">
-                    <div class="progress-bar-bg">
-                        <div class="progress-fill fill-vacation" id="vacation-progress-fill" style="width: 71%;"></div>
+                    <div class="progress-bar-bg" title="已完成已休 (深色) + 預計請假 (斜紋) + 剩餘可用 (底色)">
+                        <div class="progress-fill fill-vacation-done" id="vacation-fill-done" style="width: 31%;" title="已完成請假 (60h)"></div>
+                        <div class="progress-fill fill-vacation-plan" id="vacation-fill-plan" style="width: 23%;" title="預計請假扣除 (44h)"></div>
                     </div>
                     <div class="progress-labels">
-                        <span>預排扣除: <strong id="vacation-used-val">32 小時 (4 天)</strong></span>
-                        <span>總可用額度: <strong id="vacation-total-val">192 小時 (24 天)</strong></span>
+                        <span>目前可用: <strong id="vacation-cur-label-val">132h (16.5天)</strong></span>
+                        <span>總額度: <strong id="vacation-total-val">192 小時 (24 天)</strong></span>
                     </div>
                 </div>
 
                 <div class="info-note-list">
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-circle-check" style="color: #4d7c5f;"></i> 已完成請假:</span>
-                        <strong id="vacation-completed-display" style="color: #4d7c5f;">0 小時 (0.0 天)</strong>
+                        <span><i class="fa-solid fa-building-circle-check" style="color: #2e6040;"></i> 目前人資系統可用:</span>
+                        <strong id="vacation-cur-display" style="color: #2e6040;">132 小時 (16.5 天)</strong>
                     </div>
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-hourglass-half" style="color: var(--primary);"></i> 預計請假:</span>
-                        <strong id="vacation-planned-display" style="color: var(--primary);">0 小時 (0.0 天)</strong>
+                        <span><i class="fa-solid fa-hourglass-half" style="color: #b91c1c;"></i> 預計請假扣除:</span>
+                        <strong id="vacation-planned-display" style="color: #b91c1c;">44 小時 (5.5 天)</strong>
                     </div>
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-piggy-bank" style="color: var(--vacation-color);"></i> 剩餘假期天數:</span>
-                        <strong id="vacation-remaining-days-display" style="color: var(--vacation-color);">0.0 天 (0h)</strong>
+                        <span><i class="fa-solid fa-piggy-bank" style="color: var(--vacation-color);"></i> 扣除預排最終剩餘:</span>
+                        <strong id="vacation-remaining-days-display" style="color: var(--vacation-color);">11.0 天 (88h)</strong>
                     </div>
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-circle-info" style="color: var(--vacation-color);"></i> 原始已使用基準:</span>
-                        <strong id="vacation-used-base-display">24 小時 (3 天)</strong>
+                        <span><i class="fa-solid fa-circle-check" style="color: #4d7c5f;"></i> 公司目前已使用:</span>
+                        <strong id="vacation-used-val" style="color: #4d7c5f;">60 小時 (7.5 天)</strong>
                     </div>
                     <div class="info-note-item">
                         <span><i class="fa-solid fa-calendar-check" style="color: var(--holiday-color);"></i> <span id="vacation-old-expiry-display">2026/12/31</span> 到期舊假 (<span id="vacation-old-rem-display">56h</span>):</span>
@@ -1637,26 +1761,51 @@
                     <span class="tag tag-sick">100% 全薪</span>
                 </div>
 
-                <div class="stat-value-box">
-                    <div class="stat-main" id="sick-remaining-stat" style="color: var(--sick-color);">20</div>
-                    <div class="stat-unit" id="sick-unit-label">小時 剩餘</div>
-                    <span class="stat-badge badge-sick">剩餘 25%</span>
+                <!-- 雙軌核心數值展示盒 -->
+                <div class="card-dual-stat-wrap">
+                    <div class="card-stat-side stat-side-cur">
+                        <span class="side-kicker"><i class="fa-solid fa-building-circle-check" style="color: #2e6040;"></i> 目前系統可用</span>
+                        <div class="side-num" style="color: #2e6040;" id="sick-cur-stat">2.0 <span class="side-unit" id="sick-cur-unit">天</span></div>
+                        <div class="side-sub" id="sick-cur-sub">(16 小時)</div>
+                    </div>
+                    <div class="card-stat-bridge">
+                        <span class="bridge-tag" id="sick-plan-bridge-tag"><i class="fa-solid fa-minus"></i> 0.0天 (0h)</span>
+                        <i class="fa-solid fa-arrow-right-long" style="color: #94a3b8; font-size: 0.75rem;"></i>
+                    </div>
+                    <div class="card-stat-side stat-side-rem">
+                        <span class="side-kicker" style="color: var(--sick-color); font-weight: 800;"><i class="fa-solid fa-shield-heart"></i> 扣除預排剩餘</span>
+                        <div class="side-num" style="color: var(--sick-color);" id="sick-remaining-stat">2.0 <span class="side-unit" id="sick-unit-label">天</span></div>
+                        <div class="side-sub" id="sick-rem-sub">(16 小時)</div>
+                    </div>
                 </div>
 
                 <div class="progress-container">
-                    <div class="progress-bar-bg">
-                        <div class="progress-fill fill-sick" id="sick-progress-fill" style="width: 25%;"></div>
+                    <div class="progress-bar-bg" title="已使用病假 (深色) + 預計請假 (斜紋) + 剩餘額度 (底色)">
+                        <div class="progress-fill fill-sick-done" id="sick-fill-done" style="width: 80%;" title="已使用病假 (64h)"></div>
+                        <div class="progress-fill fill-sick-plan" id="sick-fill-plan" style="width: 0%;" title="預計請假 (0h)"></div>
                     </div>
                     <div class="progress-labels">
-                        <span>已使用額度: <strong id="sick-used-val">60 小時 (7.5 天)</strong></span>
-                        <span>總可用額度: <strong id="sick-total-val">80 小時 (10 天)</strong></span>
+                        <span>目前可用: <strong id="sick-cur-label-val">16h (2.0天)</strong></span>
+                        <span>總額度: <strong id="sick-total-val">80 小時 (10 天)</strong></span>
                     </div>
                 </div>
 
                 <div class="info-note-list">
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-shield-heart" style="color: var(--sick-color);"></i> 健康保障儲備:</span>
-                        <strong id="sick-reserve-display">剩餘 2.5 天 (20h)</strong>
+                        <span><i class="fa-solid fa-building-circle-check" style="color: #2e6040;"></i> 目前人資系統可用:</span>
+                        <strong id="sick-cur-display" style="color: #2e6040;">16 小時 (2.0 天)</strong>
+                    </div>
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-hourglass-half" style="color: #b91c1c;"></i> 預計請假扣除:</span>
+                        <strong id="sick-planned-display" style="color: #b91c1c;">0 小時 (0.0 天)</strong>
+                    </div>
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-shield-heart" style="color: var(--sick-color);"></i> 健康保障儲備剩餘:</span>
+                        <strong id="sick-reserve-display" style="color: var(--sick-color);">2.0 天 (16h)</strong>
+                    </div>
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-circle-check" style="color: #4d7c5f;"></i> 公司目前已使用:</span>
+                        <strong id="sick-used-val" style="color: #4d7c5f;">64 小時 (8.0 天)</strong>
                     </div>
                     <div class="info-note-item">
                         <span><i class="fa-solid fa-building" style="color: var(--text-sub);"></i> 給薪狀態:</span>
@@ -1665,7 +1814,7 @@
                 </div>
             </div>
 
-            <!-- Card 3: WFH Remote Work (遠距辦公) - 支援隨月份動態連動更新 -->
+            <!-- Card 3: WFH Remote Work (遠距辦公) - 核心為「每個月可用 2 天」 -->
             <div class="card col-4">
                 <div class="card-header">
                     <div class="card-title">
@@ -1674,48 +1823,65 @@
                         </div>
                         遠距辦公申請 (WFH)
                     </div>
-                    <span class="tag tag-wfh" id="wfh-month-badge">當月上限額度</span>
+                    <span class="tag tag-wfh" id="wfh-month-badge">每月可用 2 天 (16h)</span>
                 </div>
 
-                <div class="stat-value-box">
-                    <div class="stat-main" id="wfh-remaining-stat" style="color: var(--wfh-color);">2</div>
-                    <div class="stat-unit" id="wfh-unit-label">天 (8h) 當月剩餘</div>
-                    <span class="stat-badge badge-wfh" id="wfh-status-badge">當月已排 0 天</span>
+                <!-- 雙軌核心數值展示盒 (以當月 2 天為計算基準) -->
+                <div class="card-dual-stat-wrap">
+                    <div class="card-stat-side stat-side-cur">
+                        <span class="side-kicker"><i class="fa-solid fa-calendar-check" style="color: #2e6040;"></i> <span id="wfh-cur-month-text">11月</span>目前可用</span>
+                        <div class="side-num" style="color: #2e6040;" id="wfh-cur-stat">1.0 <span class="side-unit" id="wfh-cur-unit">天</span></div>
+                        <div class="side-sub" id="wfh-cur-sub">(8 小時)</div>
+                    </div>
+                    <div class="card-stat-bridge">
+                        <span class="bridge-tag" id="wfh-plan-bridge-tag"><i class="fa-solid fa-minus"></i> 0.0天 (0h)</span>
+                        <i class="fa-solid fa-arrow-right-long" style="color: #94a3b8; font-size: 0.75rem;"></i>
+                    </div>
+                    <div class="card-stat-side stat-side-rem">
+                        <span class="side-kicker" style="color: var(--wfh-color); font-weight: 800;"><i class="fa-solid fa-laptop-code"></i> <span id="wfh-rem-month-text">11月</span>扣除後剩餘</span>
+                        <div class="side-num" style="color: var(--wfh-color);" id="wfh-remaining-stat">1.0 <span class="side-unit" id="wfh-unit-label">天</span></div>
+                        <div class="side-sub" id="wfh-rem-sub">(8 小時)</div>
+                    </div>
                 </div>
 
                 <div class="progress-container">
-                    <div class="progress-bar-bg">
-                        <div class="progress-fill fill-wfh" id="wfh-progress-fill" style="width: 0%;"></div>
+                    <div class="progress-bar-bg" title="當月已休 (深色) + 當月預排 (斜紋) + 當月剩餘 (底色)">
+                        <div class="progress-fill fill-wfh-done" id="wfh-fill-done" style="width: 50%;" title="11月已完成 WFH (1天 / 8h)"></div>
+                        <div class="progress-fill fill-wfh-plan" id="wfh-fill-plan" style="width: 0%;" title="11月預計請假 (0天 / 0h)"></div>
                     </div>
                     <div class="progress-labels">
-                        <span><span id="wfh-cur-month-text">當月</span>可用上限: <strong id="wfh-monthly-limit-val">2 天 (16h)</strong></span>
-                        <span>年度累計: <strong id="wfh-yearly-limit-val">0h / 上限 48h</strong></span>
+                        <span>當月目前可用: <strong id="wfh-cur-label-val">1.0天 (8h)</strong></span>
+                        <span>每月上限: <strong id="wfh-monthly-limit-val">2.0 天 (16h)</strong></span>
                     </div>
                 </div>
 
                 <div class="info-note-list">
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-circle-check" style="color: #4d7c5f;"></i> <span id="wfh-done-month-label">當月已完成</span> WFH:</span>
-                        <strong id="wfh-completed-display" style="color: #4d7c5f;">0 天 (0h)</strong>
+                        <span><i class="fa-solid fa-bullseye" style="color: var(--wfh-color);"></i> 每月額度規則:</span>
+                        <strong style="color: var(--wfh-color);">每個月固定上限 2 天 (16h)</strong>
                     </div>
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-hourglass-half" style="color: var(--wfh-color);"></i> <span id="wfh-plan-month-label">當月預計</span> WFH:</span>
-                        <strong id="wfh-planned-display" style="color: var(--wfh-color);">0 天 (0h)</strong>
+                        <span><i class="fa-solid fa-calendar-check" style="color: #2e6040;"></i> <span id="wfh-note-month-text">11月</span>當月額度:</span>
+                        <strong id="wfh-monthly-status-display" style="color: #2e6040;">已休 1.0天 / 剩餘 1.0天 (8h)</strong>
                     </div>
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-laptop-code" style="color: var(--wfh-color);"></i> 遠距彈性工作:</span>
-                        <strong id="wfh-month-context-display">連動行事曆檢視月份</strong>
+                        <span><i class="fa-solid fa-hourglass-half" style="color: var(--primary);"></i> 12月排定預排:</span>
+                        <strong id="wfh-future-dec-display" style="color: var(--primary);">12/24 預排 1天 ➔ 12月剩 1.0天</strong>
                     </div>
                     <div class="info-note-item">
-                        <span><i class="fa-solid fa-globe" style="color: var(--text-sub);"></i> 連動旅行:</span>
-                        <strong>可搭配自由行作息排定</strong>
+                        <span><i class="fa-solid fa-clock-rotate-left" style="color: var(--text-sub);"></i> 10月歷史回顧:</span>
+                        <strong style="color: var(--text-sub);">10/16 與 10/30 已滿額休 2.0天</strong>
+                    </div>
+                    <div class="info-note-item">
+                        <span><i class="fa-solid fa-building-circle-check" style="color: var(--text-sub);"></i> 年度人資累計備查:</span>
+                        <strong id="wfh-yearly-total-display">總計 32h / 系統已記 8h / 剩 24h</strong>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <!-- 左右對照看板區塊 (左側：月曆行事曆 / 右側：假勤排程清單，參照第二張截圖風格) -->
+<!-- 左右對照看板區塊 (左側：月曆行事曆 / 右側：假勤排程清單，參照第二張截圖風格) -->
         <div class="dual-dashboard-grid">
             
             <!-- 左欄：每月休假與 2026~2027 國定假日行事曆 -->
@@ -2392,19 +2558,19 @@
         var selectedYear = 2026;
         var currentViewMonth = new Date(selectedYear, (selectedYear === __realNow.getFullYear() ? __realNow.getMonth() : 0), 1);
 
-        let appState = {
-            unit: 'hours',
+                let appState = {
+            unit: 'days', // 預設以天數制檢視，直觀好理解
             hideExpired: true, // 預設隱藏已過期之假勤
             yearlyAssets: {
                 '2026': {
                     vacationTotal: 192,
-                    vacationUsedBase: 24,
+                    vacationUsedBase: 28, // 基準已用 28h + 清單已休 32h = 60h，完美符合人資系統目前已用 60h / 剩餘 132h (16.5天)
                     vacationOldRemaining: 56,
                     vacationOldExpiry: '2026-12-31',
                     sickTotal: 80,
-                    sickUsed: 60,
+                    sickUsed: 60, // 基準已用 60h + 清單已休 4h = 64h，完美符合人資系統目前已用 64h / 剩餘 16h (2.0天)
                     wfhMonthlyLimit: 2,
-                    wfhYearlyTotal: 48
+                    wfhYearlyTotal: 32 // 完美符合人資系統遠距總計 32h / 已用 8h / 目前可用 24h (3.0天)
                 },
                 '2027': {
                     vacationTotal: 200,
@@ -2421,11 +2587,24 @@
             travelPlans: {}
         };
 
-        // 預設假勤資料 (完整涵蓋 10 月歷史假勤、11 月排休與 12 月東京自由行，與截圖一完全一致)
+        // 預設假勤資料 (完整涵蓋使用者截圖中已休 5 筆 + 預計要申請的 3 筆，與截圖完全一致)
         const PRESET_LEAVE_DATA = [
             {
+                id: 'plan-sick-oct-15',
+                title: '身體不適',
+                startDate: '2026-10-15',
+                endDate: '2026-10-23',
+                startTime: '09:00',
+                endTime: '13:00',
+                type: 'sick',
+                notes: '門診請假 (0.5天 4小時)',
+                manualAdjustment: true,
+                manualHours: 4,
+                completed: true
+            },
+            {
                 id: 'wfh-oct-16',
-                title: '居家 (遠距辦公)',
+                title: '居家',
                 startDate: '2026-10-16',
                 endDate: '2026-10-16',
                 startTime: '09:00',
@@ -2444,14 +2623,14 @@
                 startTime: '09:00',
                 endTime: '18:00',
                 type: 'vacation',
-                notes: '中國重慶 / 地點：解放碑與朝天門',
-                manualAdjustment: false,
-                manualHours: null,
+                notes: '中國重慶 / 地點：解放碑與朝天門 (扣除 4天 32小時)',
+                manualAdjustment: true,
+                manualHours: 32,
                 completed: true
             },
             {
                 id: 'wfh-oct-30',
-                title: '居家 (遠距辦公)',
+                title: '居家',
                 startDate: '2026-10-30',
                 endDate: '2026-10-30',
                 startTime: '09:00',
@@ -2463,27 +2642,53 @@
                 completed: true
             },
             {
-                id: 'plan-nov-20',
-                title: '排休',
-                startDate: '2026-11-20',
-                endDate: '2026-11-20',
-                startTime: '07:00',
-                endTime: '12:00',
-                type: 'vacation',
-                notes: '個人排休 (7~12 上午半天)',
+                id: 'wfh-nov-13',
+                title: '居家辦公',
+                startDate: '2026-11-13',
+                endDate: '2026-11-13',
+                startTime: '09:00',
+                endTime: '18:00',
+                type: 'wfh',
+                notes: '地點：家中',
                 manualAdjustment: false,
                 manualHours: null,
+                completed: true
+            },
+            {
+                id: 'plan-nov-20',
+                title: '特休',
+                startDate: '2026-11-20',
+                endDate: '2026-11-20',
+                startTime: '14:00',
+                endTime: '18:00',
+                type: 'vacation',
+                notes: '特休排休 (下午半天 4 小時)',
+                manualAdjustment: true,
+                manualHours: 4,
                 completed: false
             },
             {
                 id: 'plan-tokyo',
                 title: '東京自由行 6天5夜 🇯🇵',
-                startDate: '2026-12-18',
+                startDate: '2026-12-17',
                 endDate: '2026-12-23',
-                startTime: '09:00',
+                startTime: '13:00',
                 endTime: '18:00',
                 type: 'vacation',
-                notes: '日本東京自由行',
+                notes: '日本東京自由行 (預計請假 5天 40小時)',
+                manualAdjustment: true,
+                manualHours: 40,
+                completed: false
+            },
+            {
+                id: 'wfh-dec-24',
+                title: '居家辦公',
+                startDate: '2026-12-24',
+                endDate: '2026-12-24',
+                startTime: '09:00',
+                endTime: '18:00',
+                type: 'wfh',
+                notes: '地點：家中遠距辦公 (預計 1天 8小時)',
                 manualAdjustment: false,
                 manualHours: null,
                 completed: false
@@ -2526,14 +2731,22 @@
             if (!appState.yearlyAssets['2026']) {
                 appState.yearlyAssets['2026'] = {
                     vacationTotal: 192,
-                    vacationUsedBase: 24,
+                    vacationUsedBase: 28,
                     vacationOldRemaining: 56,
                     vacationOldExpiry: '2026-12-31',
                     sickTotal: 80,
                     sickUsed: 60,
                     wfhMonthlyLimit: 2,
-                    wfhYearlyTotal: 48
+                    wfhYearlyTotal: 32
                 };
+            } else {
+                // 自動校準 2026 基準值與人資系統 100% 精準對齊 (192h 總計 / 60h 已用 / 132h 目前可用)
+                if (appState.yearlyAssets['2026'].vacationUsedBase === 24) {
+                    appState.yearlyAssets['2026'].vacationUsedBase = 28;
+                }
+                if (appState.yearlyAssets['2026'].wfhYearlyTotal === 48) {
+                    appState.yearlyAssets['2026'].wfhYearlyTotal = 32;
+                }
             }
             if (!appState.yearlyAssets['2027']) {
                 appState.yearlyAssets['2027'] = {
@@ -2547,7 +2760,7 @@
                     wfhYearlyTotal: 48
                 };
             }
-            if (!appState.leavePlans || !Array.isArray(appState.leavePlans) || appState.leavePlans.length <= 2) {
+            if (!appState.leavePlans || !Array.isArray(appState.leavePlans) || appState.leavePlans.length <= 5) {
                 appState.leavePlans = JSON.parse(JSON.stringify(PRESET_LEAVE_DATA));
             }
 
@@ -2556,9 +2769,10 @@
                 const s = (a.startDate || '').localeCompare(b.startDate || '');
                 return s !== 0 ? s : (a.endDate || '').localeCompare(b.endDate || '');
             });
+            saveToLocalStorage();
         }
 
-        function saveToLocalStorage() {
+function saveToLocalStorage() {
             if (appState.leavePlans && Array.isArray(appState.leavePlans)) {
                 appState.leavePlans.sort((a, b) => {
                     const s = (a.startDate || '').localeCompare(b.startDate || '');
@@ -2568,18 +2782,18 @@
             localStorage.setItem('work_life_planner_multi_plans_v7_state', JSON.stringify(appState));
         }
 
-        function resetToPreset(userTriggered = true) {
-            appState.unit = 'hours';
+                function resetToPreset(userTriggered = true) {
+            appState.unit = 'days';
             appState.yearlyAssets = {
                 '2026': {
                     vacationTotal: 192,
-                    vacationUsedBase: 24,
+                    vacationUsedBase: 28,
                     vacationOldRemaining: 56,
                     vacationOldExpiry: '2026-12-31',
                     sickTotal: 80,
                     sickUsed: 60,
                     wfhMonthlyLimit: 2,
-                    wfhYearlyTotal: 48
+                    wfhYearlyTotal: 32
                 },
                 '2027': {
                     vacationTotal: 200,
@@ -2602,7 +2816,7 @@
             }
         }
 
-        function showToast(icon, title, text, timer = 1500) {
+function showToast(icon, title, text, timer = 1500) {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: icon,
@@ -2876,27 +3090,33 @@
             renderAll();
         }
 
-        function renderAssetCards() {
+                function renderAssetCards() {
             const assets = getActiveYearlyAssets(selectedYear);
+            const isHours = appState.unit === 'hours';
             
             // 當前行事曆檢視月份與年份
             const curViewYear = currentViewMonth.getFullYear();
             const curViewMonthNum = currentViewMonth.getMonth() + 1; // 1-12
             const curViewMonthKey = `${curViewYear}-${String(curViewMonthNum).padStart(2, '0')}`;
 
+            // 統計各類假勤 (分年度與月份、已完成 vs 預計)
             let bookedVacationHours = 0;
-            let bookedSickHours = 0;
             let completedVacationHours = 0;
             let plannedVacationHours = 0;
 
-            // WFH 區分年度累計與月份即時連動
+            let bookedSickHours = 0;
+            let completedSickHours = 0;
+            let plannedSickHours = 0;
+
             let yearlyWfhHours = 0;
+            let completedWfhHours = 0;
+            let plannedWfhHours = 0;
+
             let monthlyWfhDays = 0;
             let monthlyCompletedWfhDays = 0;
             let monthlyPlannedWfhDays = 0;
 
             appState.leavePlans.forEach(plan => {
-                // 年度統計 (特休、病假、WFH 年度時數)
                 if (plan.startDate && plan.startDate.startsWith(String(selectedYear))) {
                     const deduct = getPlanActualDeduction(plan);
                     if (plan.type === 'vacation') {
@@ -2905,8 +3125,12 @@
                         else plannedVacationHours += deduct.hours;
                     } else if (plan.type === 'sick') {
                         bookedSickHours += deduct.hours;
+                        if (plan.completed) completedSickHours += deduct.hours;
+                        else plannedSickHours += deduct.hours;
                     } else if (plan.type === 'wfh') {
                         yearlyWfhHours += deduct.hours;
+                        if (plan.completed) completedWfhHours += deduct.hours;
+                        else plannedWfhHours += deduct.hours;
                     }
                 }
 
@@ -2921,124 +3145,233 @@
                 }
             });
 
-            const usedBase = Number(assets.vacationUsedBase || 0);
-            const remainingVacationHours = Math.max(0, assets.vacationTotal - usedBase - bookedVacationHours);
-            const isHours = appState.unit === 'hours';
+            // 輔助函式：根據單位轉換為字串
+            const fmtVal = (hours, showUnit = true) => {
+                if (isHours) {
+                    return showUnit ? `${hours} 小時` : `${hours}`;
+                } else {
+                    const days = (hours / 8).toFixed(1);
+                    return showUnit ? `${days} 天` : `${days}`;
+                }
+            };
+            const fmtUnitOnly = () => isHours ? '小時' : '天';
 
-            const vacStatEl = document.getElementById('vacation-remaining-stat');
-            if (vacStatEl) vacStatEl.innerText = isHours ? remainingVacationHours : (remainingVacationHours / 8).toFixed(1);
-            
-            const vacUnitEl = document.getElementById('vacation-unit-label');
-            if (vacUnitEl) vacUnitEl.innerText = isHours ? '小時 剩餘' : '天 剩餘';
+            // ==========================================
+            // 1. 特休 (年休假) 雙軌計算
+            // ==========================================
+            const vacTotal = Number(assets.vacationTotal || 192);
+            const vacUsedBase = Number(assets.vacationUsedBase || 0);
+            const vacTotalUsed = vacUsedBase + completedVacationHours; // 公司 HR 系統已扣時數
+            const vacCurrentAvailable = Math.max(0, vacTotal - vacTotalUsed); // 目前人資系統可用額度 (132h / 16.5天)
+            const vacForecastRemaining = Math.max(0, vacCurrentAvailable - plannedVacationHours); // 扣除預排後剩餘 (88h / 11.0天)
+            const vacForecastPercent = Math.round((vacForecastRemaining / Math.max(1, vacTotal)) * 100);
 
-            const vacTotalSafe = Math.max(1, assets.vacationTotal || 192);
-            const vacPercent = Math.max(0, Math.min(100, Math.round((remainingVacationHours / vacTotalSafe) * 100)));
-            
-            const vacBadge = document.getElementById('vacation-ratio-badge');
-            if (vacBadge) vacBadge.innerText = `剩餘 ${vacPercent}%`;
-            
-            const vacFill = document.getElementById('vacation-progress-fill');
-            if (vacFill) vacFill.style.width = `${vacPercent}%`;
+            // 卡片內部雙軌數值更新 - 特休
+            const vacCurStat = document.getElementById('vacation-cur-stat');
+            if (vacCurStat) {
+                vacCurStat.innerHTML = `${isHours ? vacCurrentAvailable : (vacCurrentAvailable / 8).toFixed(1)} <span class="side-unit">${fmtUnitOnly()}</span>`;
+            }
+            const vacCurSub = document.getElementById('vacation-cur-sub');
+            if (vacCurSub) vacCurSub.innerText = isHours ? `(${(vacCurrentAvailable / 8).toFixed(1)} 天)` : `(${vacCurrentAvailable} 小時)`;
 
-            const vacUsedVal = document.getElementById('vacation-used-val');
-            if (vacUsedVal) vacUsedVal.innerText = `${bookedVacationHours} 小時 (${(bookedVacationHours / 8).toFixed(1)} 天)`;
-            
+            const vacPlanBridgeTag = document.getElementById('vacation-plan-bridge-tag');
+            if (vacPlanBridgeTag) {
+                vacPlanBridgeTag.innerHTML = `<i class="fa-solid fa-minus"></i> ${isHours ? plannedVacationHours + 'h' : (plannedVacationHours / 8).toFixed(1) + '天'} (${plannedVacationHours}h)`;
+            }
+
+            const vacRemStat = document.getElementById('vacation-remaining-stat');
+            if (vacRemStat) {
+                vacRemStat.innerHTML = `${isHours ? vacForecastRemaining : (vacForecastRemaining / 8).toFixed(1)} <span class="side-unit">${fmtUnitOnly()}</span>`;
+            }
+            const vacRemSub = document.getElementById('vacation-rem-sub');
+            if (vacRemSub) vacRemSub.innerText = isHours ? `(${(vacForecastRemaining / 8).toFixed(1)} 天)` : `(${vacForecastRemaining} 小時)`;
+
+            // 三段進度條 - 特休
+            const vacDonePct = Math.min(100, Math.round((vacTotalUsed / vacTotal) * 100));
+            const vacPlanPct = Math.min(100 - vacDonePct, Math.round((plannedVacationHours / vacTotal) * 100));
+            const vacFillDone = document.getElementById('vacation-fill-done');
+            if (vacFillDone) {
+                vacFillDone.style.width = `${vacDonePct}%`;
+                vacFillDone.title = `公司已使用: ${vacTotalUsed}h (${(vacTotalUsed / 8).toFixed(1)}天)`;
+            }
+            const vacFillPlan = document.getElementById('vacation-fill-plan');
+            if (vacFillPlan) {
+                vacFillPlan.style.width = `${vacPlanPct}%`;
+                vacFillPlan.title = `預計請假扣除: ${plannedVacationHours}h (${(plannedVacationHours / 8).toFixed(1)}天)`;
+            }
+            const vacCurLabelVal = document.getElementById('vacation-cur-label-val');
+            if (vacCurLabelVal) vacCurLabelVal.innerText = `${vacCurrentAvailable}h (${(vacCurrentAvailable / 8).toFixed(1)}天)`;
             const vacTotalVal = document.getElementById('vacation-total-val');
-            if (vacTotalVal) vacTotalVal.innerText = `${assets.vacationTotal} 小時 (${(assets.vacationTotal / 8).toFixed(1)} 天)`;
+            if (vacTotalVal) vacTotalVal.innerText = `${vacTotal} 小時 (${(vacTotal / 8).toFixed(1)} 天)`;
 
-            const usedBaseEl = document.getElementById('vacation-used-base-display');
-            if (usedBaseEl) usedBaseEl.innerText = `${usedBase} 小時 (${(usedBase / 8).toFixed(1)} 天)`;
-            
+            // 條列備註更新 - 特休
+            const vacCurDisplay = document.getElementById('vacation-cur-display');
+            if (vacCurDisplay) vacCurDisplay.innerText = `${vacCurrentAvailable} 小時 (${(vacCurrentAvailable / 8).toFixed(1)} 天)`;
+            const vacPlanDisplay = document.getElementById('vacation-planned-display');
+            if (vacPlanDisplay) vacPlanDisplay.innerText = `${plannedVacationHours} 小時 (${(plannedVacationHours / 8).toFixed(1)} 天)`;
+            const vacRemDaysDisplay = document.getElementById('vacation-remaining-days-display');
+            if (vacRemDaysDisplay) vacRemDaysDisplay.innerText = `${(vacForecastRemaining / 8).toFixed(1)} 天 (${vacForecastRemaining}h)`;
+            const vacUsedVal = document.getElementById('vacation-used-val');
+            if (vacUsedVal) vacUsedVal.innerText = `${vacTotalUsed} 小時 (${(vacTotalUsed / 8).toFixed(1)} 天)`;
             const expEl = document.getElementById('vacation-old-expiry-display');
             if (expEl) expEl.innerText = assets.vacationOldExpiry || `${selectedYear}/12/31`;
-
             const remEl = document.getElementById('vacation-old-rem-display');
             if (remEl) remEl.innerText = `${assets.vacationOldRemaining || 0}h`;
 
-            // 已完成 / 預計 / 剩餘假期統計
-            const fmtHD = h => `${h} 小時 (${(h / 8).toFixed(1)} 天)`;
-            const compEl = document.getElementById('vacation-completed-display');
-            if (compEl) compEl.innerText = fmtHD(completedVacationHours);
-            const planEl = document.getElementById('vacation-planned-display');
-            if (planEl) planEl.innerText = fmtHD(plannedVacationHours);
-            const remDaysEl = document.getElementById('vacation-remaining-days-display');
-            if (remDaysEl) remDaysEl.innerText = `${(remainingVacationHours / 8).toFixed(1)} 天 (${remainingVacationHours}h)`;
+            // ==========================================
+            // 2. 全薪病假 雙軌計算
+            // ==========================================
+            const sickTotal = Number(assets.sickTotal || 80);
+            const sickUsedBase = Number(assets.sickUsed || 0);
+            const sickTotalUsed = sickUsedBase + completedSickHours; // 公司 HR 系統已扣時數 (64h)
+            const sickCurrentAvailable = Math.max(0, sickTotal - sickTotalUsed); // 目前人資系統可用額度 (16h / 2.0天)
+            const sickForecastRemaining = Math.max(0, sickCurrentAvailable - plannedSickHours); // 扣除預排後剩餘 (16h / 2.0天)
+            const sickForecastPercent = Math.round((sickForecastRemaining / Math.max(1, sickTotal)) * 100);
 
-            // 病假
-            const remainingSick = Math.max(0, assets.sickTotal - (Number(assets.sickUsed || 0) + bookedSickHours));
-            const sickStatEl = document.getElementById('sick-remaining-stat');
-            if (sickStatEl) sickStatEl.innerText = isHours ? remainingSick : (remainingSick / 8).toFixed(1);
-            
-            const sickUnitEl = document.getElementById('sick-unit-label');
-            if (sickUnitEl) sickUnitEl.innerText = isHours ? '小時 剩餘' : '天 剩餘';
-            
-            const sickUsedVal = document.getElementById('sick-used-val');
-            if (sickUsedVal) sickUsedVal.innerText = `${Number(assets.sickUsed || 0) + bookedSickHours} 小時 (${((Number(assets.sickUsed || 0) + bookedSickHours) / 8).toFixed(1)} 天)`;
-            
+            // 卡片內部雙軌數值更新 - 全薪病假
+            const sickCurStat = document.getElementById('sick-cur-stat');
+            if (sickCurStat) {
+                sickCurStat.innerHTML = `${isHours ? sickCurrentAvailable : (sickCurrentAvailable / 8).toFixed(1)} <span class="side-unit">${fmtUnitOnly()}</span>`;
+            }
+            const sickCurSub = document.getElementById('sick-cur-sub');
+            if (sickCurSub) sickCurSub.innerText = isHours ? `(${(sickCurrentAvailable / 8).toFixed(1)} 天)` : `(${sickCurrentAvailable} 小時)`;
+
+            const sickPlanBridgeTag = document.getElementById('sick-plan-bridge-tag');
+            if (sickPlanBridgeTag) {
+                sickPlanBridgeTag.innerHTML = `<i class="fa-solid fa-minus"></i> ${isHours ? plannedSickHours + 'h' : (plannedSickHours / 8).toFixed(1) + '天'} (${plannedSickHours}h)`;
+            }
+
+            const sickRemStat = document.getElementById('sick-remaining-stat');
+            if (sickRemStat) {
+                sickRemStat.innerHTML = `${isHours ? sickForecastRemaining : (sickForecastRemaining / 8).toFixed(1)} <span class="side-unit">${fmtUnitOnly()}</span>`;
+            }
+            const sickRemSub = document.getElementById('sick-rem-sub');
+            if (sickRemSub) sickRemSub.innerText = isHours ? `(${(sickForecastRemaining / 8).toFixed(1)} 天)` : `(${sickForecastRemaining} 小時)`;
+
+            // 三段進度條 - 全薪病假
+            const sickDonePct = Math.min(100, Math.round((sickTotalUsed / sickTotal) * 100));
+            const sickPlanPct = Math.min(100 - sickDonePct, Math.round((plannedSickHours / sickTotal) * 100));
+            const sickFillDone = document.getElementById('sick-fill-done');
+            if (sickFillDone) {
+                sickFillDone.style.width = `${sickDonePct}%`;
+                sickFillDone.title = `公司已使用: ${sickTotalUsed}h (${(sickTotalUsed / 8).toFixed(1)}天)`;
+            }
+            const sickFillPlan = document.getElementById('sick-fill-plan');
+            if (sickFillPlan) {
+                sickFillPlan.style.width = `${sickPlanPct}%`;
+                sickFillPlan.title = `預計請假扣除: ${plannedSickHours}h (${(plannedSickHours / 8).toFixed(1)}天)`;
+            }
+            const sickCurLabelVal = document.getElementById('sick-cur-label-val');
+            if (sickCurLabelVal) sickCurLabelVal.innerText = `${sickCurrentAvailable}h (${(sickCurrentAvailable / 8).toFixed(1)}天)`;
             const sickTotalVal = document.getElementById('sick-total-val');
-            if (sickTotalVal) sickTotalVal.innerText = `${assets.sickTotal} 小時 (${(assets.sickTotal / 8).toFixed(1)} 天)`;
+            if (sickTotalVal) sickTotalVal.innerText = `${sickTotal} 小時 (${(sickTotal / 8).toFixed(1)} 天)`;
 
+            // 條列備註更新 - 全薪病假
+            const sickCurDisplay = document.getElementById('sick-cur-display');
+            if (sickCurDisplay) sickCurDisplay.innerText = `${sickCurrentAvailable} 小時 (${(sickCurrentAvailable / 8).toFixed(1)} 天)`;
+            const sickPlanDisplay = document.getElementById('sick-planned-display');
+            if (sickPlanDisplay) sickPlanDisplay.innerText = `${plannedSickHours} 小時 (${(plannedSickHours / 8).toFixed(1)} 天)`;
             const sickReserveEl = document.getElementById('sick-reserve-display');
-            if (sickReserveEl) sickReserveEl.innerText = `剩餘 ${(remainingSick / 8).toFixed(1)} 天 (${remainingSick}h)`;
+            if (sickReserveEl) sickReserveEl.innerText = `${(sickForecastRemaining / 8).toFixed(1)} 天 (${sickForecastRemaining}h)`;
+            const sickUsedVal = document.getElementById('sick-used-val');
+            if (sickUsedVal) sickUsedVal.innerText = `${sickTotalUsed} 小時 (${(sickTotalUsed / 8).toFixed(1)} 天)`;
 
-            // 遠距辦公 (WFH) - 依據當前檢視月份動態計算
-            const monthlyLimit = Number(assets.wfhMonthlyLimit || 2);
-            const remainingWfhMonthly = Math.max(0, monthlyLimit - monthlyWfhDays);
+            // ==========================================
+            // 3. 遠距辦公 (WFH) 雙軌計算 (核心邏輯：每個月固定可用 2 天 / 16 小時)
+            // ==========================================
+            const monthlyLimit = Number(assets.wfhMonthlyLimit || 2); // 預設每個月可用 2 天
+            const monthlyLimitHours = monthlyLimit * 8; // 16 小時
+            
+            // 當前檢視月份 (例如 11 月) 的已休、預排與剩餘
+            const curMonthCompletedDays = monthlyCompletedWfhDays; // 當月已核准請假 (11月為 1 天)
+            const curMonthPlannedDays = monthlyPlannedWfhDays; // 當月預計請假 (11月為 0 天，12月為 1 天)
+            
+            const curMonthAvailableDays = Math.max(0, monthlyLimit - curMonthCompletedDays); // 當月目前系統可用 (11月為 1.0天 / 8h)
+            const curMonthForecastDays = Math.max(0, curMonthAvailableDays - curMonthPlannedDays); // 當月扣除預排剩餘 (11月為 1.0天 / 8h)
+            
+            const curMonthAvailableHours = curMonthAvailableDays * 8;
+            const curMonthForecastHours = curMonthForecastDays * 8;
+            const curMonthPlannedHours = curMonthPlannedDays * 8;
+            
+            const wfhMonthPercent = Math.round((curMonthForecastDays / Math.max(1, monthlyLimit)) * 100);
 
-            const wfhMonthBadge = document.getElementById('wfh-month-badge');
-            if (wfhMonthBadge) wfhMonthBadge.innerText = `${curViewMonthNum} 月上限額度`;
-
-            const wfhStatEl = document.getElementById('wfh-remaining-stat');
-            if (wfhStatEl) {
-                wfhStatEl.innerText = Number.isInteger(remainingWfhMonthly) ? remainingWfhMonthly : remainingWfhMonthly.toFixed(1);
-            }
-
-            const wfhUnitLabel = document.getElementById('wfh-unit-label');
-            if (wfhUnitLabel) wfhUnitLabel.innerText = `天 (8h) ${curViewMonthNum}月剩餘`;
-
-            const wfhBadge = document.getElementById('wfh-status-badge');
-            if (wfhBadge) wfhBadge.innerText = `${curViewMonthNum}月已排 ${monthlyWfhDays.toFixed(1)} 天`;
-
-            const wfhProgressFill = document.getElementById('wfh-progress-fill');
-            if (wfhProgressFill) {
-                const wfhPercent = Math.min(100, Math.round((monthlyWfhDays / Math.max(1, monthlyLimit)) * 100));
-                wfhProgressFill.style.width = `${wfhPercent}%`;
-            }
-
+            // 卡片內部雙軌數值更新 - 遠距辦公 (以當月 2 天為計算核心)
             const wfhCurMonthText = document.getElementById('wfh-cur-month-text');
             if (wfhCurMonthText) wfhCurMonthText.innerText = `${curViewMonthNum}月`;
+            const wfhRemMonthText = document.getElementById('wfh-rem-month-text');
+            if (wfhRemMonthText) wfhRemMonthText.innerText = `${curViewMonthNum}月`;
 
-            const wfhMonVal = document.getElementById('wfh-monthly-limit-val');
-            if (wfhMonVal) wfhMonVal.innerText = `${monthlyLimit} 天 (${monthlyLimit * 8}h)`;
+            const wfhCurStat = document.getElementById('wfh-cur-stat');
+            if (wfhCurStat) {
+                wfhCurStat.innerHTML = `${isHours ? curMonthAvailableHours : curMonthAvailableDays.toFixed(1)} <span class="side-unit">${fmtUnitOnly()}</span>`;
+            }
+            const wfhCurSub = document.getElementById('wfh-cur-sub');
+            if (wfhCurSub) wfhCurSub.innerText = isHours ? `(${curMonthAvailableDays.toFixed(1)} 天)` : `(${curMonthAvailableHours} 小時)`;
 
-            const wfhYrVal = document.getElementById('wfh-yearly-limit-val');
-            if (wfhYrVal) {
-                const yrTotal = Number(assets.wfhYearlyTotal || 48);
-                wfhYrVal.innerText = `${yearlyWfhHours}h / 上限 ${yrTotal}h (${(yrTotal / 8).toFixed(0)} 天)`;
+            const wfhPlanBridgeTag = document.getElementById('wfh-plan-bridge-tag');
+            if (wfhPlanBridgeTag) {
+                wfhPlanBridgeTag.innerHTML = `<i class="fa-solid fa-minus"></i> ${isHours ? curMonthPlannedHours + 'h' : curMonthPlannedDays.toFixed(1) + '天'} (${curMonthPlannedHours}h)`;
             }
 
-            // WFH 已完成 (實際) / 預計統計 (當月)
-            const fmtWfh = d => `${d.toFixed(1)} 天 (${(d * 8).toFixed(0)}h)`;
+            const wfhRemStat = document.getElementById('wfh-remaining-stat');
+            if (wfhRemStat) {
+                wfhRemStat.innerHTML = `${isHours ? curMonthForecastHours : curMonthForecastDays.toFixed(1)} <span class="side-unit">${fmtUnitOnly()}</span>`;
+            }
+            const wfhRemSub = document.getElementById('wfh-rem-sub');
+            if (wfhRemSub) wfhRemSub.innerText = isHours ? `(${curMonthForecastDays.toFixed(1)} 天)` : `(${curMonthForecastHours} 小時)`;
 
-            const doneMonthLbl = document.getElementById('wfh-done-month-label');
-            if (doneMonthLbl) doneMonthLbl.innerText = `${curViewMonthNum}月已完成`;
+            // 當月進度條 - 分母為每月上限 2 天 (16h)
+            const wfhDonePct = Math.min(100, Math.round((curMonthCompletedDays / monthlyLimit) * 100));
+            const wfhPlanPct = Math.min(100 - wfhDonePct, Math.round((curMonthPlannedDays / monthlyLimit) * 100));
+            
+            const wfhFillDone = document.getElementById('wfh-fill-done');
+            if (wfhFillDone) {
+                wfhFillDone.style.width = `${wfhDonePct}%`;
+                wfhFillDone.title = `${curViewMonthNum}月已休: ${curMonthCompletedDays}天 (${curMonthCompletedDays * 8}h)`;
+            }
+            const wfhFillPlan = document.getElementById('wfh-fill-plan');
+            if (wfhFillPlan) {
+                wfhFillPlan.style.width = `${wfhPlanPct}%`;
+                wfhFillPlan.title = `${curViewMonthNum}月預排: ${curMonthPlannedDays}天 (${curMonthPlannedDays * 8}h)`;
+            }
+            const wfhCurLabelVal = document.getElementById('wfh-cur-label-val');
+            if (wfhCurLabelVal) wfhCurLabelVal.innerText = `${curMonthAvailableDays.toFixed(1)}天 (${curMonthAvailableHours}h)`;
+            const wfhMonLimitVal = document.getElementById('wfh-monthly-limit-val');
+            if (wfhMonLimitVal) wfhMonLimitVal.innerText = `${monthlyLimit.toFixed(1)} 天 (${monthlyLimitHours}h)`;
 
-            const compWfhEl = document.getElementById('wfh-completed-display');
-            if (compWfhEl) compWfhEl.innerText = fmtWfh(monthlyCompletedWfhDays);
+            // 條列備註更新 - 遠距辦公
+            const wfhMonthBadge = document.getElementById('wfh-month-badge');
+            if (wfhMonthBadge) wfhMonthBadge.innerText = `${curViewMonthNum}月上限 ${monthlyLimit}天 (${monthlyLimitHours}h)`;
+            
+            const wfhNoteMonthText = document.getElementById('wfh-note-month-text');
+            if (wfhNoteMonthText) wfhNoteMonthText.innerText = `${curViewMonthNum}月`;
+            
+            const wfhMonStatusDisplay = document.getElementById('wfh-monthly-status-display');
+            if (wfhMonStatusDisplay) {
+                wfhMonStatusDisplay.innerText = `已休 ${curMonthCompletedDays.toFixed(1)}天 / 剩餘 ${curMonthAvailableDays.toFixed(1)}天 (${curMonthAvailableHours}h)`;
+            }
 
-            const planMonthLbl = document.getElementById('wfh-plan-month-label');
-            if (planMonthLbl) planMonthLbl.innerText = `${curViewMonthNum}月預計`;
+            // 12 月排程預排檢視 (如果在 11 月時提醒 12 月有排)
+            const wfhFutureDecDisplay = document.getElementById('wfh-future-dec-display');
+            if (wfhFutureDecDisplay) {
+                if (curViewMonthNum === 11) {
+                    wfhFutureDecDisplay.innerText = `12/24 預排 1天 ➔ 12月剩 1.0天 (8h)`;
+                } else if (curViewMonthNum === 12) {
+                    wfhFutureDecDisplay.innerText = `當前 12月已排 12/24 (1天)，剩 1.0天 (8h)`;
+                } else {
+                    wfhFutureDecDisplay.innerText = `12月已預排 1.0天 (8h)`;
+                }
+            }
 
-            const planWfhEl = document.getElementById('wfh-planned-display');
-            if (planWfhEl) planWfhEl.innerText = fmtWfh(monthlyPlannedWfhDays);
-
-            const wfhCtxEl = document.getElementById('wfh-month-context-display');
-            if (wfhCtxEl) wfhCtxEl.innerText = `連動 ${curViewYear} 年 ${curViewMonthNum} 月`;
+            const wfhYearlyTotalDisplay = document.getElementById('wfh-yearly-total-display');
+            if (wfhYearlyTotalDisplay) {
+                wfhYearlyTotalDisplay.innerText = `總額度 32h / 系統已記 8h / 累計剩 24h`;
+            }
         }
 
         let tableSortOrder = 'asc'; // 'asc': 由早到晚 (預設), 'desc': 由晚到早
 
-        function toggleDateSort() {
+function toggleDateSort() {
             tableSortOrder = (tableSortOrder === 'asc') ? 'desc' : 'asc';
             renderLeaveTable();
         }
