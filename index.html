@@ -15,6 +15,8 @@
     
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Lightweight Pure-JS QR Code Generator for PC-to-iPhone Instant Sync -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 
     <style>
         :root {
@@ -1616,6 +1618,175 @@
                 display: none; /* 極窄螢幕隱藏拖曳提示文字，留給標題充足空間 */
             }
         }
+
+        /* ==========================================
+           iPhone 行事曆連動與自動關鬧鐘捷徑中心 (V2.0.14)
+           ========================================== */
+        .cal-sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 999px;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition);
+            border: 1px dashed #cbd5e1;
+            color: var(--text-muted);
+            background: #f8fafc;
+            margin-left: 5px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .cal-sync-badge:hover {
+            border-color: #385748;
+            color: #385748;
+            background: #edf4f0;
+        }
+        .cal-sync-badge.active {
+            border: 1px solid #a7d7be;
+            background: #e8f5ee;
+            color: #24583c;
+        }
+
+        .ios-sync-plan-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 210px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .ios-sync-plan-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 9px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            background: #ffffff;
+            transition: var(--transition);
+        }
+        .ios-sync-plan-item.is-checked {
+            background: #f4faf6;
+            border-color: #b7dec7;
+        }
+        .ios-alarm-behavior-tag {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ios-alarm-off {
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+        }
+        .ios-alarm-keep {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* 擬真 iOS 捷徑積木視覺卡片 */
+        .shortcut-blueprint-box {
+            background: #f2f2f7;
+            border: 1px solid #d1d1d6;
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .shortcut-block {
+            background: #ffffff;
+            border-radius: 9px;
+            padding: 8px 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.78rem;
+            color: #1c1c1e;
+            line-height: 1.45;
+        }
+        .shortcut-block.indent-1 {
+            margin-left: 16px;
+            border-left: 3px solid #007aff;
+        }
+        .shortcut-block-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+        .sc-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.68rem;
+            flex-shrink: 0;
+        }
+        .sc-pill {
+            display: inline-block;
+            background: #e5f1ff;
+            color: #0066cc;
+            font-weight: 800;
+            padding: 0 6px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            margin: 0 1px;
+        }
+        .sc-pill-orange {
+            background: #fff0e5;
+            color: #d95b00;
+        }
+        .sc-pill-green {
+            background: #e6f7ed;
+            color: #15803d;
+        }
+
+        .qr-sync-panel {
+            background: #f8fafc;
+            border: 1px dashed #94a3b8;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            margin-top: 7px;
+            display: none;
+        }
+        .qr-sync-panel.active {
+            display: block;
+        }
+
+        @media (max-width: 640px) {
+            #iosCalendarModal .modal-dialog {
+                max-width: 100% !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            #iosCalendarModal .calc-tab-btn {
+                padding: 6px 4px !important;
+                font-size: 0.72rem !important;
+                flex: 1 1 0 !important;
+                min-width: 0 !important;
+            }
+            .ios-sync-plan-item {
+                flex-wrap: wrap;
+            }
+            .shortcut-block.indent-1 {
+                margin-left: 10px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1628,10 +1799,13 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.13</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.14</span></div>
                 </div>
             </div>
             <div class="nav-actions">
+                <button class="btn btn-secondary" onclick="openIosCalendarModal('cal')" style="border-color: #a7d7be; color: #1f5c3e; background: #e8f5ee; font-weight: 800;" title="將確定請假連動至 iPhone 行事曆並設定自動關鬧鐘捷徑">
+                    <i class="fa-brands fa-apple"></i> 手機行事曆 & 關鬧鐘捷徑
+                </button>
                 <button class="btn btn-secondary" onclick="openLeaveCalculatorModal()" style="border-color: #cbd7e2; color: #445667; background: #edf2f6; font-weight: 700;">
                     <i class="fa-solid fa-calculator" style="color: var(--primary);"></i> 假期試算
                 </button>
@@ -1923,6 +2097,9 @@
                         <span id="records-count-badge" style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 1px 6px; border-radius: 8px;">0 項</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.72rem; border-color: #a7d7be; background: #e8f5ee; color: #1f5c3e; font-weight: 800;" onclick="openIosCalendarModal('cal')" title="同步已確定請假項目至 iPhone 行事曆與鬧鐘捷徑">
+                            <i class="fa-brands fa-apple"></i> 連動手機行事曆
+                        </button>
                         <span class="mobile-table-hint" style="font-size: 0.70rem; color: var(--text-muted); display: none;"><i class="fa-solid fa-arrows-left-right"></i> 表格可滑動</span>
                         <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.74rem; color: var(--text-sub); cursor: pointer; user-select: none;" title="已過期的請假預設不顯示，取消勾選可檢視歷史紀錄">
                             <input type="checkbox" id="chkHideExpired" checked onchange="toggleHideExpired(this.checked)" style="cursor: pointer; accent-color: var(--primary);">
@@ -2141,6 +2318,13 @@
                     <div class="form-group">
                         <label class="form-label">地點與簡短備註</label>
                         <input type="text" id="leaveNotes" class="form-control" placeholder="例如：中國重慶 / 家中 / 個人身體不適">
+                    </div>
+
+                    <div class="form-group" style="background: #edf4f0; border: 1px solid #c9ded2; padding: 7px 10px; border-radius: 6px; margin-bottom: 2px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.80rem; font-weight: 700; color: #24583c; cursor: pointer; margin: 0;">
+                            <input type="checkbox" id="leaveCalendarConfirmed" checked style="width: 15px; height: 15px; accent-color: #1f6f4a; cursor: pointer;">
+                            <span>📱 確定已請假（連動至 iPhone 行事曆 & 休假日自動關鬧鐘）</span>
+                        </label>
                     </div>
                 </div>
 
@@ -2501,6 +2685,161 @@
         </div>
     </div>
 
+
+    <!-- Modal 5: iPhone 行事曆連動 & 自動關鬧鐘捷徑中心 (V2.0.14) -->
+    <div class="modal-backdrop" id="iosCalendarModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'iosCalendarModal')">
+        <div class="modal-dialog" style="max-width: 660px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, #2b3a4a, #44596e); color: white;">
+                <div class="modal-title" style="color: white; font-weight: 800; font-size: 0.92rem;">
+                    <i class="fa-brands fa-apple" style="font-size: 1.05rem;"></i> iPhone 行事曆連動 & 休假自動關鬧鐘捷徑
+                </div>
+                <button type="button" class="modal-close-btn" style="color: white; background: rgba(255,255,255,0.2); border: none;" onclick="closeIosCalendarModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body" style="padding: 10px 12px;">
+                <!-- 頂部雙步驟切換分頁 -->
+                <div class="calc-tab-bar" style="margin-bottom: 8px;">
+                    <button type="button" class="calc-tab-btn active" id="ios-tab-btn-cal" onclick="switchIosModalTab('cal')">
+                        <i class="fa-solid fa-calendar-check"></i> 步驟 1：同步「確定請假」至手機行事曆
+                    </button>
+                    <button type="button" class="calc-tab-btn" id="ios-tab-btn-shortcut" onclick="switchIosModalTab('shortcut')">
+                        <i class="fa-solid fa-bolt"></i> 步驟 2：iPhone 自動關鬧鐘捷徑 (產出)
+                    </button>
+                </div>
+
+                <!-- ==================== 分頁 1：同步確定請假至 iPhone 行事曆 ==================== -->
+                <div id="ios-tab-cal-content">
+                    <!-- 智慧鬧鐘判定規則開關 -->
+                    <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-light); border-radius: 6px; padding: 7px 10px; margin-bottom: 8px;">
+                        <div style="font-size: 0.78rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <span><i class="fa-solid fa-sliders" style="color: var(--primary);"></i> 智慧休假標記與早起鬧鐘規則</span>
+                            <span style="font-size: 0.70rem; color: #24583c; background: #e8f5ee; padding: 1px 7px; border-radius: 99px; font-weight: 700;">識別碼：【休假】</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5px 10px; font-size: 0.75rem;" class="form-row">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); font-weight: 600;">
+                                <input type="checkbox" id="iosOptMorningOff" checked onchange="updateIosSyncOptions()" style="accent-color: var(--primary);">
+                                <span>上午假 (7點起) 免早起關鬧鐘</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); font-weight: 600;">
+                                <input type="checkbox" id="iosOptIncludeHolidays" checked onchange="updateIosSyncOptions()" style="accent-color: var(--primary);">
+                                <span>一併匯入台灣國定假日 (免早起)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); font-weight: 600;">
+                                <input type="checkbox" id="iosOptWfhOff" onchange="updateIosSyncOptions()" style="accent-color: var(--primary);">
+                                <span>遠距辦公 (WFH) 也關閉早起鬧鐘</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); font-weight: 600;">
+                                <input type="checkbox" id="iosOptOnlyUpcoming" checked onchange="updateIosSyncOptions()" style="accent-color: var(--primary);">
+                                <span>僅匯出近期與未來假勤 (過濾舊假)</span>
+                            </label>
+                        </div>
+                        <div style="font-size: 0.70rem; color: var(--text-sub); margin-top: 5px; line-height: 1.35;">
+                            💡 <strong>防遲到保護機制：</strong>若單日只請「下午半天假（如 12:00 / 13:00 起）」，因早上 07:00 仍需正常上班，系統會自動標示為 <code>【下午請假】</code>（不帶 <code>【休假】</code> 標籤），<strong>絕不會誤關您的早起鬧鐘！</strong>
+                        </div>
+                    </div>
+
+                    <!-- 勾選確定已經請假的項目 -->
+                    <div style="background: white; border: 1px solid var(--border-light); border-radius: 6px; padding: 7px 10px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+                            <span style="font-size: 0.78rem; font-weight: 800; color: var(--text-main);">
+                                <i class="fa-solid fa-list-check" style="color: #24583c;"></i> 勾選「確定已請假」項目 <span id="iosConfirmedCountBadge" style="font-size: 0.70rem; background: #e8f5ee; color: #24583c; padding: 1px 6px; border-radius: 8px; margin-left: 4px;">0 筆</span>
+                            </span>
+                            <div style="display: inline-flex; gap: 4px;">
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px;" onclick="batchSetCalendarConfirm(true)">全選未過期</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px;" onclick="batchSetCalendarConfirm(false)">全部取消</button>
+                            </div>
+                        </div>
+                        <div class="ios-sync-plan-list custom-scrollbar" id="iosSyncPlanListContainer">
+                            <!-- 動態渲染假勤勾選列 -->
+                        </div>
+                    </div>
+
+                    <!-- 三種同步至 iPhone 的操作方式 -->
+                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 9px 10px;">
+                        <div style="font-size: 0.78rem; font-weight: 800; color: #166534; margin-bottom: 6px;">
+                            <i class="fa-solid fa-paper-plane"></i> 將上方確定請假行程傳送至 iPhone 行事曆：
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <button type="button" class="btn btn-primary" style="flex: 1 1 200px; justify-content: center; background: #1f6f4a; border-color: #195c3d; padding: 6px 10px; font-size: 0.80rem;" onclick="exportConfirmedLeavesToIcs()">
+                                <i class="fa-brands fa-apple"></i> 📲 手機直接匯入 iPhone 行事曆 (.ics)
+                            </button>
+                            <button type="button" class="btn btn-secondary" style="flex: 1 1 180px; justify-content: center; border-color: #86efac; background: #ffffff; color: #166534; font-weight: 700; padding: 6px 10px; font-size: 0.78rem;" onclick="toggleIosSyncQrCode()">
+                                <i class="fa-solid fa-qrcode"></i> 📷 電腦排假 ➔ 手機掃碼秒傳
+                            </button>
+                            <button type="button" class="btn btn-secondary" style="flex: 1 1 150px; justify-content: center; border-color: #cbd5e1; background: #ffffff; color: var(--text-main); font-weight: 700; padding: 6px 8px; font-size: 0.75rem;" onclick="subscribeWebcalLink()" title="訂閱 GitHub Pages 上的預設行事曆">
+                                <i class="fa-solid fa-rss"></i> webcal 訂閱連結
+                            </button>
+                        </div>
+
+                        <!-- 電腦對手機掃碼秒傳面板 -->
+                        <div class="qr-sync-panel" id="iosQrSyncPanel">
+                            <div style="font-size: 0.78rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">
+                                📱 請打開 iPhone 原生「相機」對準下方 QR Code 掃描
+                            </div>
+                            <div style="font-size: 0.71rem; color: var(--text-sub); margin-bottom: 6px;">
+                                掃描後將在 iPhone Safari 開啟本頁，<strong>自動同步電腦上勾選的確定假勤，並直接彈出加入 iPhone 行事曆視窗！</strong>
+                            </div>
+                            <div id="iosQrCodeCanvasWrap" style="display: inline-block; background: white; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 150px; min-height: 150px;"></div>
+                            <div style="margin-top: 6px; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
+                                <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.71rem;" onclick="copyIosSyncUrl()">
+                                    <i class="fa-regular fa-copy"></i> 複製跨裝置同步連結 (傳至 LINE 給自己)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== 分頁 2：iPhone 自動關鬧鐘捷徑產生器 ==================== -->
+                <div id="ios-tab-shortcut-content" style="display: none;">
+                    <!-- 自訂鬧鐘標籤與版本切換 -->
+                    <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-light); border-radius: 6px; padding: 7px 10px; margin-bottom: 8px;">
+                        <div class="form-row" style="align-items: end;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">⏰ 您的 iPhone 上班鬧鐘標籤名稱</label>
+                                <input type="text" id="shortcutAlarmLabelInput" class="form-control" value="上班" placeholder="例如：上班" oninput="renderShortcutBlueprint()">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">⚡ 選擇捷徑執行時機腳本</label>
+                                <select id="shortcutModeSelect" class="form-control" onchange="renderShortcutBlueprint()">
+                                    <option value="dawn" selected>🌙 凌晨 04:00 全自動版 (休假關鬧鐘+收假自動開回)</option>
+                                    <option value="night">🔔 睡前 22:00 預告版 (前一晚關鬧鐘+跳安心通知)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-top: 6px; padding-top: 5px; border-top: 1px dashed var(--border-light); font-size: 0.72rem; color: var(--text-sub);">
+                            <span>💡 請先在 iPhone「<strong>時鐘</strong>」App 將平日早起鬧鐘的標籤改為「<strong id="hintAlarmLabelText" style="color: var(--primary);">上班</strong>」（多個連環鬧鐘皆設同名即可一次全關！）</span>
+                            <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.70rem; height: 22px; background: white; font-weight: 700; color: #0066cc; border-color: #bfdbfe;" onclick="copyHolidayKeyword()">
+                                <i class="fa-regular fa-copy"></i> 複製關鍵字【休假】
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 擬真 iOS 捷徑積木逐步藍圖 -->
+                    <div class="shortcut-blueprint-box" id="shortcutBlueprintContainer">
+                        <!-- 由 JS 即時生成對應的繁體中文 iOS 捷徑積木 -->
+                    </div>
+
+                    <!-- 匯出捷徑步驟備忘錄按鈕列 -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+                        <button type="button" class="btn btn-primary" style="flex: 1 1 200px; justify-content: center; padding: 6px 10px; font-size: 0.78rem;" onclick="copyShortcutGuideText()">
+                            <i class="fa-regular fa-copy"></i> 📋 複製完整捷徑設定步驟 (貼到手機備忘錄)
+                        </button>
+                        <button type="button" class="btn btn-secondary" style="flex: 1 1 180px; justify-content: center; padding: 6px 10px; font-size: 0.78rem; font-weight: 700;" onclick="downloadShortcutGuideFile()">
+                            <i class="fa-solid fa-file-arrow-down"></i> 💾 下載 iPhone 捷徑設定手冊 (.md)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.76rem;" onclick="closeIosCalendarModal()">關閉視窗</button>
+                <button type="button" class="btn btn-primary" id="iosModalNextStepBtn" style="padding: 3px 12px; font-size: 0.76rem;" onclick="switchIosModalTab('shortcut')">
+                    下一步：查看 iPhone 自動關鬧鐘捷徑 ➔
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Application Script Logic -->
     <script>
         // 2026 台灣完整國定假日與補假
@@ -2698,6 +3037,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
             renderAll();
+            checkIncomingIosSyncHash();
 
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
@@ -2705,6 +3045,7 @@
                     closeYearlyAssetModal();
                     closeLeaveCalculatorModal();
                     closeExportImageModal();
+                    closeIosCalendarModal();
                 }
             });
         });
@@ -3475,7 +3816,7 @@ function toggleDateSort() {
                     </td>
                     <td>
                         <strong style="color: var(--text-main); font-size: 0.82rem;">${plan.title}</strong>
-                        ${isExpired ? `<span style="font-size: 0.68rem; color: var(--text-muted); background: var(--bg-card-subtle); padding: 1px 4px; border-radius: 3px; margin-left: 4px;">已過期</span>` : ''}
+                        ${isExpired ? `<span style="font-size: 0.68rem; color: var(--text-muted); background: var(--bg-card-subtle); padding: 1px 4px; border-radius: 3px; margin-left: 4px;">已過期</span>` : `<span class="cal-sync-badge ${isPlanCalendarConfirmed(plan) ? 'active' : ''}" onclick="event.stopPropagation(); togglePlanCalendarConfirm('${plan.id}')" title="${isPlanCalendarConfirmed(plan) ? '已標記為確定請假（納入 iPhone 行事曆連動，點擊可取消）' : '點擊標記為「確定已請假」，納入 iPhone 行事曆與關鬧鐘連動'}"><i class="fa-solid ${isPlanCalendarConfirmed(plan) ? 'fa-mobile-screen-button' : 'fa-calendar-plus'}"></i> ${isPlanCalendarConfirmed(plan) ? '已連動' : '連動手機'}</span>`}
                         ${plan.notes ? `<div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 1px;">${plan.notes}</div>` : ''}
                     </td>
                     <td style="white-space: nowrap; font-size: 0.76rem;">
@@ -3504,6 +3845,9 @@ function toggleDateSort() {
             const plan = appState.leavePlans.find(p => String(p.id) === String(planId));
             if (!plan) return;
             plan.completed = !!checked;
+            if (checked) {
+                plan.calendarConfirmed = true; // 勾選已休/已核准時，自動納入確定請假行事曆連動
+            }
             saveToLocalStorage();
             renderAll();
         }
@@ -4047,6 +4391,9 @@ function toggleDateSort() {
                 if (document.getElementById('endMinute')) document.getElementById('endMinute').value = '00';
 
                 document.getElementById('enableManualAdjustment').checked = false;
+                if (document.getElementById('leaveCalendarConfirmed')) {
+                    document.getElementById('leaveCalendarConfirmed').checked = true;
+                }
                 toggleManualAdjustment(false);
                 handleDateRangeChange();
 
@@ -4085,6 +4432,9 @@ function toggleDateSort() {
 
                 handleDateRangeChange();
 
+                if (document.getElementById('leaveCalendarConfirmed')) {
+                    document.getElementById('leaveCalendarConfirmed').checked = isPlanCalendarConfirmed(plan);
+                }
                 const isManual = !!plan.manualAdjustment;
                 document.getElementById('enableManualAdjustment').checked = isManual;
                 toggleManualAdjustment(isManual);
@@ -4128,6 +4478,7 @@ function toggleDateSort() {
 
             const isManual = document.getElementById('enableManualAdjustment').checked;
             const manualHours = isManual ? Number(document.getElementById('manualDeductHours').value) : null;
+            const calendarConfirmed = document.getElementById('leaveCalendarConfirmed') ? !!document.getElementById('leaveCalendarConfirmed').checked : false;
 
             if (leaveId) {
                 const idx = appState.leavePlans.findIndex(p => p.id === leaveId);
@@ -4137,7 +4488,8 @@ function toggleDateSort() {
                         startTime, endTime,
                         manualAdjustment: isManual,
                         manualHours: isManual ? manualHours : null,
-                        completed: !!appState.leavePlans[idx].completed
+                        completed: !!appState.leavePlans[idx].completed,
+                        calendarConfirmed: calendarConfirmed
                     };
                 }
 
@@ -4152,7 +4504,9 @@ function toggleDateSort() {
                     id: newId, title, startDate, endDate, type, notes,
                     startTime, endTime,
                     manualAdjustment: isManual,
-                    manualHours: isManual ? manualHours : null
+                    manualHours: isManual ? manualHours : null,
+                    completed: false,
+                    calendarConfirmed: calendarConfirmed
                 });
 
                 if (type === 'vacation') {
@@ -5327,6 +5681,816 @@ function toggleDateSort() {
         window.handleCalcEndDateChange = handleCalcEndDateChange;
         window.getRemainingVacationHoursForYear = getRemainingVacationHoursForYear;
         window.import2026RemainingToOldLeave = import2026RemainingToOldLeave;
+
+
+        // ==========================================
+        // iPhone 行事曆連動 & 休假自動關鬧鐘捷徑中心核心引擎 (V2.0.14)
+        // ==========================================
+        function getIosSyncConfig() {
+            if (!appState.iosSyncConfig) {
+                appState.iosSyncConfig = {
+                    morningHalfOff: true,
+                    includeNationalHolidays: true,
+                    wfhTurnOffAlarm: false,
+                    onlyUpcoming: true,
+                    alarmLabel: '上班',
+                    shortcutMode: 'dawn'
+                };
+            }
+            return appState.iosSyncConfig;
+        }
+
+        // 判定該筆假勤是否已標記為「確定請假 (連動手機行事曆)」
+        function isPlanCalendarConfirmed(plan) {
+            if (!plan) return false;
+            if (plan.calendarConfirmed !== undefined && plan.calendarConfirmed !== null) {
+                return !!plan.calendarConfirmed;
+            }
+            return !!plan.completed;
+        }
+
+        // 切換單筆假勤的「確定請假 (連動手機行事曆)」狀態
+        function togglePlanCalendarConfirm(planId, explicitVal) {
+            const plan = appState.leavePlans.find(p => String(p.id) === String(planId));
+            if (!plan) return;
+            const current = isPlanCalendarConfirmed(plan);
+            plan.calendarConfirmed = (explicitVal !== undefined) ? !!explicitVal : !current;
+            saveToLocalStorage();
+            renderLeaveTable();
+            const modal = document.getElementById('iosCalendarModal');
+            if (modal && modal.classList.contains('active')) {
+                renderIosSyncPlanList();
+                if (document.getElementById('iosQrSyncPanel')?.classList.contains('active')) {
+                    renderIosSyncQrCode();
+                }
+            }
+        }
+
+        // 批次全選或取消確定請假連動
+        function batchSetCalendarConfirm(val) {
+            const __now = new Date();
+            const todayISO = `${__now.getFullYear()}-${String(__now.getMonth() + 1).padStart(2, '0')}-${String(__now.getDate()).padStart(2, '0')}`;
+            appState.leavePlans.forEach(plan => {
+                if (val) {
+                    if (!plan.endDate || plan.endDate >= todayISO) {
+                        plan.calendarConfirmed = true;
+                    }
+                } else {
+                    plan.calendarConfirmed = false;
+                }
+            });
+            saveToLocalStorage();
+            renderLeaveTable();
+            renderIosSyncPlanList();
+            if (document.getElementById('iosQrSyncPanel')?.classList.contains('active')) {
+                renderIosSyncQrCode();
+            }
+        }
+
+        // 判定單筆假勤對於早起鬧鐘的行為分類
+        function classifyPlanAlarmBehavior(plan) {
+            const cfg = getIosSyncConfig();
+            const deduct = getPlanActualDeduction(plan);
+            const sParts = (plan.startTime || '07:00').split(':').map(Number);
+            const eParts = (plan.endTime || '16:00').split(':').map(Number);
+            const sH = isNaN(sParts[0]) ? 7 : sParts[0];
+            const eH = isNaN(eParts[0]) ? 16 : eParts[0];
+
+            if (plan.type === 'wfh') {
+                if (cfg.wfhTurnOffAlarm) {
+                    return { turnOffAlarm: true, label: '🌙 WFH 免通勤・關鬧鐘', prefix: '【休假】' };
+                } else {
+                    return { turnOffAlarm: false, label: '☀️ WFH・保留早起鬧鐘', prefix: '【遠距辦公】' };
+                }
+            }
+
+            // 單日請假，且開始時間 >= 11:00（下午半天假，早上 07:00 仍須正常上班！）
+            const isSingleDay = (plan.startDate === plan.endDate);
+            if (isSingleDay && sH >= 11 && deduct.hours < 8) {
+                return { turnOffAlarm: false, label: '☀️ 下午請假・保留早起鬧鐘', prefix: '【下午請假】' };
+            }
+
+            // 單日請假，上午半天假（開始時間 < 11:00 且結束時間 <= 13:00 且時數 < 8）
+            if (isSingleDay && sH < 11 && eH <= 13 && deduct.hours < 8) {
+                if (cfg.morningHalfOff) {
+                    return { turnOffAlarm: true, isMorningHalf: true, label: '🌙 上午假・關早起鬧鐘+午間提醒', prefix: '【休假】' };
+                } else {
+                    return { turnOffAlarm: false, isMorningHalf: true, label: '☀️ 上午假・保留鬧鐘', prefix: '【上午請假】' };
+                }
+            }
+
+            // 全天假或跨多日假勤
+            return { turnOffAlarm: true, label: '🌙 全天休假・自動關鬧鐘', prefix: '【休假】' };
+        }
+
+        function openIosCalendarModal(defaultTab = 'cal') {
+            const cfg = getIosSyncConfig();
+            const elMorning = document.getElementById('iosOptMorningOff');
+            const elHol = document.getElementById('iosOptIncludeHolidays');
+            const elWfh = document.getElementById('iosOptWfhOff');
+            const elUp = document.getElementById('iosOptOnlyUpcoming');
+            const elLabel = document.getElementById('shortcutAlarmLabelInput');
+            const elMode = document.getElementById('shortcutModeSelect');
+
+            if (elMorning) elMorning.checked = !!cfg.morningHalfOff;
+            if (elHol) elHol.checked = !!cfg.includeNationalHolidays;
+            if (elWfh) elWfh.checked = !!cfg.wfhTurnOffAlarm;
+            if (elUp) elUp.checked = !!cfg.onlyUpcoming;
+            if (elLabel) elLabel.value = cfg.alarmLabel || '上班';
+            if (elMode) elMode.value = cfg.shortcutMode || 'dawn';
+
+            renderIosSyncPlanList();
+            renderShortcutBlueprint();
+            switchIosModalTab(defaultTab);
+
+            const modal = document.getElementById('iosCalendarModal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeIosCalendarModal() {
+            const modal = document.getElementById('iosCalendarModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function switchIosModalTab(tab) {
+            const btnCal = document.getElementById('ios-tab-btn-cal');
+            const btnSc = document.getElementById('ios-tab-btn-shortcut');
+            const contCal = document.getElementById('ios-tab-cal-content');
+            const contSc = document.getElementById('ios-tab-shortcut-content');
+            const nextBtn = document.getElementById('iosModalNextStepBtn');
+
+            if (tab === 'shortcut') {
+                if (btnCal) btnCal.classList.remove('active');
+                if (btnSc) btnSc.classList.add('active');
+                if (contCal) contCal.style.display = 'none';
+                if (contSc) contSc.style.display = 'block';
+                if (nextBtn) {
+                    nextBtn.innerHTML = '⬅ 返回步驟 1：同步行事曆';
+                    nextBtn.onclick = () => switchIosModalTab('cal');
+                }
+                renderShortcutBlueprint();
+            } else {
+                if (btnCal) btnCal.classList.add('active');
+                if (btnSc) btnSc.classList.remove('active');
+                if (contCal) contCal.style.display = 'block';
+                if (contSc) contSc.style.display = 'none';
+                if (nextBtn) {
+                    nextBtn.innerHTML = '下一步：查看 iPhone 自動關鬧鐘捷徑 ➔';
+                    nextBtn.onclick = () => switchIosModalTab('shortcut');
+                }
+            }
+        }
+
+        function updateIosSyncOptions() {
+            const cfg = getIosSyncConfig();
+            cfg.morningHalfOff = !!document.getElementById('iosOptMorningOff')?.checked;
+            cfg.includeNationalHolidays = !!document.getElementById('iosOptIncludeHolidays')?.checked;
+            cfg.wfhTurnOffAlarm = !!document.getElementById('iosOptWfhOff')?.checked;
+            cfg.onlyUpcoming = !!document.getElementById('iosOptOnlyUpcoming')?.checked;
+            saveToLocalStorage();
+            renderIosSyncPlanList();
+            if (document.getElementById('iosQrSyncPanel')?.classList.contains('active')) {
+                renderIosSyncQrCode();
+            }
+        }
+
+        function renderIosSyncPlanList() {
+            const container = document.getElementById('iosSyncPlanListContainer');
+            const badge = document.getElementById('iosConfirmedCountBadge');
+            if (!container) return;
+
+            const cfg = getIosSyncConfig();
+            const __now = new Date();
+            const cutoffDate = new Date(__now.getFullYear(), __now.getMonth(), __now.getDate() - 7);
+            const cutoffISO = `${cutoffDate.getFullYear()}-${String(cutoffDate.getMonth() + 1).padStart(2, '0')}-${String(cutoffDate.getDate()).padStart(2, '0')}`;
+
+            let plansToShow = [...(appState.leavePlans || [])];
+            if (cfg.onlyUpcoming) {
+                plansToShow = plansToShow.filter(p => !p.endDate || p.endDate >= cutoffISO);
+            }
+
+            let confirmedCount = 0;
+            plansToShow.forEach(p => { if (isPlanCalendarConfirmed(p)) confirmedCount++; });
+            if (badge) badge.innerText = `已勾選 ${confirmedCount} 筆`;
+
+            if (plansToShow.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 0.76rem; padding: 14px;">目前無符合條件之假勤項目（可取消「僅匯出近期與未來假勤」檢視歷史紀錄，或先排入新假勤）。</div>`;
+                return;
+            }
+
+            container.innerHTML = plansToShow.map(plan => {
+                const confirmed = isPlanCalendarConfirmed(plan);
+                const behavior = classifyPlanAlarmBehavior(plan);
+                const deduct = getPlanActualDeduction(plan);
+                const dateText = (plan.startDate === plan.endDate)
+                    ? `${plan.startDate} (${plan.startTime || '07:00'}~${plan.endTime || '16:00'})`
+                    : `${plan.startDate} ~ ${plan.endDate}`;
+                const typeLabel = plan.type === 'wfh' ? '🏡 遠距' : (plan.type === 'sick' ? '🏥 病假' : '🏖️ 特休');
+
+                return `
+                    <label class="ios-sync-plan-item ${confirmed ? 'is-checked' : ''}" style="cursor: pointer;">
+                        <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                            <input type="checkbox" ${confirmed ? 'checked' : ''} onchange="togglePlanCalendarConfirm('${plan.id}', this.checked)" style="width: 15px; height: 15px; accent-color: #1f6f4a; cursor: pointer; flex-shrink: 0;">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 0.80rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+                                    <span>${typeLabel}</span>
+                                    <span>${plan.title}</span>
+                                    <span style="font-size: 0.71rem; color: var(--primary); font-weight: 700;">(${deduct.days}天 / ${deduct.hours}h)</span>
+                                </div>
+                                <div style="font-size: 0.70rem; color: var(--text-sub);">${dateText}</div>
+                            </div>
+                        </div>
+                        <span class="ios-alarm-behavior-tag ${behavior.turnOffAlarm ? 'ios-alarm-off' : 'ios-alarm-keep'}">${behavior.label}</span>
+                    </label>
+                `;
+            }).join('');
+        }
+
+        // 輔助：RFC 5545 日期加減一天 (YYYYMMDD)
+        function addDaysToCompactYMD(dateISO, addDays) {
+            const p = dateISO.split('-').map(Number);
+            const d = new Date(p[0], p[1] - 1, p[2] + addDays);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}${m}${day}`;
+        }
+
+        function escapeIcsText(str) {
+            return String(str || '')
+                .replace(/\\/g, '\\\\')
+                .replace(/;/g, '\\;')
+                .replace(/,/g, '\\,')
+                .replace(/\r?\n/g, '\\n');
+        }
+
+        // 核心：產生標準 RFC 5545 iCalendar (.ics) 內容（每個免早起休假日獨立全天事件，完美相容 iOS 捷徑「是今天」判定）
+        function generateConfirmedIcsContent() {
+            const cfg = getIosSyncConfig();
+            const __now = new Date();
+            const cutoffDate = new Date(__now.getFullYear(), __now.getMonth(), __now.getDate() - 7);
+            const cutoffISO = `${cutoffDate.getFullYear()}-${String(cutoffDate.getMonth() + 1).padStart(2, '0')}-${String(cutoffDate.getDate()).padStart(2, '0')}`;
+
+            const dtStamp = __now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            const lines = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Alice Attendance Planner//iOS Alarm Sync V2.0.14//TW',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'X-WR-CALNAME:個人休假排程 (連動鬧鐘)',
+                'X-WR-TIMEZONE:Asia/Taipei'
+            ];
+
+            const holidayMap = {};
+            NATIONAL_HOLIDAYS_2026.forEach(h => { holidayMap[h.date] = h.name; });
+            NATIONAL_HOLIDAYS_2027.forEach(h => { holidayMap[h.date] = h.name; });
+
+            let exportedEventsCount = 0;
+
+            // 1. 處理已勾選「確定請假」的個人假勤
+            const confirmedPlans = (appState.leavePlans || []).filter(p => {
+                if (!isPlanCalendarConfirmed(p)) return false;
+                if (cfg.onlyUpcoming && p.endDate && p.endDate < cutoffISO) return false;
+                return true;
+            });
+
+            confirmedPlans.forEach(plan => {
+                const behavior = classifyPlanAlarmBehavior(plan);
+                const deduct = getPlanActualDeduction(plan);
+                const typeName = plan.type === 'wfh' ? '遠距辦公' : (plan.type === 'sick' ? '全薪病假' : '特休假');
+
+                if (plan.startDate === plan.endDate) {
+                    const ymd = plan.startDate.replace(/-/g, '');
+                    const nextYmd = addDaysToCompactYMD(plan.startDate, 1);
+
+                    if (behavior.turnOffAlarm) {
+                        // 免早起（全天假或上午假）：建立全天事件，讓 iPhone 捷徑「開始日期 是今天 + 標題包含【休假】」100% 命中！
+                        const timeHint = behavior.isMorningHalf ? ` (${plan.startTime || '07:00'}~${plan.endTime || '12:00'})` : '';
+                        const summary = `${behavior.prefix}${plan.title}${timeHint}`;
+                        const desc = `類別：${typeName} (${deduct.days}天 / ${deduct.hours}h)\n時段：${plan.startTime || '07:00'} ~ ${plan.endTime || '16:00'}${plan.notes ? '\n備註：' + plan.notes : ''}\n[iPhone 捷徑將自動關閉當日早起鬧鐘]`;
+
+                        lines.push('BEGIN:VEVENT');
+                        lines.push(`UID:leave-${plan.id}-${ymd}@alicetychen.attendance`);
+                        lines.push(`DTSTAMP:${dtStamp}`);
+                        lines.push(`DTSTART;VALUE=DATE:${ymd}`);
+                        lines.push(`DTEND;VALUE=DATE:${nextYmd}`);
+                        lines.push(`SUMMARY:${escapeIcsText(summary)}`);
+                        lines.push(`DESCRIPTION:${escapeIcsText(desc)}`);
+                        lines.push('TRANSP:TRANSPARENT');
+                        if (behavior.isMorningHalf) {
+                            // 上午半天假貼心附加：上午 10:50 提醒準備下午上班
+                            lines.push('BEGIN:VALARM');
+                            lines.push('TRIGGER:PT10H50M');
+                            lines.push('ACTION:DISPLAY');
+                            lines.push('DESCRIPTION:⏰ 上午假即將結束，提醒您準備下午出門上班！');
+                            lines.push('END:VALARM');
+                        }
+                        lines.push('END:VEVENT');
+                        exportedEventsCount++;
+                    } else {
+                        // 下午請假或不關鬧鐘的 WFH：使用精確時間區間且不帶【休假】關鍵字，確保早起鬧鐘正常響鈴！
+                        const sT = (plan.startTime || '13:00').replace(':', '') + '00';
+                        const eT = (plan.endTime || '16:00').replace(':', '') + '00';
+                        const summary = `${behavior.prefix}${plan.title} (${plan.startTime || '13:00'}~${plan.endTime || '16:00'})`;
+                        const desc = `類別：${typeName} (${deduct.days}天 / ${deduct.hours}h)\n早上仍需正常起床上班，保留早起鬧鐘！${plan.notes ? '\n備註：' + plan.notes : ''}`;
+
+                        lines.push('BEGIN:VEVENT');
+                        lines.push(`UID:leave-${plan.id}-${ymd}@alicetychen.attendance`);
+                        lines.push(`DTSTAMP:${dtStamp}`);
+                        lines.push(`DTSTART:${ymd}T${sT}`);
+                        lines.push(`DTEND:${ymd}T${eT}`);
+                        lines.push(`SUMMARY:${escapeIcsText(summary)}`);
+                        lines.push(`DESCRIPTION:${escapeIcsText(desc)}`);
+                        lines.push('END:VEVENT');
+                        exportedEventsCount++;
+                    }
+                } else {
+                    // 跨多日假勤：逐日拆分為單日全天事件（排除週末與國定假日，避免與國假重複；讓每一天休假日都能被 iOS 捷徑「是今天」100% 精準觸發！）
+                    const pS = plan.startDate.split('-').map(Number);
+                    const pE = plan.endDate.split('-').map(Number);
+                    let cur = new Date(pS[0], pS[1] - 1, pS[2]);
+                    const end = new Date(pE[0], pE[1] - 1, pE[2]);
+                    let guard = 0;
+
+                    while (cur <= end && guard < 366) {
+                        guard++;
+                        const y = cur.getFullYear();
+                        const m = String(cur.getMonth() + 1).padStart(2, '0');
+                        const d = String(cur.getDate()).padStart(2, '0');
+                        const dISO = `${y}-${m}-${d}`;
+                        const dow = cur.getDay();
+
+                        // 平日且非國定假日（國定假日由下方統一產生或內建處理）
+                        if (dow !== 0 && dow !== 6 && !holidayMap[dISO]) {
+                            const ymd = `${y}${m}${d}`;
+                            const nextYmd = addDaysToCompactYMD(dISO, 1);
+                            const summary = `${behavior.prefix}${plan.title}`;
+                            const desc = `連續假勤區間：${plan.startDate} ~ ${plan.endDate}\n類別：${typeName} (總計 ${deduct.days}天 / ${deduct.hours}h)${plan.notes ? '\n備註：' + plan.notes : ''}`;
+
+                            lines.push('BEGIN:VEVENT');
+                            lines.push(`UID:leave-${plan.id}-${ymd}@alicetychen.attendance`);
+                            lines.push(`DTSTAMP:${dtStamp}`);
+                            lines.push(`DTSTART;VALUE=DATE:${ymd}`);
+                            lines.push(`DTEND;VALUE=DATE:${nextYmd}`);
+                            lines.push(`SUMMARY:${escapeIcsText(summary)}`);
+                            lines.push(`DESCRIPTION:${escapeIcsText(desc)}`);
+                            lines.push('TRANSP:TRANSPARENT');
+                            lines.push('END:VEVENT');
+                            exportedEventsCount++;
+                        }
+                        cur.setDate(cur.getDate() + 1);
+                    }
+                }
+            });
+
+            // 2. 若勾選「一併匯入台灣國定假日」，匯出平日國定假日（標記【休假】讓國假也自動關鬧鐘！）
+            if (cfg.includeNationalHolidays) {
+                const allHols = [...NATIONAL_HOLIDAYS_2026, ...NATIONAL_HOLIDAYS_2027];
+                allHols.forEach(h => {
+                    if (cfg.onlyUpcoming && h.date < cutoffISO) return;
+                    const p = h.date.split('-').map(Number);
+                    const dObj = new Date(p[0], p[1] - 1, p[2]);
+                    const dow = dObj.getDay();
+                    if (dow === 0 || dow === 6) return; // 週末本來就休假，僅針對週一至週五國定假日建立關鬧鐘事件
+
+                    const ymd = h.date.replace(/-/g, '');
+                    const nextYmd = addDaysToCompactYMD(h.date, 1);
+                    lines.push('BEGIN:VEVENT');
+                    lines.push(`UID:tw-national-holiday-${ymd}@alicetychen.attendance`);
+                    lines.push(`DTSTAMP:${dtStamp}`);
+                    lines.push(`DTSTART;VALUE=DATE:${ymd}`);
+                    lines.push(`DTEND;VALUE=DATE:${nextYmd}`);
+                    lines.push(`SUMMARY:${escapeIcsText('【休假】國定假日：' + h.name)}`);
+                    lines.push('DESCRIPTION:台灣國定假日放假一天（iPhone 捷徑自動關閉早起上班鬧鐘）');
+                    lines.push('TRANSP:TRANSPARENT');
+                    lines.push('END:VEVENT');
+                    exportedEventsCount++;
+                });
+            }
+
+            lines.push('END:VCALENDAR');
+            return { icsText: lines.join('\r\n'), count: exportedEventsCount, confirmedPlansCount: confirmedPlans.length };
+        }
+
+        function exportConfirmedLeavesToIcs() {
+            const { icsText, count, confirmedPlansCount } = generateConfirmedIcsContent();
+            if (count === 0) {
+                showToast('warning', '尚未選取任何休假項目', '請先在清單勾選至少一筆「確定已請假」的項目，或開啟「一併匯入台灣國定假日」！', 2600);
+                return;
+            }
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+            if (isIOS) {
+                // iOS Safari 原生最佳體驗：直接以 text/calendar Data URI 開啟，系統立即彈出「加入全部到行事曆」原生面板！
+                const dataUri = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsText);
+                window.location.href = dataUri;
+            } else {
+                const blob = new Blob([icsText], { type: 'text/calendar;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `確定請假與休假連動_${selectedYear}.ics`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 3000);
+                showToast('success', '已產出 iPhone 行事曆檔 (.ics)！', `共包含 ${confirmedPlansCount} 筆確定假勤（合計 ${count} 個行事曆事件）。若在電腦上操作，推薦點旁邊「手機掃碼秒傳」直接用 iPhone 相機掃描！`, 3500);
+            }
+        }
+
+        // 產生跨裝置秒傳同步 URL (UTF-8 Base64URL 精簡編碼)
+        function buildIosSyncShareUrl() {
+            const cfg = getIosSyncConfig();
+            const __now = new Date();
+            const cutoffDate = new Date(__now.getFullYear(), __now.getMonth(), __now.getDate() - 7);
+            const cutoffISO = `${cutoffDate.getFullYear()}-${String(cutoffDate.getMonth() + 1).padStart(2, '0')}-${String(cutoffDate.getDate()).padStart(2, '0')}`;
+
+            const confirmedPlans = (appState.leavePlans || []).filter(p => {
+                if (!isPlanCalendarConfirmed(p)) return false;
+                if (cfg.onlyUpcoming && p.endDate && p.endDate < cutoffISO) return false;
+                return true;
+            });
+
+            // 精簡封裝以最小化 QR Code 密度，讓手機鏡頭 0.5 秒極速對焦
+            const compactPayload = {
+                o: [cfg.morningHalfOff ? 1 : 0, cfg.includeNationalHolidays ? 1 : 0, cfg.wfhTurnOffAlarm ? 1 : 0],
+                p: confirmedPlans.map(p => [
+                    p.id,
+                    p.title,
+                    p.startDate,
+                    p.endDate,
+                    p.startTime || '07:00',
+                    p.endTime || '16:00',
+                    p.type || 'vacation',
+                    p.manualAdjustment ? (p.manualHours || 0) : -1,
+                    p.completed ? 1 : 0
+                ])
+            };
+
+            const jsonStr = JSON.stringify(compactPayload);
+            const bytes = new TextEncoder().encode(jsonStr);
+            let binary = '';
+            bytes.forEach(b => { binary += String.fromCharCode(b); });
+            const b64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+            const baseUrl = window.location.origin.startsWith('http')
+                ? (window.location.origin + window.location.pathname)
+                : 'https://alicetychen.github.io/attendance_planner/';
+            return `${baseUrl}#ios_sync=${b64}`;
+        }
+
+        function toggleIosSyncQrCode() {
+            const panel = document.getElementById('iosQrSyncPanel');
+            if (!panel) return;
+            const willShow = !panel.classList.contains('active');
+            panel.classList.toggle('active', willShow);
+            if (willShow) {
+                renderIosSyncQrCode();
+            }
+        }
+
+        function renderIosSyncQrCode() {
+            const wrap = document.getElementById('iosQrCodeCanvasWrap');
+            if (!wrap) return;
+            const syncUrl = buildIosSyncShareUrl();
+
+            if (typeof qrcode === 'function') {
+                try {
+                    const qr = qrcode(0, 'M');
+                    qr.addData(syncUrl);
+                    qr.make();
+                    wrap.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+                    const svgEl = wrap.querySelector('svg');
+                    if (svgEl) {
+                        svgEl.style.width = '176px';
+                        svgEl.style.height = '176px';
+                        svgEl.style.display = 'block';
+                    }
+                    return;
+                } catch (err) {
+                    console.warn('QR SVG 產生過長或失敗:', err);
+                }
+            }
+            wrap.innerHTML = `<div style="padding: 16px; font-size: 0.75rem; color: var(--text-sub);">請點擊下方「複製跨裝置同步連結」傳送至手機開啟</div>`;
+        }
+
+        function copyIosSyncUrl() {
+            const url = buildIosSyncShareUrl();
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('success', '已複製跨裝置同步連結！', '可貼到 LINE Keep 或傳給自己，在 iPhone 點開即可自動同步假勤並匯入行事曆！', 2600);
+            }).catch(() => {
+                prompt('請手動複製以下同步連結至 iPhone 開啟：', url);
+            });
+        }
+
+        function subscribeWebcalLink() {
+            const webcalUrl = 'webcal://alicetychen.github.io/attendance_planner/confirmed_leaves.ics';
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                window.location.href = webcalUrl;
+            } else {
+                navigator.clipboard.writeText(webcalUrl).then(() => {
+                    showToast('info', '已複製 webcal 訂閱網址！', `網址：${webcalUrl}（在 iPhone Safari 貼上開啟即可訂閱固定休假行事曆；若剛排定個人新假，建議直接點左側「匯入 .ics」或「手機掃碼秒傳」最快！）`, 4000);
+                });
+            }
+        }
+
+        // 當 iPhone 掃描電腦 QR Code 開啟網頁時，自動解析 #ios_sync=... 並引導一鍵加入行事曆
+        function checkIncomingIosSyncHash() {
+            const hash = window.location.hash || '';
+            if (!hash.startsWith('#ios_sync=')) return;
+
+            try {
+                let b64 = hash.slice('#ios_sync='.length).replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4 !== 0) b64 += '=';
+                const binary = atob(b64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                const jsonStr = new TextDecoder().decode(bytes);
+                const payload = JSON.parse(jsonStr);
+
+                if (payload && Array.isArray(payload.p)) {
+                    const cfg = getIosSyncConfig();
+                    if (Array.isArray(payload.o)) {
+                        cfg.morningHalfOff = !!payload.o[0];
+                        cfg.includeNationalHolidays = !!payload.o[1];
+                        cfg.wfhTurnOffAlarm = !!payload.o[2];
+                    }
+
+                    // 合併或更新傳入的確定請假項目至手機端 appState
+                    payload.p.forEach(item => {
+                        const [id, title, startDate, endDate, startTime, endTime, type, manH, comp] = item;
+                        const existingIdx = appState.leavePlans.findIndex(x => String(x.id) === String(id));
+                        const planObj = {
+                            id, title, startDate, endDate, startTime, endTime, type,
+                            notes: existingIdx !== -1 ? (appState.leavePlans[existingIdx].notes || '') : '',
+                            manualAdjustment: manH >= 0,
+                            manualHours: manH >= 0 ? manH : null,
+                            completed: !!comp,
+                            calendarConfirmed: true
+                        };
+                        if (existingIdx !== -1) {
+                            appState.leavePlans[existingIdx] = planObj;
+                        } else {
+                            appState.leavePlans.push(planObj);
+                        }
+                    });
+
+                    saveToLocalStorage();
+                    renderAll();
+                    // 清除網址列 hash 避免重複觸發
+                    history.replaceState(null, '', window.location.pathname + window.location.search);
+
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `📱 已同步 ${payload.p.length} 筆確定請假！`,
+                            html: `<div style="font-size: 0.88rem; color: #334155; line-height: 1.5;">已將電腦端設定的假勤同步至您的手機。<br>請點擊下方按鈕<strong>直接喚起 iPhone 行事曆「加入全部」</strong>！</div>`,
+                            showCancelButton: true,
+                            confirmButtonColor: '#1f6f4a',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: '📲 立即加入 iPhone 行事曆',
+                            cancelButtonText: '稍後再說'
+                        }).then(res => {
+                            if (res.isConfirmed) {
+                                exportConfirmedLeavesToIcs();
+                            }
+                        });
+                    } else {
+                        exportConfirmedLeavesToIcs();
+                    }
+                }
+            } catch (err) {
+                console.error('解析 #ios_sync 失敗:', err);
+            }
+        }
+
+        // 渲染 iPhone 捷徑積木視覺化藍圖與產生文字手冊
+        function renderShortcutBlueprint() {
+            const cfg = getIosSyncConfig();
+            const labelInput = document.getElementById('shortcutAlarmLabelInput');
+            const modeSelect = document.getElementById('shortcutModeSelect');
+            const alarmLabel = (labelInput?.value || '上班').trim() || '上班';
+            const mode = modeSelect?.value || 'dawn';
+
+            cfg.alarmLabel = alarmLabel;
+            cfg.shortcutMode = mode;
+            saveToLocalStorage();
+
+            const hintEl = document.getElementById('hintAlarmLabelText');
+            if (hintEl) hintEl.innerText = alarmLabel;
+
+            const container = document.getElementById('shortcutBlueprintContainer');
+            if (!container) return;
+
+            if (mode === 'dawn') {
+                container.innerHTML = `
+                    <div class="shortcut-block" style="background: #eef6ff; border-color: #bfdbfe;">
+                        <div class="shortcut-block-head" style="color: #1e40af;">
+                            <span class="sc-icon" style="background: #007aff;"><i class="fa-solid fa-clock"></i></span>
+                            <span>觸發條件（捷徑 App ➔ 下方「自動化」➔ 右上角「+」➔「特定時間」）</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: #334155;">
+                            • 時間設為：<span class="sc-pill">上午 04:00</span>（早於起床鬧鐘即可） ｜ 重複：<span class="sc-pill">週一 至 週五</span><br>
+                            • 點選 <span class="sc-pill sc-pill-green">立即執行</span>（免詢問全自動）➔ 下一步 ➔ 點選「<strong>新增空白自動化</strong>」依序加入以下 4 個動作：
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block">
+                        <div class="shortcut-block-head">
+                            <span class="sc-icon" style="background: #ff3b30;"><i class="fa-solid fa-calendar-day"></i></span>
+                            <span>動作 1：搜尋「行事曆」➔ 選擇【尋找行事曆事件】</span>
+                        </div>
+                        <div>
+                            尋找 <span class="sc-pill">所有行事曆事件</span>，其中：<br>
+                            • 將第一項時間範圍改為：<span class="sc-pill">開始日期</span> <span class="sc-pill">是今天</span><br>
+                            • 點擊「<strong>+ 新增篩選條件</strong>」：<span class="sc-pill">標題</span> <span class="sc-pill">包含</span> <span class="sc-pill sc-pill-orange">【休假】</span>
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block">
+                        <div class="shortcut-block-head">
+                            <span class="sc-icon" style="background: #8e8e93;"><i class="fa-solid fa-code-branch"></i></span>
+                            <span>動作 2：搜尋「如果」➔ 選擇【如果 (If)】</span>
+                        </div>
+                        <div>
+                            如果 <span class="sc-pill">行事曆事件</span> <span class="sc-pill">有任何值</span>（代表今天確定休假免早起！）
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block indent-1">
+                        <div class="shortcut-block-head">
+                            <span class="sc-icon" style="background: #ff9500;"><i class="fa-solid fa-bell-slash"></i></span>
+                            <span>動作 3（放在「如果」裡面）：自動關閉所有「${alarmLabel}」鬧鐘</span>
+                        </div>
+                        <div>
+                            ① 搜尋「尋找鬧鐘」➔ 條件設為 <span class="sc-pill">標籤</span> <span class="sc-pill">包含</span> <span class="sc-pill sc-pill-orange">${alarmLabel}</span><br>
+                            ② 搜尋「重複」➔ 選【重複執行每一個】（針對 <span class="sc-pill">鬧鐘</span>）<br>
+                            ③ 在重複內加入【切換鬧鐘】➔ 改為 <strong>將</strong> <span class="sc-pill">重複項目</span> <span class="sc-pill sc-pill-orange">關閉</span>（展開箭頭關閉「執行時顯示」）<br>
+                            <span style="font-size: 0.70rem; color: #64748b;">*(若您只有 1 個固定起床鬧鐘，可直接放 1 個【切換鬧鐘】：將「06:00 ${alarmLabel}」<strong>關閉</strong>，免用重複，更簡單！)*</span>
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block">
+                        <div class="shortcut-block-head" style="color: #475569;">
+                            <span class="sc-icon" style="background: #8e8e93;"><i class="fa-solid fa-rotate"></i></span>
+                            <span>否則 (Otherwise) —— 收假回到平日上班，自動幫您把鬧鐘開回來！</span>
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block indent-1" style="border-left-color: #34c759;">
+                        <div class="shortcut-block-head">
+                            <span class="sc-icon" style="background: #34c759;"><i class="fa-solid fa-bell"></i></span>
+                            <span>動作 4（放在「否則」裡面）：平日正常上班自動開啟「${alarmLabel}」鬧鐘</span>
+                        </div>
+                        <div>
+                            ① 搜尋「尋找鬧鐘」➔ 條件設為 <span class="sc-pill">標籤</span> <span class="sc-pill">包含</span> <span class="sc-pill sc-pill-green">${alarmLabel}</span><br>
+                            ② 加入【重複執行每一個】➔ 內含【切換鬧鐘】：<strong>將</strong> <span class="sc-pill">重複項目</span> <span class="sc-pill sc-pill-green">開啟</span>（關閉「執行時顯示」）
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="shortcut-block" style="background: #eef6ff; border-color: #bfdbfe;">
+                        <div class="shortcut-block-head" style="color: #1e40af;">
+                            <span class="sc-icon" style="background: #5856d6;"><i class="fa-solid fa-moon"></i></span>
+                            <span>觸發條件（每晚睡前 22:00 自動檢查「明天」是否休假並通知您）</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: #334155;">
+                            • 時間設為：<span class="sc-pill">下午 10:00 (22:00)</span> ｜ 重複：<span class="sc-pill">週日、週一、週二、週三、週四</span>（隔天為週一~五之前一晚）<br>
+                            • 點選 <span class="sc-pill sc-pill-green">立即執行</span> ➔ 點選「<strong>新增空白自動化</strong>」：
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block">
+                        <div class="shortcut-block-head">
+                            <span class="sc-icon" style="background: #ff3b30;"><i class="fa-solid fa-calendar-plus"></i></span>
+                            <span>動作 1 & 2：取得明天日期並【尋找行事曆事件】</span>
+                        </div>
+                        <div>
+                            ① 搜尋「調整日期」➔ 將 <span class="sc-pill">加上</span> <span class="sc-pill">1</span> <span class="sc-pill">天</span> 至 <span class="sc-pill">目前日期</span><br>
+                            ② 加入【尋找行事曆事件】➔ 條件設為 <span class="sc-pill">開始日期</span> <span class="sc-pill">是</span> <span class="sc-pill">調整後的日期</span>（點擊變數將時間格式設為「無」僅比對年月日），且 <span class="sc-pill">標題</span> <span class="sc-pill">包含</span> <span class="sc-pill sc-pill-orange">【休假】</span>
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block indent-1">
+                        <div class="shortcut-block-head">
+                            <span class="sc-icon" style="background: #ff9500;"><i class="fa-solid fa-bell-slash"></i></span>
+                            <span>動作 3（如果「行事曆事件」有任何值）：關閉明早「${alarmLabel}」鬧鐘 + 安心通知</span>
+                        </div>
+                        <div>
+                            • 【尋找鬧鐘】（標籤包含 <span class="sc-pill sc-pill-orange">${alarmLabel}</span>）➔ 【重複執行每一個】➔ 【切換鬧鐘】設為 <span class="sc-pill sc-pill-orange">關閉</span><br>
+                            • 加入【顯示通知】：<code>🌙 明天是休假日！已自動為您關閉「${alarmLabel}」鬧鐘，祝好眠！</code>
+                        </div>
+                    </div>
+
+                    <div class="shortcut-block indent-1" style="border-left-color: #34c759;">
+                        <div class="shortcut-block-head">
+                            <span class="sc-icon" style="background: #34c759;"><i class="fa-solid fa-bell"></i></span>
+                            <span>動作 4（否則）：明日正常上班，確保「${alarmLabel}」鬧鐘開啟</span>
+                        </div>
+                        <div>
+                            • 【尋找鬧鐘】（標籤包含 <span class="sc-pill sc-pill-green">${alarmLabel}</span>）➔ 【重複執行每一個】➔ 【切換鬧鐘】設為 <span class="sc-pill sc-pill-green">開啟</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function copyHolidayKeyword() {
+            navigator.clipboard.writeText('【休假】').then(() => {
+                showToast('success', '已複製關鍵字： 【休假】', '可直接貼入 iPhone 捷徑「標題 包含 【休假】」欄位中！', 1800);
+            });
+        }
+
+        function buildShortcutGuidePlainText() {
+            const cfg = getIosSyncConfig();
+            const alarmLabel = cfg.alarmLabel || '上班';
+            return `# 📱 iPhone 休假日自動關閉鬧鐘 — 捷徑與個人自動化設定手冊
+
+## 事前準備（僅需設定一次，約 30 秒）
+1. 打開 iPhone 內建「時鐘」App ➔「鬧鐘」。
+2. 點選您平日早起使用的鬧鐘，將「標籤（名稱）」修改為：「${alarmLabel}」
+   （若您有多個連環早起鬧鐘，例如 06:00、06:10、06:20，全部命名包含「${alarmLabel}」即可一次全自動開關！）
+3. 在「假勤管理與行事曆」網頁勾選確定請假的項目，點擊「手機直接匯入 iPhone 行事曆 (.ics)」並點右上角「加入全部」。
+   - 全天假、上午假（07:00起）與國定假日會自動帶上「【休假】」前綴。
+   - 單日下午請假（12:00/13:00起）會自動標示為「【下午請假】」，早上 07:00 仍需上班，絕不會誤關早起鬧鐘！
+
+---
+
+## ⚡ 設定 iPhone 自動化捷徑（推薦：凌晨 04:00 全自動雙向開關版）
+1. 打開 iPhone 內建「捷徑 (Shortcuts)」App。
+2. 點選畫面最下方中間的「自動化」分頁 ➔ 點選右上角「＋」。
+3. 選擇「特定時間」：
+   - 時間：設為「上午 04:00」（早於您最早的一顆起床鬧鐘即可）
+   - 重複：點選「週一、週二、週三、週四、週五」（亮起五個平日）
+   - 勾選：「立即執行」（不須執行前確認，真正全自動！）
+   - 點選右上角「下一步」➔ 點選「新增空白自動化」。
+
+4. 依序加入以下 4 組動作積木：
+   【步驟 1】搜尋並加入「尋找行事曆事件」：
+   - 將第一行「開始日期 在接下來...」點開，改為：「開始日期」「是今天」
+   - 點擊「+ 新增篩選條件」，設為：「標題」「包含」「【休假】」
+
+   【步驟 2】搜尋並加入「如果 (If)」：
+   - 條件預設即為：如果「行事曆事件」「有任何值」
+
+   【步驟 3】（拖曳放在「如果」的下方縮排區內 — 休假日自動關鬧鐘）：
+   - 搜尋並加入「尋找鬧鐘」➔ 新增篩選條件：「標籤」「包含」「${alarmLabel}」
+   - 搜尋並加入「重複執行每一個」（對象為「鬧鐘」）
+   - 搜尋並加入「切換鬧鐘」（放在重複區塊內）：
+     點擊「開啟」改為「關閉」，點擊變數選取「重複項目」
+     ➔ 呈現為：將「重複項目」「關閉」（點擊右側箭頭展開，關閉「執行時顯示」）
+   *(極簡小撇步：若您只有 1 顆固定起床鬧鐘，步驟 3 只需放 1 個「切換鬧鐘」：將 [06:00 ${alarmLabel}] 關閉 即可！)*
+
+   【步驟 4】（拖曳放在「否則 (Otherwise)」的下方縮排區內 — 收假自動恢復開鬧鐘）：
+   - 搜尋並加入「尋找鬧鐘」➔ 新增篩選條件：「標籤」「包含」「${alarmLabel}」
+   - 搜尋並加入「重複執行每一個」
+   - 在重複區塊內加入「切換鬧鐘」：將「重複項目」「開啟」（展開箭頭關閉「執行時顯示」）
+
+5. 點擊右上角「完成」！大功告成 🎉
+   從此以後：只要行事曆上有「【休假】」，當天早起鬧鐘自動關閉；收假回到正常上班日，鬧鐘自動重新開啟，再也不怕忘記開鬧鐘！
+`;
+        }
+
+        function copyShortcutGuideText() {
+            const txt = buildShortcutGuidePlainText();
+            navigator.clipboard.writeText(txt).then(() => {
+                showToast('success', '已複製完整捷徑設定步驟！', '可貼至 iPhone 備忘錄或 LINE，邊看邊設定只需 1 分鐘！', 2500);
+            });
+        }
+
+        function downloadShortcutGuideFile() {
+            const txt = buildShortcutGuidePlainText();
+            const blob = new Blob([txt], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'iPhone_休假自動關鬧鐘捷徑設定指南.md';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 3000);
+            showToast('success', '已下載捷徑設定手冊！', '', 1800);
+        }
+
+        // iOS 行事曆與鬧鐘捷徑全域綁定
+        window.openIosCalendarModal = openIosCalendarModal;
+        window.closeIosCalendarModal = closeIosCalendarModal;
+        window.switchIosModalTab = switchIosModalTab;
+        window.togglePlanCalendarConfirm = togglePlanCalendarConfirm;
+        window.batchSetCalendarConfirm = batchSetCalendarConfirm;
+        window.updateIosSyncOptions = updateIosSyncOptions;
+        window.exportConfirmedLeavesToIcs = exportConfirmedLeavesToIcs;
+        window.toggleIosSyncQrCode = toggleIosSyncQrCode;
+        window.copyIosSyncUrl = copyIosSyncUrl;
+        window.subscribeWebcalLink = subscribeWebcalLink;
+        window.renderShortcutBlueprint = renderShortcutBlueprint;
+        window.copyHolidayKeyword = copyHolidayKeyword;
+        window.copyShortcutGuideText = copyShortcutGuideText;
+        window.downloadShortcutGuideFile = downloadShortcutGuideFile;
     </script>
 </body>
 </html>
