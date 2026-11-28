@@ -1620,7 +1620,7 @@
         }
 
         /* ==========================================
-           iPhone 行事曆連動與自動關鬧鐘捷徑中心 (V2.0.16)
+           iPhone 行事曆連動與自動關鬧鐘捷徑中心 (V2.0.17)
            ========================================== */
         .cal-sync-badge {
             display: inline-flex;
@@ -1646,9 +1646,19 @@
             background: #edf4f0;
         }
         .cal-sync-badge.active {
-            border: 1px solid #a7d7be;
-            background: #e8f5ee;
-            color: #24583c;
+            border: 1px solid #93c5fd;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+        .cal-sync-badge.exported {
+            border: 1px solid #86efac;
+            background: #dcfce7;
+            color: #166534;
+        }
+        .cal-sync-badge.modified {
+            border: 1px solid #fcd34d;
+            background: #fef3c7;
+            color: #92400e;
         }
 
         .ios-sync-plan-list {
@@ -1799,7 +1809,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.16</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.17</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -2686,7 +2696,7 @@
     </div>
 
 
-    <!-- Modal 5: iPhone 行事曆連動 & 自動關鬧鐘捷徑中心 (V2.0.16) -->
+    <!-- Modal 5: iPhone 行事曆連動 & 自動關鬧鐘捷徑中心 (V2.0.17) -->
     <div class="modal-backdrop" id="iosCalendarModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'iosCalendarModal')">
         <div class="modal-dialog" style="max-width: 660px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
             <div class="modal-header" style="background: linear-gradient(135deg, #2b3a4a, #44596e); color: white;">
@@ -2722,7 +2732,7 @@
                             </label>
                             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); font-weight: 600;">
                                 <input type="checkbox" id="iosOptIncludeHolidays" checked onchange="updateIosSyncOptions()" style="accent-color: var(--primary);">
-                                <span>一併匯入台灣國定假日 (免早起)</span>
+                                <span>一併匯入台灣國定假日 <span id="iosHolidaysExportedTag" style="display: none; font-size: 0.66rem; background: #dcfce7; color: #166534; padding: 0 5px; border-radius: 99px; font-weight: 800;">✓ 已匯出過</span></span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); font-weight: 600;">
                                 <input type="checkbox" id="iosOptWfhOff" onchange="updateIosSyncOptions()" style="accent-color: var(--primary);">
@@ -2744,9 +2754,11 @@
                             <span style="font-size: 0.78rem; font-weight: 800; color: var(--text-main);">
                                 <i class="fa-solid fa-list-check" style="color: #24583c;"></i> 勾選「確定已請假」項目 <span id="iosConfirmedCountBadge" style="font-size: 0.70rem; background: #e8f5ee; color: #24583c; padding: 1px 6px; border-radius: 8px; margin-left: 4px;">0 筆</span>
                             </span>
-                            <div style="display: inline-flex; gap: 4px;">
-                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px;" onclick="batchSetCalendarConfirm(true)">全選未過期</button>
-                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px;" onclick="batchSetCalendarConfirm(false)">全部取消</button>
+                            <div style="display: inline-flex; gap: 4px; flex-wrap: wrap;">
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px; border-color: #93c5fd; color: #1d4ed8; background: #eff6ff; font-weight: 700;" onclick="selectOnlyUnexportedPlans()" title="智慧防重複：只勾選尚未匯入過行事曆的新假勤">只選未匯出</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px;" onclick="batchSetModalExportSelection(true)">全選</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px;" onclick="batchSetModalExportSelection(false)">全取消</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 0.69rem; height: 22px; color: var(--text-sub);" onclick="resetAllIcsExportedStatus()" title="清除所有「已匯入行事曆」紀錄以便重新整包匯出">重置標記</button>
                             </div>
                         </div>
                         <div class="ios-sync-plan-list custom-scrollbar" id="iosSyncPlanListContainer">
@@ -3822,7 +3834,7 @@ function toggleDateSort() {
                     </td>
                     <td>
                         <strong style="color: var(--text-main); font-size: 0.82rem;">${plan.title}</strong>
-                        ${isExpired ? `<span style="font-size: 0.68rem; color: var(--text-muted); background: var(--bg-card-subtle); padding: 1px 4px; border-radius: 3px; margin-left: 4px;">已過期</span>` : `<span class="cal-sync-badge ${isPlanCalendarConfirmed(plan) ? 'active' : ''}" onclick="event.stopPropagation(); togglePlanCalendarConfirm('${plan.id}')" title="${isPlanCalendarConfirmed(plan) ? '已標記為確定請假（納入 iPhone 行事曆連動，點擊可取消）' : '點擊標記為「確定已請假」，納入 iPhone 行事曆與關鬧鐘連動'}"><i class="fa-solid ${isPlanCalendarConfirmed(plan) ? 'fa-mobile-screen-button' : 'fa-calendar-plus'}"></i> ${isPlanCalendarConfirmed(plan) ? '已連動' : '連動手機'}</span>`}
+                        ${isExpired ? `<span style="font-size: 0.68rem; color: var(--text-muted); background: var(--bg-card-subtle); padding: 1px 4px; border-radius: 3px; margin-left: 4px;">已過期</span>` : renderPlanTableCalBadge(plan)}
                         ${plan.notes ? `<div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 1px;">${plan.notes}</div>` : ''}
                     </td>
                     <td style="white-space: nowrap; font-size: 0.76rem;">
@@ -4495,7 +4507,9 @@ function toggleDateSort() {
                         manualAdjustment: isManual,
                         manualHours: isManual ? manualHours : null,
                         completed: !!appState.leavePlans[idx].completed,
-                        calendarConfirmed: calendarConfirmed
+                        calendarConfirmed: calendarConfirmed,
+                        icsExportedFingerprint: appState.leavePlans[idx].icsExportedFingerprint || null,
+                        icsExportedAt: appState.leavePlans[idx].icsExportedAt || null
                     };
                 }
 
@@ -5690,13 +5704,17 @@ function toggleDateSort() {
 
 
         // ==========================================
-        // iPhone 行事曆連動 & 休假自動關鬧鐘捷徑中心核心引擎 (V2.0.16)
+        // iPhone 行事曆連動 & 休假自動關鬧鐘捷徑中心核心引擎 (V2.0.17)
         // ==========================================
+        // 本次彈窗中勾選準備匯出 .ics 的假勤 ID 集合（預設智慧過濾已匯出過的項目，避免重複！）
+        let modalExportSelectedIds = new Set();
+
         function getIosSyncConfig() {
             if (!appState.iosSyncConfig) {
                 appState.iosSyncConfig = {
                     morningHalfOff: true,
                     includeNationalHolidays: true,
+                    holidaysExported: false,
                     wfhTurnOffAlarm: false,
                     onlyUpcoming: true,
                     alarmLabel: '上班',
@@ -5704,6 +5722,24 @@ function toggleDateSort() {
                 };
             }
             return appState.iosSyncConfig;
+        }
+
+        // 計算假勤內容指紋（若日期、時間、標題或類別改變，指紋變化即自動判定為需重新匯出！）
+        function getPlanIcsFingerprint(plan) {
+            if (!plan) return '';
+            return `${plan.startDate || ''}|${plan.endDate || ''}|${plan.startTime || ''}|${plan.endTime || ''}|${plan.title || ''}|${plan.type || ''}`;
+        }
+
+        // 判定該筆假勤是否已經匯出過 .ics 且內容未變動
+        function isPlanExportedUpToDate(plan) {
+            if (!plan || !plan.icsExportedFingerprint) return false;
+            return plan.icsExportedFingerprint === getPlanIcsFingerprint(plan);
+        }
+
+        // 判定該筆假勤是否曾經匯出過，但後來改了日期/時間而需要重新匯出
+        function isPlanExportOutdated(plan) {
+            if (!plan || !plan.icsExportedFingerprint) return false;
+            return plan.icsExportedFingerprint !== getPlanIcsFingerprint(plan);
         }
 
         // 判定該筆假勤是否已標記為「確定請假 (連動手機行事曆)」
@@ -5715,12 +5751,32 @@ function toggleDateSort() {
             return !!plan.completed;
         }
 
-        // 切換單筆假勤的「確定請假 (連動手機行事曆)」狀態
+        // 主畫面假勤排定清單的連動狀態徽章（三態：✓ 已匯入行事曆 / 🔄 日期異動待重匯 / 📲 待匯出行事曆 / + 連動手機）
+        function renderPlanTableCalBadge(plan) {
+            const confirmed = isPlanCalendarConfirmed(plan);
+            if (!confirmed) {
+                return `<span class="cal-sync-badge" onclick="event.stopPropagation(); togglePlanCalendarConfirm('${plan.id}')" title="點擊標記為「確定已請假」，納入 iPhone 行事曆與關鬧鐘連動"><i class="fa-solid fa-calendar-plus"></i> 連動手機</span>`;
+            }
+            if (isPlanExportedUpToDate(plan)) {
+                return `<span class="cal-sync-badge exported" onclick="event.stopPropagation(); openIosCalendarModal('cal')" title="此筆假勤已匯入過行事曆（${plan.icsExportedAt || '已同步'}），下次匯出將自動略過不重複！點擊可開啟連動視窗"><i class="fa-solid fa-circle-check"></i> 已匯入行事曆</span>`;
+            }
+            if (isPlanExportOutdated(plan)) {
+                return `<span class="cal-sync-badge modified" onclick="event.stopPropagation(); openIosCalendarModal('cal')" title="此筆假勤修改過日期或內容，請點擊重新匯入至 iPhone 行事曆！"><i class="fa-solid fa-rotate"></i> 異動待重匯</span>`;
+            }
+            return `<span class="cal-sync-badge active" onclick="event.stopPropagation(); togglePlanCalendarConfirm('${plan.id}')" title="已確定請假（尚未匯出 .ics，點擊上方「連動手機行事曆」即可匯入 iPhone；再點一下可取消連動）"><i class="fa-solid fa-mobile-screen-button"></i> 待匯出行事曆</span>`;
+        }
+
+        // 切換主清單單筆假勤的「確定請假」狀態
         function togglePlanCalendarConfirm(planId, explicitVal) {
             const plan = appState.leavePlans.find(p => String(p.id) === String(planId));
             if (!plan) return;
             const current = isPlanCalendarConfirmed(plan);
             plan.calendarConfirmed = (explicitVal !== undefined) ? !!explicitVal : !current;
+            if (plan.calendarConfirmed && !isPlanExportedUpToDate(plan)) {
+                modalExportSelectedIds.add(String(plan.id));
+            } else if (!plan.calendarConfirmed) {
+                modalExportSelectedIds.delete(String(plan.id));
+            }
             saveToLocalStorage();
             renderLeaveTable();
             const modal = document.getElementById('iosCalendarModal');
@@ -5732,25 +5788,95 @@ function toggleDateSort() {
             }
         }
 
-        // 批次全選或取消確定請假連動
-        function batchSetCalendarConfirm(val) {
-            const __now = new Date();
-            const todayISO = `${__now.getFullYear()}-${String(__now.getMonth() + 1).padStart(2, '0')}-${String(__now.getDate()).padStart(2, '0')}`;
-            appState.leavePlans.forEach(plan => {
-                if (val) {
-                    if (!plan.endDate || plan.endDate >= todayISO) {
-                        plan.calendarConfirmed = true;
-                    }
-                } else {
-                    plan.calendarConfirmed = false;
-                }
-            });
+        // 在彈窗內單獨勾選／取消「本次是否要匯出此筆假勤」
+        function toggleModalExportItem(planId, checked) {
+            const idStr = String(planId);
+            const plan = appState.leavePlans.find(p => String(p.id) === idStr);
+            if (checked) {
+                modalExportSelectedIds.add(idStr);
+                if (plan) plan.calendarConfirmed = true;
+            } else {
+                modalExportSelectedIds.delete(idStr);
+            }
             saveToLocalStorage();
             renderLeaveTable();
             renderIosSyncPlanList();
             if (document.getElementById('iosQrSyncPanel')?.classList.contains('active')) {
                 renderIosSyncQrCode();
             }
+        }
+
+        // 智慧預設：只勾選「確定已請假 且 尚未匯出過（或日期已異動）」的新假勤！
+        function selectOnlyUnexportedPlans(silent = false) {
+            modalExportSelectedIds.clear();
+            const cfg = getIosSyncConfig();
+            const __now = new Date();
+            const cutoffDate = new Date(__now.getFullYear(), __now.getMonth(), __now.getDate() - 7);
+            const cutoffISO = `${cutoffDate.getFullYear()}-${String(cutoffDate.getMonth() + 1).padStart(2, '0')}-${String(cutoffDate.getDate()).padStart(2, '0')}`;
+
+            (appState.leavePlans || []).forEach(plan => {
+                if (cfg.onlyUpcoming && plan.endDate && plan.endDate < cutoffISO) return;
+                if (isPlanCalendarConfirmed(plan) && !isPlanExportedUpToDate(plan)) {
+                    modalExportSelectedIds.add(String(plan.id));
+                }
+            });
+
+            // 若台灣國定假日之前已經匯出過，預設自動取消勾選避免重複匯入 29 天國假！
+            if (cfg.holidaysExported) {
+                cfg.includeNationalHolidays = false;
+                const elHol = document.getElementById('iosOptIncludeHolidays');
+                if (elHol) elHol.checked = false;
+            }
+            const holTag = document.getElementById('iosHolidaysExportedTag');
+            if (holTag) holTag.style.display = cfg.holidaysExported ? 'inline-block' : 'none';
+
+            if (!silent) {
+                renderIosSyncPlanList();
+                if (document.getElementById('iosQrSyncPanel')?.classList.contains('active')) {
+                    renderIosSyncQrCode();
+                }
+            }
+        }
+
+        // 彈窗內全選 / 全取消本次匯出項目
+        function batchSetModalExportSelection(val) {
+            modalExportSelectedIds.clear();
+            if (val) {
+                const cfg = getIosSyncConfig();
+                const __now = new Date();
+                const cutoffDate = new Date(__now.getFullYear(), __now.getMonth(), __now.getDate() - 7);
+                const cutoffISO = `${cutoffDate.getFullYear()}-${String(cutoffDate.getMonth() + 1).padStart(2, '0')}-${String(cutoffDate.getDate()).padStart(2, '0')}`;
+                (appState.leavePlans || []).forEach(plan => {
+                    if (cfg.onlyUpcoming && plan.endDate && plan.endDate < cutoffISO) return;
+                    plan.calendarConfirmed = true;
+                    modalExportSelectedIds.add(String(plan.id));
+                });
+                saveToLocalStorage();
+                renderLeaveTable();
+            }
+            renderIosSyncPlanList();
+            if (document.getElementById('iosQrSyncPanel')?.classList.contains('active')) {
+                renderIosSyncQrCode();
+            }
+        }
+
+        // 重置所有「已匯入行事曆」標記（例如使用者刪除手機上的舊休假行事曆，想重新整包匯出時使用）
+        function resetAllIcsExportedStatus() {
+            (appState.leavePlans || []).forEach(plan => {
+                delete plan.icsExportedFingerprint;
+                delete plan.icsExportedAt;
+            });
+            const cfg = getIosSyncConfig();
+            cfg.holidaysExported = false;
+            cfg.includeNationalHolidays = true;
+            const elHol = document.getElementById('iosOptIncludeHolidays');
+            if (elHol) elHol.checked = true;
+
+            saveToLocalStorage();
+            selectOnlyUnexportedPlans(true);
+            renderLeaveTable();
+            renderIosSyncPlanList();
+            showToast('info', '已重置匯出標記', '所有確定請假項目與台灣國定假日已恢復勾選，可重新整包匯出！', 2200);
         }
 
         // 判定單筆假勤對於早起鬧鐘的行為分類
@@ -5799,11 +5925,14 @@ function toggleDateSort() {
             const elMode = document.getElementById('shortcutModeSelect');
 
             if (elMorning) elMorning.checked = !!cfg.morningHalfOff;
-            if (elHol) elHol.checked = !!cfg.includeNationalHolidays;
             if (elWfh) elWfh.checked = !!cfg.wfhTurnOffAlarm;
             if (elUp) elUp.checked = !!cfg.onlyUpcoming;
             if (elLabel) elLabel.value = cfg.alarmLabel || '上班';
             if (elMode) elMode.value = cfg.shortcutMode || 'dawn';
+
+            // 開啟視窗時自動套用智慧防重複篩選：僅預選「尚未匯出過（或已修改日期）」的新假勤！
+            selectOnlyUnexportedPlans(true);
+            if (elHol) elHol.checked = !!cfg.includeNationalHolidays;
 
             renderIosSyncPlanList();
             renderShortcutBlueprint();
@@ -5875,25 +6004,42 @@ function toggleDateSort() {
                 plansToShow = plansToShow.filter(p => !p.endDate || p.endDate >= cutoffISO);
             }
 
-            let confirmedCount = 0;
-            plansToShow.forEach(p => { if (isPlanCalendarConfirmed(p)) confirmedCount++; });
-            if (badge) badge.innerText = `已勾選 ${confirmedCount} 筆`;
+            let selectedCount = 0;
+            let alreadyExportedCount = 0;
+            plansToShow.forEach(p => {
+                if (modalExportSelectedIds.has(String(p.id))) selectedCount++;
+                if (isPlanExportedUpToDate(p)) alreadyExportedCount++;
+            });
+            if (badge) {
+                badge.innerText = alreadyExportedCount > 0
+                    ? `本次勾選 ${selectedCount} 筆 (已自動略過 ${alreadyExportedCount} 筆已匯出)`
+                    : `本次勾選 ${selectedCount} 筆`;
+            }
+
+            const holTag = document.getElementById('iosHolidaysExportedTag');
+            if (holTag) holTag.style.display = cfg.holidaysExported ? 'inline-block' : 'none';
 
             const summaryHint = document.getElementById('iosExportSummaryHint');
             if (summaryHint) {
                 const preview = generateConfirmedIcsContent();
-                if (confirmedCount === 0 && !cfg.includeNationalHolidays) {
-                    summaryHint.style.background = '#fee2e2';
-                    summaryHint.style.color = '#b91c1c';
-                    summaryHint.innerText = '⚠️ 請先勾選上方至少 1 筆假勤';
-                } else if (confirmedCount === 0) {
+                if (selectedCount === 0 && !cfg.includeNationalHolidays) {
+                    if (alreadyExportedCount > 0) {
+                        summaryHint.style.background = '#dcfce7';
+                        summaryHint.style.color = '#166534';
+                        summaryHint.innerText = `✓ 所有確定請假 (${alreadyExportedCount} 筆) 皆已匯入過行事曆，無須重複匯出！`;
+                    } else {
+                        summaryHint.style.background = '#fee2e2';
+                        summaryHint.style.color = '#b91c1c';
+                        summaryHint.innerText = '⚠️ 請先勾選上方至少 1 筆新假勤';
+                    }
+                } else if (selectedCount === 0) {
                     summaryHint.style.background = '#fef3c7';
                     summaryHint.style.color = '#92400e';
-                    summaryHint.innerText = `⚠️ 個人請假 0 筆（目前僅含國定假日 ${preview.count} 天，請勾選上方假勤！）`;
+                    summaryHint.innerText = `本次將匯出：台灣國定假日 ${preview.count} 天（個人新假勤 0 筆）`;
                 } else {
                     summaryHint.style.background = '#dcfce7';
                     summaryHint.style.color = '#15803d';
-                    summaryHint.innerText = `將匯出：個人請假 ${confirmedCount} 筆（共計 ${preview.count} 個行事曆事件）`;
+                    summaryHint.innerText = `本次將匯出：新假勤 ${selectedCount} 筆${cfg.includeNationalHolidays ? ' + 國定假日' : ''}（共 ${preview.count} 個行程）`;
                 }
             }
 
@@ -5903,7 +6049,9 @@ function toggleDateSort() {
             }
 
             container.innerHTML = plansToShow.map(plan => {
-                const confirmed = isPlanCalendarConfirmed(plan);
+                const checked = modalExportSelectedIds.has(String(plan.id));
+                const exportedClean = isPlanExportedUpToDate(plan);
+                const exportedModified = isPlanExportOutdated(plan);
                 const behavior = classifyPlanAlarmBehavior(plan);
                 const deduct = getPlanActualDeduction(plan);
                 const dateText = (plan.startDate === plan.endDate)
@@ -5911,15 +6059,25 @@ function toggleDateSort() {
                     : `${plan.startDate} ~ ${plan.endDate}`;
                 const typeLabel = plan.type === 'wfh' ? '🏡 遠距' : (plan.type === 'sick' ? '🏥 病假' : '🏖️ 特休');
 
+                let exportStatusTag = '';
+                if (exportedClean) {
+                    exportStatusTag = `<span style="font-size: 0.67rem; background: #dcfce7; color: #166534; border: 1px solid #86efac; padding: 0 6px; border-radius: 99px; font-weight: 800;">✓ 已匯入行事曆 (${plan.icsExportedAt || '已同步'})</span>`;
+                } else if (exportedModified) {
+                    exportStatusTag = `<span style="font-size: 0.67rem; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; padding: 0 6px; border-radius: 99px; font-weight: 800;">🔄 日期已異動・建議重匯</span>`;
+                } else if (isPlanCalendarConfirmed(plan)) {
+                    exportStatusTag = `<span style="font-size: 0.67rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 0 6px; border-radius: 99px; font-weight: 800;">🆕 新請假・待匯出</span>`;
+                }
+
                 return `
-                    <label class="ios-sync-plan-item ${confirmed ? 'is-checked' : ''}" style="cursor: pointer;">
+                    <label class="ios-sync-plan-item ${checked ? 'is-checked' : ''}" style="cursor: pointer; ${exportedClean && !checked ? 'opacity: 0.72;' : ''}">
                         <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-                            <input type="checkbox" ${confirmed ? 'checked' : ''} onchange="togglePlanCalendarConfirm('${plan.id}', this.checked)" style="width: 15px; height: 15px; accent-color: #1f6f4a; cursor: pointer; flex-shrink: 0;">
+                            <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleModalExportItem('${plan.id}', this.checked)" style="width: 15px; height: 15px; accent-color: #1f6f4a; cursor: pointer; flex-shrink: 0;">
                             <div style="min-width: 0;">
                                 <div style="font-size: 0.80rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
                                     <span>${typeLabel}</span>
                                     <span>${plan.title}</span>
                                     <span style="font-size: 0.71rem; color: var(--primary); font-weight: 700;">(${deduct.days}天 / ${deduct.hours}h)</span>
+                                    ${exportStatusTag}
                                 </div>
                                 <div style="font-size: 0.70rem; color: var(--text-sub);">${dateText}</div>
                             </div>
@@ -5959,7 +6117,7 @@ function toggleDateSort() {
             const lines = [
                 'BEGIN:VCALENDAR',
                 'VERSION:2.0',
-                'PRODID:-//Alice Attendance Planner//iOS Alarm Sync V2.0.16//TW',
+                'PRODID:-//Alice Attendance Planner//iOS Alarm Sync V2.0.17//TW',
                 'CALSCALE:GREGORIAN',
                 'METHOD:PUBLISH',
                 'X-WR-CALNAME:個人休假排程 (連動鬧鐘)',
@@ -5972,9 +6130,9 @@ function toggleDateSort() {
 
             let exportedEventsCount = 0;
 
-            // 1. 處理已勾選「確定請假」的個人假勤
+            // 1. 僅匯出「本次勾選要匯出 (modalExportSelectedIds)」的個人假勤，徹底杜絕舊紀錄重複寫入 iPhone 行事曆！
             const confirmedPlans = (appState.leavePlans || []).filter(p => {
-                if (!isPlanCalendarConfirmed(p)) return false;
+                if (!modalExportSelectedIds.has(String(p.id))) return false;
                 if (cfg.onlyUpcoming && p.endDate && p.endDate < cutoffISO) return false;
                 return true;
             });
@@ -6089,7 +6247,7 @@ function toggleDateSort() {
             }
 
             lines.push('END:VCALENDAR');
-            return { icsText: lines.join('\r\n'), count: exportedEventsCount, confirmedPlansCount: confirmedPlans.length };
+            return { icsText: lines.join('\r\n'), count: exportedEventsCount, confirmedPlansCount: confirmedPlans.length, exportedPlans: confirmedPlans };
         }
 
         function triggerBlobIcsDownload(icsText, fileName, confirmedPlansCount, count) {
@@ -6138,12 +6296,34 @@ function toggleDateSort() {
             }
         }
 
-        async function exportConfirmedLeavesToIcs(mode = 'share') {
-            const { icsText, count, confirmedPlansCount } = generateConfirmedIcsContent();
+        async function exportConfirmedLeavesToIcs(mode = 'download') {
+            const { icsText, count, confirmedPlansCount, exportedPlans } = generateConfirmedIcsContent();
             if (count === 0) {
-                showToast('warning', '尚未選取任何休假項目', '請先在清單勾選至少一筆「確定已請假」的項目，或開啟「一併匯入台灣國定假日」！', 2800);
+                showToast('info', '目前沒有需要新匯出的項目！', '已匯入過行事曆的項目已自動幫您略過防重複；若想強制重匯，請手動勾選該項目或點「重置標記」。', 3000);
                 return;
             }
+
+            // 匯出成功瞬間：自動將本次匯出的假勤標記「✓ 已匯入行事曆」指紋，並記錄國定假日已匯出，下次打開自動不重複勾選！
+            const __now = new Date();
+            const stampMD = `${__now.getMonth() + 1}/${__now.getDate()}`;
+            (exportedPlans || []).forEach(plan => {
+                plan.calendarConfirmed = true;
+                plan.icsExportedFingerprint = getPlanIcsFingerprint(plan);
+                plan.icsExportedAt = `${stampMD} 已匯出`;
+                modalExportSelectedIds.delete(String(plan.id));
+            });
+
+            const cfg = getIosSyncConfig();
+            if (cfg.includeNationalHolidays) {
+                cfg.holidaysExported = true;
+                cfg.includeNationalHolidays = false;
+                const elHol = document.getElementById('iosOptIncludeHolidays');
+                if (elHol) elHol.checked = false;
+            }
+
+            saveToLocalStorage();
+            renderLeaveTable();
+            renderIosSyncPlanList();
 
             // 關鍵：使用純英文檔名確保 iOS Safari 100% 保留 .ics 副檔名並關聯至 Apple 行事曆 App
             const fileName = `leave_schedule_${selectedYear}.ics`;
@@ -6158,7 +6338,7 @@ function toggleDateSort() {
             const cutoffISO = `${cutoffDate.getFullYear()}-${String(cutoffDate.getMonth() + 1).padStart(2, '0')}-${String(cutoffDate.getDate()).padStart(2, '0')}`;
 
             const confirmedPlans = (appState.leavePlans || []).filter(p => {
-                if (!isPlanCalendarConfirmed(p)) return false;
+                if (!modalExportSelectedIds.has(String(p.id))) return false;
                 if (cfg.onlyUpcoming && p.endDate && p.endDate < cutoffISO) return false;
                 return true;
             });
@@ -6289,6 +6469,7 @@ function toggleDateSort() {
                     });
 
                     saveToLocalStorage();
+                    selectOnlyUnexportedPlans(true);
                     renderAll();
                     // 清除網址列 hash 避免重複觸發
                     history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -6530,7 +6711,10 @@ function toggleDateSort() {
         window.closeIosCalendarModal = closeIosCalendarModal;
         window.switchIosModalTab = switchIosModalTab;
         window.togglePlanCalendarConfirm = togglePlanCalendarConfirm;
-        window.batchSetCalendarConfirm = batchSetCalendarConfirm;
+        window.toggleModalExportItem = toggleModalExportItem;
+        window.selectOnlyUnexportedPlans = selectOnlyUnexportedPlans;
+        window.batchSetModalExportSelection = batchSetModalExportSelection;
+        window.resetAllIcsExportedStatus = resetAllIcsExportedStatus;
         window.updateIosSyncOptions = updateIosSyncOptions;
         window.exportConfirmedLeavesToIcs = exportConfirmedLeavesToIcs;
         window.toggleIosSyncQrCode = toggleIosSyncQrCode;
