@@ -6301,12 +6301,12 @@ function toggleDateSort() {
                     <div class="shortcut-block">
                         <div class="shortcut-block-head">
                             <span class="sc-icon" style="background: #ff3b30;"><i class="fa-solid fa-calendar-day"></i></span>
-                            <span>動作 1：搜尋「行事曆」➔ 選擇【尋找行事曆事件】</span>
+                            <span>動作 1：搜尋「行事曆」➔ 選擇【尋找行事曆行程】</span>
                         </div>
                         <div>
-                            尋找 <span class="sc-pill">所有行事曆事件</span>，其中：<br>
-                            • 將第一項時間範圍改為：<span class="sc-pill">開始日期</span> <span class="sc-pill">是今天</span><br>
-                            • 點擊「<strong>+ 新增篩選條件</strong>」：<span class="sc-pill">標題</span> <span class="sc-pill">包含</span> <span class="sc-pill sc-pill-orange">【休假】</span>
+                            尋找以下 <span class="sc-pill">全部</span> 為真的 <span class="sc-pill">行事曆行程</span>：<br>
+                            • 條件 1：<span class="sc-pill">開始日期</span> <span class="sc-pill">是今天</span><br>
+                            • 點擊「<strong>+ 加入過濾條件</strong>」：<span class="sc-pill">標題</span> <span class="sc-pill">包含</span> <span class="sc-pill sc-pill-orange">【休假】</span>（⚠️ 務必選「包含」而非「是」）
                         </div>
                     </div>
 
@@ -6316,27 +6316,26 @@ function toggleDateSort() {
                             <span>動作 2：搜尋「如果」➔ 選擇【如果 (If)】</span>
                         </div>
                         <div>
-                            如果 <span class="sc-pill">行事曆事件</span> <span class="sc-pill">有任何值</span>（代表今天確定休假免早起！）
+                            如果 <span class="sc-pill">行事曆行程 (開始日期)</span> <span class="sc-pill">包含任何數值</span>（代表今天確定休假免早起！）
                         </div>
                     </div>
 
                     <div class="shortcut-block indent-1">
                         <div class="shortcut-block-head">
                             <span class="sc-icon" style="background: #ff9500;"><i class="fa-solid fa-bell-slash"></i></span>
-                            <span>動作 3（放在「如果」裡面）：自動關閉所有「${alarmLabel}」鬧鐘</span>
+                            <span>動作 3（長按拖進「如果」裡面）：自動關閉所有「${alarmLabel}」鬧鐘</span>
                         </div>
                         <div>
                             ① 搜尋「尋找鬧鐘」➔ 條件設為 <span class="sc-pill">標籤</span> <span class="sc-pill">包含</span> <span class="sc-pill sc-pill-orange">${alarmLabel}</span><br>
-                            ② 搜尋「重複」➔ 選【重複執行每一個】（針對 <span class="sc-pill">鬧鐘</span>）<br>
-                            ③ 在重複內加入【切換鬧鐘】➔ 改為 <strong>將</strong> <span class="sc-pill">重複項目</span> <span class="sc-pill sc-pill-orange">關閉</span>（展開箭頭關閉「執行時顯示」）<br>
-                            <span style="font-size: 0.70rem; color: #64748b;">*(若您只有 1 個固定起床鬧鐘，可直接放 1 個【切換鬧鐘】：將「06:00 ${alarmLabel}」<strong>關閉</strong>，免用重複，更簡單！)*</span>
+                            ② 搜尋「重複」➔ 選【重複每個項目】（顯示：重複 <span class="sc-pill">鬧鐘</span> 中的每個項目）<br>
+                            ③ 搜尋「切換鬧鐘」並<strong>拖進「重複」與「結束重複」中間</strong> ➔ 改為 <span class="sc-pill sc-pill-orange">關閉</span> 鬧鐘 <span class="sc-pill">重複項目</span>（展開關閉「執行時顯示」）
                         </div>
                     </div>
 
                     <div class="shortcut-block">
                         <div class="shortcut-block-head" style="color: #475569;">
                             <span class="sc-icon" style="background: #8e8e93;"><i class="fa-solid fa-rotate"></i></span>
-                            <span>否則 (Otherwise) —— 收假回到平日上班，自動幫您把鬧鐘開回來！</span>
+                            <span>否則 (長按上方「如果」積木 ➔ 點選「加入『否則』」) —— 收假自動開回鬧鐘！</span>
                         </div>
                     </div>
 
