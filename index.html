@@ -1620,7 +1620,7 @@
         }
 
         /* ==========================================
-           iPhone 行事曆連動與自動關鬧鐘捷徑中心 (V2.0.14)
+           iPhone 行事曆連動與自動關鬧鐘捷徑中心 (V2.0.15)
            ========================================== */
         .cal-sync-badge {
             display: inline-flex;
@@ -1799,7 +1799,7 @@
                     <i class="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
-                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.14</span></div>
+                    <div class="brand-title">假勤管理與行事曆 <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 12px; margin-left: 6px; vertical-align: middle;">V2.0.15</span></div>
                 </div>
             </div>
             <div class="nav-actions">
@@ -2686,7 +2686,7 @@
     </div>
 
 
-    <!-- Modal 5: iPhone 行事曆連動 & 自動關鬧鐘捷徑中心 (V2.0.14) -->
+    <!-- Modal 5: iPhone 行事曆連動 & 自動關鬧鐘捷徑中心 (V2.0.15) -->
     <div class="modal-backdrop" id="iosCalendarModal" onmousedown="handleBackdropMouseDown(event)" onclick="handleBackdropClick(event, 'iosCalendarModal')">
         <div class="modal-dialog" style="max-width: 660px;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()">
             <div class="modal-header" style="background: linear-gradient(135deg, #2b3a4a, #44596e); color: white;">
@@ -2756,19 +2756,27 @@
 
                     <!-- 三種同步至 iPhone 的操作方式 -->
                     <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 9px 10px;">
-                        <div style="font-size: 0.78rem; font-weight: 800; color: #166534; margin-bottom: 6px;">
-                            <i class="fa-solid fa-paper-plane"></i> 將上方確定請假行程傳送至 iPhone 行事曆：
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 6px;">
+                            <span style="font-size: 0.78rem; font-weight: 800; color: #166534;">
+                                <i class="fa-solid fa-paper-plane"></i> 將上方確定請假行程傳送至 iPhone 行事曆：
+                            </span>
+                            <span id="iosExportSummaryHint" style="font-size: 0.71rem; font-weight: 700; color: #15803d; background: #dcfce7; padding: 1px 7px; border-radius: 99px;">準備就緒</span>
                         </div>
                         <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                            <button type="button" class="btn btn-primary" style="flex: 1 1 200px; justify-content: center; background: #1f6f4a; border-color: #195c3d; padding: 6px 10px; font-size: 0.80rem;" onclick="exportConfirmedLeavesToIcs()">
-                                <i class="fa-brands fa-apple"></i> 📲 手機直接匯入 iPhone 行事曆 (.ics)
+                            <button type="button" class="btn btn-primary" style="flex: 1 1 210px; justify-content: center; background: #1f6f4a; border-color: #195c3d; padding: 7px 10px; font-size: 0.80rem;" onclick="exportConfirmedLeavesToIcs('share')">
+                                <i class="fa-brands fa-apple"></i> 📲 方式A：一鍵分享至「行事曆」App (推薦)
                             </button>
-                            <button type="button" class="btn btn-secondary" style="flex: 1 1 180px; justify-content: center; border-color: #86efac; background: #ffffff; color: #166534; font-weight: 700; padding: 6px 10px; font-size: 0.78rem;" onclick="toggleIosSyncQrCode()">
-                                <i class="fa-solid fa-qrcode"></i> 📷 電腦排假 ➔ 手機掃碼秒傳
+                            <button type="button" class="btn btn-secondary" style="flex: 1 1 190px; justify-content: center; border-color: #86efac; background: #ffffff; color: #166534; font-weight: 800; padding: 7px 10px; font-size: 0.78rem;" onclick="exportConfirmedLeavesToIcs('download')">
+                                <i class="fa-solid fa-download"></i> 📥 方式B：下載 .ics 檔 (從 Safari 下載點開)
                             </button>
-                            <button type="button" class="btn btn-secondary" style="flex: 1 1 150px; justify-content: center; border-color: #cbd5e1; background: #ffffff; color: var(--text-main); font-weight: 700; padding: 6px 8px; font-size: 0.75rem;" onclick="subscribeWebcalLink()" title="訂閱 GitHub Pages 上的預設行事曆">
-                                <i class="fa-solid fa-rss"></i> webcal 訂閱連結
+                            <button type="button" class="btn btn-secondary" style="flex: 1 1 160px; justify-content: center; border-color: #cbd5e1; background: #ffffff; color: var(--text-main); font-weight: 700; padding: 6px 8px; font-size: 0.75rem;" onclick="toggleIosSyncQrCode()">
+                                <i class="fa-solid fa-qrcode"></i> 📷 電腦 ➔ 手機掃碼秒傳
                             </button>
+                        </div>
+                        <div style="font-size: 0.70rem; color: #166534; margin-top: 6px; line-height: 1.4; background: rgba(255,255,255,0.7); padding: 5px 8px; border-radius: 5px;">
+                            📌 <strong>iPhone 操作小叮嚀：</strong><br>
+                            • 點擊<strong>「方式A」</strong>會滑出 iPhone 分享選單 ➔ 點選中間那排彩色圖示的<strong>「行事曆」</strong>➔ 點右上角<strong>「儲存 / 加入全部」</strong>即刻完成！<br>
+                            • 若點<strong>「方式B（下載 .ics）」</strong>：按「下載」後，請點一下 Safari 網址列旁的藍色<strong>「下載箭頭 ↓」➔ 點開剛下載的 .ics 檔 ➔ 點右上角「加入全部」</strong>才會寫入行事曆喔！
                         </div>
 
                         <!-- 電腦對手機掃碼秒傳面板 -->
@@ -5684,7 +5692,7 @@ function toggleDateSort() {
 
 
         // ==========================================
-        // iPhone 行事曆連動 & 休假自動關鬧鐘捷徑中心核心引擎 (V2.0.14)
+        // iPhone 行事曆連動 & 休假自動關鬧鐘捷徑中心核心引擎 (V2.0.15)
         // ==========================================
         function getIosSyncConfig() {
             if (!appState.iosSyncConfig) {
@@ -5873,6 +5881,24 @@ function toggleDateSort() {
             plansToShow.forEach(p => { if (isPlanCalendarConfirmed(p)) confirmedCount++; });
             if (badge) badge.innerText = `已勾選 ${confirmedCount} 筆`;
 
+            const summaryHint = document.getElementById('iosExportSummaryHint');
+            if (summaryHint) {
+                const preview = generateConfirmedIcsContent();
+                if (confirmedCount === 0 && !cfg.includeNationalHolidays) {
+                    summaryHint.style.background = '#fee2e2';
+                    summaryHint.style.color = '#b91c1c';
+                    summaryHint.innerText = '⚠️ 請先勾選上方至少 1 筆假勤';
+                } else if (confirmedCount === 0) {
+                    summaryHint.style.background = '#fef3c7';
+                    summaryHint.style.color = '#92400e';
+                    summaryHint.innerText = `⚠️ 個人請假 0 筆（目前僅含國定假日 ${preview.count} 天，請勾選上方假勤！）`;
+                } else {
+                    summaryHint.style.background = '#dcfce7';
+                    summaryHint.style.color = '#15803d';
+                    summaryHint.innerText = `將匯出：個人請假 ${confirmedCount} 筆（共計 ${preview.count} 個行事曆事件）`;
+                }
+            }
+
             if (plansToShow.length === 0) {
                 container.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 0.76rem; padding: 14px;">目前無符合條件之假勤項目（可取消「僅匯出近期與未來假勤」檢視歷史紀錄，或先排入新假勤）。</div>`;
                 return;
@@ -5935,7 +5961,7 @@ function toggleDateSort() {
             const lines = [
                 'BEGIN:VCALENDAR',
                 'VERSION:2.0',
-                'PRODID:-//Alice Attendance Planner//iOS Alarm Sync V2.0.14//TW',
+                'PRODID:-//Alice Attendance Planner//iOS Alarm Sync V2.0.15//TW',
                 'CALSCALE:GREGORIAN',
                 'METHOD:PUBLISH',
                 'X-WR-CALNAME:個人休假排程 (連動鬧鐘)',
@@ -6073,31 +6099,81 @@ function toggleDateSort() {
             return { icsText: lines.join('\r\n'), count: exportedEventsCount, confirmedPlansCount: confirmedPlans.length };
         }
 
-        function exportConfirmedLeavesToIcs() {
-            const { icsText, count, confirmedPlansCount } = generateConfirmedIcsContent();
-            if (count === 0) {
-                showToast('warning', '尚未選取任何休假項目', '請先在清單勾選至少一筆「確定已請假」的項目，或開啟「一併匯入台灣國定假日」！', 2600);
+        function triggerBlobIcsDownload(icsText, fileName, confirmedPlansCount, count) {
+            const isLineInApp = /Line\//i.test(navigator.userAgent || '');
+            if (isLineInApp && typeof Swal !== 'undefined') {
+                const extUrl = window.location.href.includes('openExternalBrowser=1')
+                    ? window.location.href
+                    : (window.location.href + (window.location.search ? '&' : '?') + 'openExternalBrowser=1');
+                Swal.fire({
+                    icon: 'info',
+                    title: '請在 Safari 瀏覽器開啟',
+                    html: '<div style="font-size:0.86rem;line-height:1.5;">偵測到您目前在 LINE 內建視窗中，LINE 會阻擋行事曆檔案匯入。<br>請點擊右下角「<strong>以預設瀏覽器 (Safari) 開啟</strong>」後再點擊匯入！</div>',
+                    confirmButtonText: '嘗試自動跳轉 Safari',
+                    confirmButtonColor: '#1f6f4a'
+                }).then(r => { if (r.isConfirmed) window.location.href = extUrl; });
                 return;
             }
 
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const blob = new Blob([icsText], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
 
-            if (isIOS) {
-                // iOS Safari 原生最佳體驗：直接以 text/calendar Data URI 開啟，系統立即彈出「加入全部到行事曆」原生面板！
-                const dataUri = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsText);
-                window.location.href = dataUri;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            if (isIOS && typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: '📥 請完成最後一步加入行事曆！',
+                    html: `
+                        <div style="text-align: left; font-size: 0.85rem; color: #1e293b; line-height: 1.65; background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <div><strong>①</strong> 在 Safari 剛跳出的詢問框點選 <strong>「下載」</strong></div>
+                            <div><strong>②</strong> 點擊 Safari 網址列旁的藍色 <strong>「下載圖示 ↓」</strong> ➔ 點選「下載項目」打開剛下載的 <code>${fileName}</code></div>
+                            <div><strong>③</strong> 點擊右上角 <strong>「加入全部」</strong>（共 ${count} 個行程，含個人請假 ${confirmedPlansCount} 筆）即寫入完成！</div>
+                        </div>
+                    `,
+                    confirmButtonText: '我知道了',
+                    confirmButtonColor: '#1f6f4a'
+                });
             } else {
-                const blob = new Blob([icsText], { type: 'text/calendar;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `確定請假與休假連動_${selectedYear}.ics`;
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 3000);
-                showToast('success', '已產出 iPhone 行事曆檔 (.ics)！', `共包含 ${confirmedPlansCount} 筆確定假勤（合計 ${count} 個行事曆事件）。若在電腦上操作，推薦點旁邊「手機掃碼秒傳」直接用 iPhone 相機掃描！`, 3500);
+                showToast('success', '已下載行事曆檔 (.ics)！', `共包含 ${confirmedPlansCount} 筆確定假勤（合計 ${count} 個行事曆事件）。`, 3500);
             }
+        }
+
+        async function exportConfirmedLeavesToIcs(mode = 'share') {
+            const { icsText, count, confirmedPlansCount } = generateConfirmedIcsContent();
+            if (count === 0) {
+                showToast('warning', '尚未選取任何休假項目', '請先在清單勾選至少一筆「確定已請假」的項目，或開啟「一併匯入台灣國定假日」！', 2800);
+                return;
+            }
+
+            const fileName = `休假排程_${selectedYear}.ics`;
+
+            // 方式 A：優先使用 iOS 原生 Web Share API 直接分享檔案給「行事曆」App（完全繞過 Safari 阻擋 data: URI 與免找下載清單！）
+            if (mode === 'share' && navigator.share && navigator.canShare) {
+                try {
+                    const icsFile = new File([icsText], fileName, { type: 'text/calendar' });
+                    if (navigator.canShare({ files: [icsFile] })) {
+                        await navigator.share({
+                            files: [icsFile],
+                            title: `個人確定請假排程 (${selectedYear})`
+                        });
+                        return;
+                    }
+                } catch (err) {
+                    // 若使用者在分享選單主動按「取消」(AbortError)，直接結束不報錯
+                    if (err && err.name === 'AbortError') return;
+                    console.warn('Web Share API 無法開啟，自動切換為標準檔案下載模式:', err);
+                }
+            }
+
+            // 方式 B 或電腦端自動備援：使用標準 Blob 檔案下載 + Safari 明確引導步驟
+            triggerBlobIcsDownload(icsText, fileName, confirmedPlansCount, count);
         }
 
         // 產生跨裝置秒傳同步 URL (UTF-8 Base64URL 精簡編碼)
